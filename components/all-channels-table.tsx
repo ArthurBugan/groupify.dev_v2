@@ -1,22 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
-	Youtube,
-	MoreHorizontal,
 	ExternalLink,
 	FolderKanban,
+	MoreHorizontal,
 	Pencil,
 	Trash2,
+	Youtube,
 } from "lucide-react";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -25,8 +19,14 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link } from "@tanstack/react-router";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 export function AllChannelsTable() {
 	// Mock data - in a real app, this would come from your database

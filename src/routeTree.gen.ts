@@ -19,7 +19,7 @@ import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/i
 import { Route as AppDashboardSettingsLayoutRouteImport } from './routes/_app/dashboard/settings/layout'
 import { Route as AppDashboardGroupsIndexRouteImport } from './routes/_app/dashboard/groups/index'
 import { Route as AppDashboardChannelsIndexRouteImport } from './routes/_app/dashboard/channels/index'
-import { Route as AuthForgotPasswordSuccessChar91emailChar93IndexRouteImport } from './routes/_auth/forgot-password/success/[email]/index'
+import { Route as AuthForgotPasswordSuccessEmailIndexRouteImport } from './routes/_auth/forgot-password/success/$email/index'
 import { Route as AppShareTypeIdIndexRouteImport } from './routes/_app/share/$type/$id/index'
 import { Route as AppDashboardSettingsPrivacyIndexRouteImport } from './routes/_app/dashboard/settings/privacy/index'
 import { Route as AppDashboardSettingsNotificationsIndexRouteImport } from './routes/_app/dashboard/settings/notifications/index'
@@ -33,8 +33,8 @@ import { Route as AppDashboardGroupsIdIndexRouteImport } from './routes/_app/das
 import { Route as AppDashboardGroupsIdShareIndexRouteImport } from './routes/_app/dashboard/groups/$id/share/index'
 import { Route as AppDashboardGroupsIdEditIndexRouteImport } from './routes/_app/dashboard/groups/$id/edit/index'
 import { Route as AppDashboardGroupsIdAddChannelIndexRouteImport } from './routes/_app/dashboard/groups/$id/add-channel/index'
-import { Route as AppDashboardChannelsEditChar91idChar93IndexRouteImport } from './routes/_app/dashboard/channels/edit/[id]/index'
-import { Route as AppDashboardChannelsChangeGroupChar91idChar93IndexRouteImport } from './routes/_app/dashboard/channels/change-group/[id]/index'
+import { Route as AppDashboardChannelsEditIdIndexRouteImport } from './routes/_app/dashboard/channels/edit/$id/index'
+import { Route as AppDashboardChannelsChangeGroupIdIndexRouteImport } from './routes/_app/dashboard/channels/change-group/$id/index'
 
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/_app/',
@@ -88,10 +88,10 @@ const AppDashboardChannelsIndexRoute =
     path: '/channels/',
     getParentRoute: () => AppDashboardLayoutRoute,
   } as any)
-const AuthForgotPasswordSuccessChar91emailChar93IndexRoute =
-  AuthForgotPasswordSuccessChar91emailChar93IndexRouteImport.update({
-    id: '/_auth/forgot-password/success/[email]/',
-    path: '/forgot-password/success/[email]/',
+const AuthForgotPasswordSuccessEmailIndexRoute =
+  AuthForgotPasswordSuccessEmailIndexRouteImport.update({
+    id: '/_auth/forgot-password/success/$email/',
+    path: '/forgot-password/success/$email/',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AppShareTypeIdIndexRoute = AppShareTypeIdIndexRouteImport.update({
@@ -171,16 +171,16 @@ const AppDashboardGroupsIdAddChannelIndexRoute =
     path: '/groups/$id/add-channel/',
     getParentRoute: () => AppDashboardLayoutRoute,
   } as any)
-const AppDashboardChannelsEditChar91idChar93IndexRoute =
-  AppDashboardChannelsEditChar91idChar93IndexRouteImport.update({
-    id: '/channels/edit/[id]/',
-    path: '/channels/edit/[id]/',
+const AppDashboardChannelsEditIdIndexRoute =
+  AppDashboardChannelsEditIdIndexRouteImport.update({
+    id: '/channels/edit/$id/',
+    path: '/channels/edit/$id/',
     getParentRoute: () => AppDashboardLayoutRoute,
   } as any)
-const AppDashboardChannelsChangeGroupChar91idChar93IndexRoute =
-  AppDashboardChannelsChangeGroupChar91idChar93IndexRouteImport.update({
-    id: '/channels/change-group/[id]/',
-    path: '/channels/change-group/[id]/',
+const AppDashboardChannelsChangeGroupIdIndexRoute =
+  AppDashboardChannelsChangeGroupIdIndexRouteImport.update({
+    id: '/channels/change-group/$id/',
+    path: '/channels/change-group/$id/',
     getParentRoute: () => AppDashboardLayoutRoute,
   } as any)
 
@@ -205,9 +205,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings/notifications': typeof AppDashboardSettingsNotificationsIndexRoute
   '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
-  '/forgot-password/success/[email]': typeof AuthForgotPasswordSuccessChar91emailChar93IndexRoute
-  '/dashboard/channels/change-group/[id]': typeof AppDashboardChannelsChangeGroupChar91idChar93IndexRoute
-  '/dashboard/channels/edit/[id]': typeof AppDashboardChannelsEditChar91idChar93IndexRoute
+  '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
+  '/dashboard/channels/change-group/$id': typeof AppDashboardChannelsChangeGroupIdIndexRoute
+  '/dashboard/channels/edit/$id': typeof AppDashboardChannelsEditIdIndexRoute
   '/dashboard/groups/$id/add-channel': typeof AppDashboardGroupsIdAddChannelIndexRoute
   '/dashboard/groups/$id/edit': typeof AppDashboardGroupsIdEditIndexRoute
   '/dashboard/groups/$id/share': typeof AppDashboardGroupsIdShareIndexRoute
@@ -232,9 +232,9 @@ export interface FileRoutesByTo {
   '/dashboard/settings/notifications': typeof AppDashboardSettingsNotificationsIndexRoute
   '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
-  '/forgot-password/success/[email]': typeof AuthForgotPasswordSuccessChar91emailChar93IndexRoute
-  '/dashboard/channels/change-group/[id]': typeof AppDashboardChannelsChangeGroupChar91idChar93IndexRoute
-  '/dashboard/channels/edit/[id]': typeof AppDashboardChannelsEditChar91idChar93IndexRoute
+  '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
+  '/dashboard/channels/change-group/$id': typeof AppDashboardChannelsChangeGroupIdIndexRoute
+  '/dashboard/channels/edit/$id': typeof AppDashboardChannelsEditIdIndexRoute
   '/dashboard/groups/$id/add-channel': typeof AppDashboardGroupsIdAddChannelIndexRoute
   '/dashboard/groups/$id/edit': typeof AppDashboardGroupsIdEditIndexRoute
   '/dashboard/groups/$id/share': typeof AppDashboardGroupsIdShareIndexRoute
@@ -261,9 +261,9 @@ export interface FileRoutesById {
   '/_app/dashboard/settings/notifications/': typeof AppDashboardSettingsNotificationsIndexRoute
   '/_app/dashboard/settings/privacy/': typeof AppDashboardSettingsPrivacyIndexRoute
   '/_app/share/$type/$id/': typeof AppShareTypeIdIndexRoute
-  '/_auth/forgot-password/success/[email]/': typeof AuthForgotPasswordSuccessChar91emailChar93IndexRoute
-  '/_app/dashboard/channels/change-group/[id]/': typeof AppDashboardChannelsChangeGroupChar91idChar93IndexRoute
-  '/_app/dashboard/channels/edit/[id]/': typeof AppDashboardChannelsEditChar91idChar93IndexRoute
+  '/_auth/forgot-password/success/$email/': typeof AuthForgotPasswordSuccessEmailIndexRoute
+  '/_app/dashboard/channels/change-group/$id/': typeof AppDashboardChannelsChangeGroupIdIndexRoute
+  '/_app/dashboard/channels/edit/$id/': typeof AppDashboardChannelsEditIdIndexRoute
   '/_app/dashboard/groups/$id/add-channel/': typeof AppDashboardGroupsIdAddChannelIndexRoute
   '/_app/dashboard/groups/$id/edit/': typeof AppDashboardGroupsIdEditIndexRoute
   '/_app/dashboard/groups/$id/share/': typeof AppDashboardGroupsIdShareIndexRoute
@@ -291,9 +291,9 @@ export interface FileRouteTypes {
     | '/dashboard/settings/notifications'
     | '/dashboard/settings/privacy'
     | '/share/$type/$id'
-    | '/forgot-password/success/[email]'
-    | '/dashboard/channels/change-group/[id]'
-    | '/dashboard/channels/edit/[id]'
+    | '/forgot-password/success/$email'
+    | '/dashboard/channels/change-group/$id'
+    | '/dashboard/channels/edit/$id'
     | '/dashboard/groups/$id/add-channel'
     | '/dashboard/groups/$id/edit'
     | '/dashboard/groups/$id/share'
@@ -318,9 +318,9 @@ export interface FileRouteTypes {
     | '/dashboard/settings/notifications'
     | '/dashboard/settings/privacy'
     | '/share/$type/$id'
-    | '/forgot-password/success/[email]'
-    | '/dashboard/channels/change-group/[id]'
-    | '/dashboard/channels/edit/[id]'
+    | '/forgot-password/success/$email'
+    | '/dashboard/channels/change-group/$id'
+    | '/dashboard/channels/edit/$id'
     | '/dashboard/groups/$id/add-channel'
     | '/dashboard/groups/$id/edit'
     | '/dashboard/groups/$id/share'
@@ -346,9 +346,9 @@ export interface FileRouteTypes {
     | '/_app/dashboard/settings/notifications/'
     | '/_app/dashboard/settings/privacy/'
     | '/_app/share/$type/$id/'
-    | '/_auth/forgot-password/success/[email]/'
-    | '/_app/dashboard/channels/change-group/[id]/'
-    | '/_app/dashboard/channels/edit/[id]/'
+    | '/_auth/forgot-password/success/$email/'
+    | '/_app/dashboard/channels/change-group/$id/'
+    | '/_app/dashboard/channels/edit/$id/'
     | '/_app/dashboard/groups/$id/add-channel/'
     | '/_app/dashboard/groups/$id/edit/'
     | '/_app/dashboard/groups/$id/share/'
@@ -362,7 +362,7 @@ export interface RootRouteChildren {
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
   AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
   AppShareTypeIdIndexRoute: typeof AppShareTypeIdIndexRoute
-  AuthForgotPasswordSuccessChar91emailChar93IndexRoute: typeof AuthForgotPasswordSuccessChar91emailChar93IndexRoute
+  AuthForgotPasswordSuccessEmailIndexRoute: typeof AuthForgotPasswordSuccessEmailIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -437,11 +437,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardChannelsIndexRouteImport
       parentRoute: typeof AppDashboardLayoutRoute
     }
-    '/_auth/forgot-password/success/[email]/': {
-      id: '/_auth/forgot-password/success/[email]/'
-      path: '/forgot-password/success/[email]'
-      fullPath: '/forgot-password/success/[email]'
-      preLoaderRoute: typeof AuthForgotPasswordSuccessChar91emailChar93IndexRouteImport
+    '/_auth/forgot-password/success/$email/': {
+      id: '/_auth/forgot-password/success/$email/'
+      path: '/forgot-password/success/$email'
+      fullPath: '/forgot-password/success/$email'
+      preLoaderRoute: typeof AuthForgotPasswordSuccessEmailIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/share/$type/$id/': {
@@ -535,18 +535,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardGroupsIdAddChannelIndexRouteImport
       parentRoute: typeof AppDashboardLayoutRoute
     }
-    '/_app/dashboard/channels/edit/[id]/': {
-      id: '/_app/dashboard/channels/edit/[id]/'
-      path: '/channels/edit/[id]'
-      fullPath: '/dashboard/channels/edit/[id]'
-      preLoaderRoute: typeof AppDashboardChannelsEditChar91idChar93IndexRouteImport
+    '/_app/dashboard/channels/edit/$id/': {
+      id: '/_app/dashboard/channels/edit/$id/'
+      path: '/channels/edit/$id'
+      fullPath: '/dashboard/channels/edit/$id'
+      preLoaderRoute: typeof AppDashboardChannelsEditIdIndexRouteImport
       parentRoute: typeof AppDashboardLayoutRoute
     }
-    '/_app/dashboard/channels/change-group/[id]/': {
-      id: '/_app/dashboard/channels/change-group/[id]/'
-      path: '/channels/change-group/[id]'
-      fullPath: '/dashboard/channels/change-group/[id]'
-      preLoaderRoute: typeof AppDashboardChannelsChangeGroupChar91idChar93IndexRouteImport
+    '/_app/dashboard/channels/change-group/$id/': {
+      id: '/_app/dashboard/channels/change-group/$id/'
+      path: '/channels/change-group/$id'
+      fullPath: '/dashboard/channels/change-group/$id'
+      preLoaderRoute: typeof AppDashboardChannelsChangeGroupIdIndexRouteImport
       parentRoute: typeof AppDashboardLayoutRoute
     }
   }
@@ -591,8 +591,8 @@ interface AppDashboardLayoutRouteChildren {
   AppDashboardGroupsIndexRoute: typeof AppDashboardGroupsIndexRoute
   AppDashboardGroupsIdIndexRoute: typeof AppDashboardGroupsIdIndexRoute
   AppDashboardGroupsNewIndexRoute: typeof AppDashboardGroupsNewIndexRoute
-  AppDashboardChannelsChangeGroupChar91idChar93IndexRoute: typeof AppDashboardChannelsChangeGroupChar91idChar93IndexRoute
-  AppDashboardChannelsEditChar91idChar93IndexRoute: typeof AppDashboardChannelsEditChar91idChar93IndexRoute
+  AppDashboardChannelsChangeGroupIdIndexRoute: typeof AppDashboardChannelsChangeGroupIdIndexRoute
+  AppDashboardChannelsEditIdIndexRoute: typeof AppDashboardChannelsEditIdIndexRoute
   AppDashboardGroupsIdAddChannelIndexRoute: typeof AppDashboardGroupsIdAddChannelIndexRoute
   AppDashboardGroupsIdEditIndexRoute: typeof AppDashboardGroupsIdEditIndexRoute
   AppDashboardGroupsIdShareIndexRoute: typeof AppDashboardGroupsIdShareIndexRoute
@@ -605,10 +605,9 @@ const AppDashboardLayoutRouteChildren: AppDashboardLayoutRouteChildren = {
   AppDashboardGroupsIndexRoute: AppDashboardGroupsIndexRoute,
   AppDashboardGroupsIdIndexRoute: AppDashboardGroupsIdIndexRoute,
   AppDashboardGroupsNewIndexRoute: AppDashboardGroupsNewIndexRoute,
-  AppDashboardChannelsChangeGroupChar91idChar93IndexRoute:
-    AppDashboardChannelsChangeGroupChar91idChar93IndexRoute,
-  AppDashboardChannelsEditChar91idChar93IndexRoute:
-    AppDashboardChannelsEditChar91idChar93IndexRoute,
+  AppDashboardChannelsChangeGroupIdIndexRoute:
+    AppDashboardChannelsChangeGroupIdIndexRoute,
+  AppDashboardChannelsEditIdIndexRoute: AppDashboardChannelsEditIdIndexRoute,
   AppDashboardGroupsIdAddChannelIndexRoute:
     AppDashboardGroupsIdAddChannelIndexRoute,
   AppDashboardGroupsIdEditIndexRoute: AppDashboardGroupsIdEditIndexRoute,
@@ -626,8 +625,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,
   AppShareTypeIdIndexRoute: AppShareTypeIdIndexRoute,
-  AuthForgotPasswordSuccessChar91emailChar93IndexRoute:
-    AuthForgotPasswordSuccessChar91emailChar93IndexRoute,
+  AuthForgotPasswordSuccessEmailIndexRoute:
+    AuthForgotPasswordSuccessEmailIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

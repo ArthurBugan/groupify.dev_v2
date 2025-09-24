@@ -1,4 +1,4 @@
-import { apiClient, type ApiResponse } from "@/hooks/api/api-client";
+import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 
 type LoginCredentials = {
 	email: string;
