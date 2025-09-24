@@ -7,8 +7,14 @@
 /.next/
 /out/
 
+.nitro
+.output
+.tanstack
+
 # production
 /build
+
+**/.DS_Store
 
 # debug
 npm-debug.log*

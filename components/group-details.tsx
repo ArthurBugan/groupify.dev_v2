@@ -1,13 +1,19 @@
-import type React from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Pencil, Share2 } from "lucide-react"
-import Link from "next/link"
-import * as LucideIcons from "lucide-react"
+import type React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Pencil, Share2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import * as LucideIcons from "lucide-react";
 
 interface GroupDetailsProps {
-  id: string
+  id: string;
 }
 
 export function GroupDetails({ id }: GroupDetailsProps) {
@@ -35,7 +41,15 @@ export function GroupDetails({ id }: GroupDetailsProps) {
               ? "Workout tutorials, health tips, and fitness journey channels."
               : "A collection of YouTube channels",
     category:
-      id === "1" ? "Gaming" : id === "2" ? "Technology" : id === "3" ? "Food" : id === "4" ? "Fitness" : "General",
+      id === "1"
+        ? "Gaming"
+        : id === "2"
+          ? "Technology"
+          : id === "3"
+            ? "Food"
+            : id === "4"
+              ? "Fitness"
+              : "General",
     createdAt: "June 24, 2023",
     channelCount: 12,
     totalSubscribers: "2.4M",
@@ -57,13 +71,20 @@ export function GroupDetails({ id }: GroupDetailsProps) {
         : id === "201" || id === "202" || id === "203"
           ? "Tech Reviews"
           : null,
-    parentId: id === "101" || id === "102" ? "1" : id === "201" || id === "202" || id === "203" ? "2" : null,
-  }
+    parentId:
+      id === "101" || id === "102"
+        ? "1"
+        : id === "201" || id === "202" || id === "203"
+          ? "2"
+          : null,
+  };
 
   // Dynamically render the icon
   const IconComponent = group.icon
-    ? (LucideIcons as Record<string, React.FC<React.SVGProps<SVGSVGElement>>>)[group.icon] || LucideIcons.FolderKanban
-    : LucideIcons.FolderKanban
+    ? (LucideIcons as Record<string, React.FC<React.SVGProps<SVGSVGElement>>>)[
+        group.icon
+      ] || LucideIcons.FolderKanban
+    : LucideIcons.FolderKanban;
 
   return (
     <Card>
@@ -77,7 +98,8 @@ export function GroupDetails({ id }: GroupDetailsProps) {
               <div className="flex items-center gap-2">
                 {group.parentGroup && (
                   <Link
-                    href={`/dashboard/groups/${group.parentId}`}
+                    to={`/dashboard/groups/$id`}
+                    params={{ id: group.parentId ?? '' }}
                     className="text-sm text-muted-foreground hover:underline"
                   >
                     {group.parentGroup} /
@@ -89,15 +111,15 @@ export function GroupDetails({ id }: GroupDetailsProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge>{group.category}</Badge>
+            <Badge variant="secondary">{group.category}</Badge>
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/groups/${id}/edit`}>
+              <Link to={"/dashboard/groups/$id/edit"} params={{ id: "2" }}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit Group
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/groups/${id}/share`}>
+              <Link to={`/dashboard/groups/$id/share`} params={{ id: "2" }}>
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Link>
@@ -112,19 +134,25 @@ export function GroupDetails({ id }: GroupDetailsProps) {
             <p>{group.createdAt}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Channels</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Channels
+            </p>
             <p>{group.channelCount}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Total Subscribers</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Total Subscribers
+            </p>
             <p>{group.totalSubscribers}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Total Views</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Total Views
+            </p>
             <p>{group.totalViews}</p>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

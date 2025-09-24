@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -214,19 +214,19 @@ export function LandingPage() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
-              <Link href="#features" className="text-sm font-medium hover:text-primary transition-colors group">
+              <Link to="#features" className="text-sm font-medium hover:text-primary transition-colors group">
                 {t("nav.features")}
                 <div className="h-0.5 w-0 bg-primary transition-all group-hover:w-full"></div>
               </Link>
-              <Link href="#integrations" className="text-sm font-medium hover:text-primary transition-colors group">
+              <Link to="#integrations" className="text-sm font-medium hover:text-primary transition-colors group">
                 {t("nav.integrations")}
                 <div className="h-0.5 w-0 bg-primary transition-all group-hover:w-full"></div>
               </Link>
-              <Link href="#pricing" className="text-sm font-medium hover:text-primary transition-colors group">
+              <Link to="#pricing" className="text-sm font-medium hover:text-primary transition-colors group">
                 {t("nav.pricing")}
                 <div className="h-0.5 w-0 bg-primary transition-all group-hover:w-full"></div>
               </Link>
-              <Link href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors group">
+              <Link to="#testimonials" className="text-sm font-medium hover:text-primary transition-colors group">
                 {t("nav.reviews")}
                 <div className="h-0.5 w-0 bg-primary transition-all group-hover:w-full"></div>
               </Link>
@@ -235,13 +235,13 @@ export function LandingPage() {
             <div className="hidden md:flex items-center gap-4">
               <LanguageSelector />
               <Button variant="ghost" asChild className="hover:bg-accent">
-                <Link href="/auth/login">{t("nav.signin")}</Link>
+                <Link to="/login">{t("nav.signin")}</Link>
               </Button>
               <Button
                 asChild
                 className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/25"
               >
-                <Link href="/auth/register">{t("nav.getstarted")}</Link>
+                <Link to="/register">{t("nav.getstarted")}</Link>
               </Button>
             </div>
 
@@ -260,25 +260,25 @@ export function LandingPage() {
           {mobileMenuOpen && (
             <div className="md:hidden border-t py-4 bg-background/95 backdrop-blur-xl">
               <div className="flex flex-col gap-4">
-                <Link href="#features" className="text-sm font-medium hover:text-primary transition-colors">
+                <Link to="#features" className="text-sm font-medium hover:text-primary transition-colors">
                   {t("nav.features")}
                 </Link>
-                <Link href="#integrations" className="text-sm font-medium hover:text-primary transition-colors">
+                <Link to="#integrations" className="text-sm font-medium hover:text-primary transition-colors">
                   {t("nav.integrations")}
                 </Link>
-                <Link href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
+                <Link to="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
                   {t("nav.pricing")}
                 </Link>
-                <Link href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors">
+                <Link to="#testimonials" className="text-sm font-medium hover:text-primary transition-colors">
                   {t("nav.reviews")}
                 </Link>
                 <div className="flex flex-col gap-2 pt-4 border-t">
                   <LanguageSelector />
                   <Button variant="ghost" asChild>
-                    <Link href="/auth/login">{t("nav.signin")}</Link>
+                    <Link to="/login">{t("nav.signin")}</Link>
                   </Button>
                   <Button asChild className="bg-gradient-to-r from-red-500 to-pink-500">
-                    <Link href="/auth/register">{t("nav.getstarted")}</Link>
+                    <Link to="/register">{t("nav.getstarted")}</Link>
                   </Button>
                 </div>
               </div>
@@ -300,7 +300,7 @@ export function LandingPage() {
               <div className="space-y-6">
                 <Badge
                   variant="outline"
-                  className="w-fit border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+                  className="w-fit border-red-200 bg-red-50 text-red-700 hover:bg-red-900 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
                 >
                   <Sparkles className="mr-2 h-3 w-3" />
                   {t("hero.badge")}
@@ -330,13 +330,13 @@ export function LandingPage() {
                   asChild
                   className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/25 text-lg px-8 py-6"
                 >
-                  <Link href="/auth/register">
+                  <Link to="/register">
                     {t("hero.starttrial")}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild className="border-2 text-lg px-8 py-6 hover:bg-accent">
-                  <Link href="/demo">
+                  <Link to="/demo">
                     <Play className="mr-2 h-5 w-5" />
                     {t("hero.watchdemo")}
                   </Link>
@@ -590,7 +590,7 @@ export function LandingPage() {
                     variant={plan.popular ? "default" : "outline"}
                     asChild
                   >
-                    <Link href="/auth/register">
+                    <Link to="/register">
                       {plan.cta}
                       <ChevronRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -623,7 +623,7 @@ export function LandingPage() {
                 asChild
                 className="text-lg px-8 py-6 bg-white text-gray-900 hover:bg-gray-100 shadow-xl"
               >
-                <Link href="/auth/register">
+                <Link to="/register">
                   {t("hero.starttrial")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -634,7 +634,7 @@ export function LandingPage() {
                 className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 backdrop-blur-sm"
                 asChild
               >
-                <Link href="/demo">
+                <Link to="/demo">
                   <Play className="mr-2 h-5 w-5" />
                   {t("hero.watchdemo")}
                 </Link>
@@ -671,22 +671,22 @@ export function LandingPage() {
               <h3 className="font-semibold">{t("footer.product")}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="#features" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="#features" className="hover:text-foreground transition-colors hover:underline">
                     {t("nav.features")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="#pricing" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="#pricing" className="hover:text-foreground transition-colors hover:underline">
                     {t("nav.pricing")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/demo" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/demo" className="hover:text-foreground transition-colors hover:underline">
                     Demo
                   </Link>
                 </li>
                 <li>
-                  <Link href="/api" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/api" className="hover:text-foreground transition-colors hover:underline">
                     API
                   </Link>
                 </li>
@@ -697,22 +697,22 @@ export function LandingPage() {
               <h3 className="font-semibold">{t("footer.support")}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="/help" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/help" className="hover:text-foreground transition-colors hover:underline">
                     Help Center
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/contact" className="hover:text-foreground transition-colors hover:underline">
                     Contact
                   </Link>
                 </li>
                 <li>
-                  <Link href="/status" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/status" className="hover:text-foreground transition-colors hover:underline">
                     Status
                   </Link>
                 </li>
                 <li>
-                  <Link href="/community" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/community" className="hover:text-foreground transition-colors hover:underline">
                     Community
                   </Link>
                 </li>
@@ -723,22 +723,22 @@ export function LandingPage() {
               <h3 className="font-semibold">{t("footer.company")}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="/about" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/about" className="hover:text-foreground transition-colors hover:underline">
                     About
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/blog" className="hover:text-foreground transition-colors hover:underline">
                     Blog
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/careers" className="hover:text-foreground transition-colors hover:underline">
                     Careers
                   </Link>
                 </li>
                 <li>
-                  <Link href="/privacy" className="hover:text-foreground transition-colors hover:underline">
+                  <Link to="/privacy" className="hover:text-foreground transition-colors hover:underline">
                     Privacy
                   </Link>
                 </li>

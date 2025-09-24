@@ -65,7 +65,7 @@ export function BillingSettings() {
                 Billed {billingCycle}ly • Next billing date: {nextBillingDate}
               </p>
             </div>
-            <Badge variant="default" className="text-lg px-3 py-1">
+            <Badge variant="outline" className="text-lg px-3 py-1">
               {currentPlan}
             </Badge>
           </div>

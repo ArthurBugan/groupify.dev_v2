@@ -1,67 +1,95 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Moon, Sun, Monitor } from "lucide-react"
-import { useTheme } from "next-themes"
-import { useAppearance } from "@/components/appearance-provider"
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Moon, Sun, Monitor } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useAppearance } from "@/components/appearance-provider";
 
 export function AppearanceSettings() {
-  const { theme, setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  const { accentColor, setAccentColor, fontSize, setFontSize, compactMode, setCompactMode, animations, setAnimations } =
-    useAppearance()
-
-  // Prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return null
-  }
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const {
+    accentColor,
+    setAccentColor,
+    fontSize,
+    setFontSize,
+    compactMode,
+    setCompactMode,
+    animations,
+    setAnimations,
+  } = useAppearance();
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Theme</CardTitle>
-          <CardDescription>Select your preferred theme for the dashboard</CardDescription>
+          <CardDescription>
+            Select your preferred theme for the dashboard
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <RadioGroup value={theme} onValueChange={setTheme}>
             <div className="grid gap-4">
               <div className="flex items-center space-x-3 space-y-0">
                 <RadioGroupItem value="light" id="light" />
-                <Label htmlFor="light" className="flex items-center gap-3 cursor-pointer">
+                <Label
+                  htmlFor="light"
+                  className="flex items-center gap-3 cursor-pointer"
+                >
                   <Sun className="h-4 w-4" />
                   <div>
                     <p className="font-medium">Light</p>
-                    <p className="text-sm text-muted-foreground">Light theme with white backgrounds</p>
+                    <p className="text-sm text-muted-foreground">
+                      Light theme with white backgrounds
+                    </p>
                   </div>
                 </Label>
               </div>
               <div className="flex items-center space-x-3 space-y-0">
                 <RadioGroupItem value="dark" id="dark" />
-                <Label htmlFor="dark" className="flex items-center gap-3 cursor-pointer">
+                <Label
+                  htmlFor="dark"
+                  className="flex items-center gap-3 cursor-pointer"
+                >
                   <Moon className="h-4 w-4" />
                   <div>
                     <p className="font-medium">Dark</p>
-                    <p className="text-sm text-muted-foreground">Dark theme with black backgrounds</p>
+                    <p className="text-sm text-muted-foreground">
+                      Dark theme with black backgrounds
+                    </p>
                   </div>
                 </Label>
               </div>
               <div className="flex items-center space-x-3 space-y-0">
                 <RadioGroupItem value="system" id="system" />
-                <Label htmlFor="system" className="flex items-center gap-3 cursor-pointer">
+                <Label
+                  htmlFor="system"
+                  className="flex items-center gap-3 cursor-pointer"
+                >
                   <Monitor className="h-4 w-4" />
                   <div>
                     <p className="font-medium">System</p>
-                    <p className="text-sm text-muted-foreground">Automatically match your system theme</p>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically match your system theme
+                    </p>
                   </div>
                 </Label>
               </div>
@@ -70,7 +98,10 @@ export function AppearanceSettings() {
 
           <div className="mt-4 p-4 rounded-lg border bg-muted/50">
             <p className="text-sm text-muted-foreground">
-              Current theme: <span className="font-medium">{resolvedTheme === "dark" ? "Dark" : "Light"}</span>
+              Current theme:{" "}
+              <span className="font-medium">
+                {resolvedTheme === "dark" ? "Dark" : "Light"}
+              </span>
             </p>
           </div>
         </CardContent>
@@ -79,13 +110,17 @@ export function AppearanceSettings() {
       <Card>
         <CardHeader>
           <CardTitle>Display Preferences</CardTitle>
-          <CardDescription>Customize how the dashboard looks and feels</CardDescription>
+          <CardDescription>
+            Customize how the dashboard looks and feels
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="accent-color">Accent Color</Label>
-              <p className="text-sm text-muted-foreground">Choose your preferred accent color</p>
+              <p className="text-sm text-muted-foreground">
+                Choose your preferred accent color
+              </p>
             </div>
             <Select value={accentColor} onValueChange={setAccentColor}>
               <SelectTrigger className="w-[180px]">
@@ -129,7 +164,9 @@ export function AppearanceSettings() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="font-size">Font Size</Label>
-              <p className="text-sm text-muted-foreground">Adjust the base font size</p>
+              <p className="text-sm text-muted-foreground">
+                Adjust the base font size
+              </p>
             </div>
             <Select value={fontSize} onValueChange={setFontSize}>
               <SelectTrigger className="w-[180px]">
@@ -146,17 +183,29 @@ export function AppearanceSettings() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="compact-mode">Compact Mode</Label>
-              <p className="text-sm text-muted-foreground">Reduce spacing and padding in the UI</p>
+              <p className="text-sm text-muted-foreground">
+                Reduce spacing and padding in the UI
+              </p>
             </div>
-            <Switch id="compact-mode" checked={compactMode} onCheckedChange={setCompactMode} />
+            <Switch
+              id="compact-mode"
+              checked={compactMode}
+              onCheckedChange={setCompactMode}
+            />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="animations">Enable Animations</Label>
-              <p className="text-sm text-muted-foreground">Show smooth transitions and animations</p>
+              <p className="text-sm text-muted-foreground">
+                Show smooth transitions and animations
+              </p>
             </div>
-            <Switch id="animations" checked={animations} onCheckedChange={setAnimations} />
+            <Switch
+              id="animations"
+              checked={animations}
+              onCheckedChange={setAnimations}
+            />
           </div>
         </CardContent>
       </Card>
@@ -186,5 +235,5 @@ export function AppearanceSettings() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

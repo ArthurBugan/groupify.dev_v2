@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@tanstack/react-router"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -22,7 +22,7 @@ export function GroupList() {
           {groups.map((group) => (
             <div key={group.id} className="flex items-center justify-between">
               <div className="space-y-1">
-                <Link href={`/dashboard/groups/${group.id}`} className="font-medium hover:underline">
+                <Link to={`/dashboard/groups/${group.id}`} className="font-medium hover:underline">
                   {group.name}
                 </Link>
                 <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FolderKanban, UserCircle, Eye, Share2, Clock } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@tanstack/react-router"
 import { Progress } from "@/components/ui/progress"
 
 export function SharedGroupsOverview() {
@@ -79,7 +79,7 @@ export function SharedGroupsOverview() {
                   <Badge variant="secondary">{group.category}</Badge>
                 </div>
                 <CardTitle className="text-lg">
-                  <Link href={`/dashboard/groups/${group.id}`} className="hover:underline flex items-center gap-2">
+                  <Link to={`/dashboard/groups/${group.id}`} className="hover:underline flex items-center gap-2">
                     <FolderKanban className="h-4 w-4" />
                     {group.name}
                   </Link>

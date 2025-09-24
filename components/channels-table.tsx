@@ -305,7 +305,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
           </Select>
           <div className="flex border rounded-md overflow-hidden">
             <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
+              variant={viewMode === "grid" ? "secondary" : "ghost"}
               size="icon"
               className="rounded-none"
               onClick={() => setViewMode("grid")}
@@ -314,7 +314,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
               <span className="sr-only">Grid view</span>
             </Button>
             <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
+              variant={viewMode === "list" ? "secondary" : "ghost"}
               size="icon"
               className="rounded-none"
               onClick={() => setViewMode("list")}
@@ -323,7 +323,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
               <span className="sr-only">List view</span>
             </Button>
             <Button
-              variant={viewMode === "compact" ? "default" : "ghost"}
+              variant={viewMode === "compact" ? "secondary" : "ghost"}
               size="icon"
               className="rounded-none"
               onClick={() => setViewMode("compact")}

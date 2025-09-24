@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link } from "@tanstack/react-router"
+import { useLocation } from '@tanstack/react-router'
 import { LayoutDashboard, FolderKanban, Youtube, Settings, Menu, Moon, Sun } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,9 @@ import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
 export function DashboardSidebar() {
-  const pathname = usePathname()
+  const pathname = useLocation({
+    select: (location) => location.pathname,
+  })
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -36,7 +38,7 @@ export function DashboardSidebar() {
     },
     {
       name: "Settings",
-      href: "/dashboard/settings",
+      href: "/dashboard/settings/account",
       icon: Settings,
     },
   ]
@@ -50,7 +52,7 @@ export function DashboardSidebar() {
             {routes.map((route) => (
               <Link
                 key={route.href}
-                href={route.href}
+                to={route.href}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
                   pathname === route.href ? "bg-accent text-accent-foreground" : "transparent",

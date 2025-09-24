@@ -39,6 +39,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
         key: category,
         icons: resp.categories[category]
       })));
+      setActiveTab("Activities")
     })()
   }, []);
 
@@ -140,7 +141,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
             // Category Tabs
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <ScrollArea className="w-full">
-                <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
+                <TabsList className="grid w-full h-full grid-cols-9">
                   {categories.map((category) => (
                     <TabsTrigger key={category.key} value={category.key} className="text-xs px-2">
                       {category.name.split(" ")[0]}

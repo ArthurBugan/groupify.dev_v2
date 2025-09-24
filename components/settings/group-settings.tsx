@@ -10,11 +10,9 @@ import { Badge } from "@/components/ui/badge"
 import { Plus, X, Save } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
-import { useRouter } from "next/navigation"
 
 export function GroupSettings() {
   const { toast } = useToast()
-  const router = useRouter()
   const [maxChannels, setMaxChannels] = useState("50")
   const [allowDuplicates, setAllowDuplicates] = useState(false)
   const [autoSort, setAutoSort] = useState(true)
@@ -93,7 +91,7 @@ export function GroupSettings() {
     })
 
     // Apply settings by refreshing the groups page
-    router.refresh()
+    // router.refresh()
   }
 
   return (
