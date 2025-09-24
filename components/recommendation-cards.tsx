@@ -4,8 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Sparkles, Heart, ArrowRight, Coffee, CheckCircle2 } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 
@@ -48,10 +47,9 @@ function CrunchyrollIntegrationCard() {
 
       <CardContent className="pt-2 pb-0">
         <div className="relative h-40 w-full mb-4 rounded-md overflow-hidden border border-orange-200 dark:border-orange-900/50 shadow-sm">
-          <Image
+          <img
             src="https://imgsrv.crunchyroll.com/cdn-cgi/image/fit=contain,format=auto,quality=94,width=3840/CurationAssets/Ani-May/May%202025/ULTRA-WIDE/TheApothecaryDiaries-Animay-2025-UW-LTR.png"
             alt="Crunchyroll website"
-            fill
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-4">
@@ -93,7 +91,7 @@ function CrunchyrollIntegrationCard() {
 
       <CardFooter className="pt-4">
         <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" asChild>
-          <Link href="/dashboard/settings/integrations">
+          <Link to="/dashboard/settings/integrations">
             Connect Crunchyroll <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
@@ -142,7 +140,7 @@ function DonationSupportCard() {
             <button
               className={cn(
                 "flex-1 py-2 text-sm font-medium transition-colors",
-                donationType === "one-time" ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80",
+                donationType === "one-time" ? "bg-primary text-primary" : "bg-muted hover:bg-muted/80",
               )}
               onClick={() => handleSelectType("one-time")}
             >
@@ -151,7 +149,7 @@ function DonationSupportCard() {
             <button
               className={cn(
                 "flex-1 py-2 text-sm font-medium transition-colors",
-                donationType === "monthly" ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80",
+                donationType === "monthly" ? "bg-primary text-primary" : "bg-muted hover:bg-muted/80",
               )}
               onClick={() => handleSelectType("monthly")}
             >

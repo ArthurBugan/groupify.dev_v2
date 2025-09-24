@@ -69,7 +69,7 @@ export function IntegrationSettings() {
                 Test Connection
               </Button>
               {connectionStatus === "connected" && (
-                <Badge variant="default" className="gap-1">
+                <Badge variant="outline" className="gap-1">
                   <CheckCircle2 className="h-3 w-3" />
                   Connected
                 </Badge>

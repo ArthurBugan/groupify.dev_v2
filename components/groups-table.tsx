@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
+import { Link } from "@tanstack/react-router"
 import {
   MoreHorizontal,
   Pencil,
@@ -482,7 +482,7 @@ export function GroupsTable() {
                         )}
 
                         {renderIcon(group.icon)}
-                        <Link href={`/dashboard/groups/${group.id}`} className="font-medium hover:underline">
+                        <Link to={`/dashboard/groups/${group.id}`} className="font-medium hover:underline">
                           {group.name}
                         </Link>
 
@@ -493,7 +493,7 @@ export function GroupsTable() {
                           className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                           asChild
                         >
-                          <Link href={`/dashboard/groups/new?parentId=${group.id}`}>
+                          <Link to={`/dashboard/groups/new?parentId=${group.id}`}>
                             <Plus className="h-3 w-3" />
                             <span className="sr-only">Add subgroup</span>
                           </Link>
@@ -515,16 +515,16 @@ export function GroupsTable() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/groups/${group.id}`}>View details</Link>
+                            <Link to={`/dashboard/groups/${group.id}`}>View details</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/groups/${group.id}/edit`}>
+                            <Link to={`/dashboard/groups/${group.id}/edit`}>
                               <Pencil className="mr-2 h-4 w-4" />
                               Edit
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/groups/new?parentId=${group.id}`}>
+                            <Link to={`/dashboard/groups/new?parentId=${group.id}`}>
                               <Plus className="mr-2 h-4 w-4" />
                               Add Subgroup
                             </Link>

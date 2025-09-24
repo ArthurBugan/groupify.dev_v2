@@ -23,6 +23,8 @@ export function DataPrivacySettings() {
   const [analytics, setAnalytics] = useState(true)
   const [deleteConfirmation, setDeleteConfirmation] = useState("")
 
+  return <div>lalalal</div>
+
   return (
     <div className="space-y-6">
       <Card>
