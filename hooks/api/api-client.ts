@@ -1,143 +1,143 @@
 type ApiResponse<T> = {
-  data: T;
-  message?: string;
+	data: T;
+	message?: string;
 };
 
 type ApiError = {
-  message: string;
-  status: number;
-  errors?: Record<string, string[]>;
+	message: string;
+	status: number;
+	errors?: Record<string, string[]>;
 };
 
 class ApiClient {
-  private baseURL: string;
-  private defaultHeaders: Record<string, string>;
+	private baseURL: string;
+	private defaultHeaders: Record<string, string>;
 
-  constructor(baseURL: string = '/api') {
-    this.baseURL = baseURL;
-    this.defaultHeaders = {
-      'Credentials': 'include',
-      'Content-Type': 'application/json',
-    };
-  }
+	constructor(baseURL: string = "/api") {
+		this.baseURL = baseURL;
+		this.defaultHeaders = {
+			Credentials: "include",
+			"Content-Type": "application/json",
+		};
+	}
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
-    
-    const config: RequestInit = {
-      ...options,
-      headers: {
-        ...this.defaultHeaders,
-        ...options.headers,
-      },
-    };
+	private async request<T>(
+		endpoint: string,
+		options: RequestInit = {},
+	): Promise<T> {
+		const url = `${this.baseURL}${endpoint}`;
 
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({
-          message: 'An error occurred',
-        }));
-        
-        const apiError: ApiError = {
-          message: errorData.message || `HTTP ${response.status}`,
-          status: response.status,
-          errors: errorData.errors,
-        };
-        
-        throw apiError;
-      }
+		const config: RequestInit = {
+			...options,
+			headers: {
+				...this.defaultHeaders,
+				...options.headers,
+			},
+		};
 
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      if (error instanceof TypeError) {
-        // Network error
-        throw {
-          message: 'Network error. Please check your connection.',
-          status: 0,
-        } as ApiError;
-      }
-      throw error;
-    }
-  }
+		try {
+			const response = await fetch(url, config);
 
-  // GET request
-  async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
-    const url = new URL(endpoint, this.baseURL);
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
-      });
-    }
-    
-    return this.request<T>(url.pathname + url.search);
-  }
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({
+					message: "An error occurred",
+				}));
 
-  // POST request
-  async post<T>(endpoint: string, data?: unknown): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
+				const apiError: ApiError = {
+					message: errorData.message || `HTTP ${response.status}`,
+					status: response.status,
+					errors: errorData.errors,
+				};
 
-  async postFormData<T>(endpoint: string, data?: FormData): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      body: data,
-    });
-  }
+				throw apiError;
+			}
 
-  // PUT request
-  async put<T>(endpoint: string, data?: unknown): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
+			const data = await response.json();
+			return data;
+		} catch (error) {
+			if (error instanceof TypeError) {
+				// Network error
+				throw {
+					message: "Network error. Please check your connection.",
+					status: 0,
+				} as ApiError;
+			}
+			throw error;
+		}
+	}
 
-  // PATCH request
-  async patch<T>(endpoint: string, data?: unknown): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
+	// GET request
+	async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
+		const url = new URL(endpoint, this.baseURL);
+		if (params) {
+			Object.entries(params).forEach(([key, value]) => {
+				url.searchParams.append(key, value);
+			});
+		}
 
-  // DELETE request
-  async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'DELETE',
-    });
-  }
+		return this.request<T>(url.pathname + url.search);
+	}
 
-  // Set authorization token
-  setAuthToken(token: string) {
-    this.defaultHeaders.Authorization = `Bearer ${token}`;
-  }
+	// POST request
+	async post<T>(endpoint: string, data?: unknown): Promise<T> {
+		return this.request<T>(endpoint, {
+			method: "POST",
+			body: data ? JSON.stringify(data) : undefined,
+		});
+	}
 
-  // Remove authorization token
-  removeAuthToken() {
-    delete this.defaultHeaders.Authorization;
-  }
+	async postFormData<T>(endpoint: string, data?: FormData): Promise<T> {
+		return this.request<T>(endpoint, {
+			method: "POST",
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+			body: data,
+		});
+	}
 
-  // Set custom header
-  setHeader(key: string, value: string) {
-    this.defaultHeaders[key] = value;
-  }
+	// PUT request
+	async put<T>(endpoint: string, data?: unknown): Promise<T> {
+		return this.request<T>(endpoint, {
+			method: "PUT",
+			body: data ? JSON.stringify(data) : undefined,
+		});
+	}
 
-  // Remove custom header
-  removeHeader(key: string) {
-    delete this.defaultHeaders[key];
-  }
+	// PATCH request
+	async patch<T>(endpoint: string, data?: unknown): Promise<T> {
+		return this.request<T>(endpoint, {
+			method: "PATCH",
+			body: data ? JSON.stringify(data) : undefined,
+		});
+	}
+
+	// DELETE request
+	async delete<T>(endpoint: string): Promise<T> {
+		return this.request<T>(endpoint, {
+			method: "DELETE",
+		});
+	}
+
+	// Set authorization token
+	setAuthToken(token: string) {
+		this.defaultHeaders.Authorization = `Bearer ${token}`;
+	}
+
+	// Remove authorization token
+	removeAuthToken() {
+		delete this.defaultHeaders.Authorization;
+	}
+
+	// Set custom header
+	setHeader(key: string, value: string) {
+		this.defaultHeaders[key] = value;
+	}
+
+	// Remove custom header
+	removeHeader(key: string) {
+		delete this.defaultHeaders[key];
+	}
 }
 
 export const apiClient = new ApiClient(import.meta.env.VITE_BASE_URL);

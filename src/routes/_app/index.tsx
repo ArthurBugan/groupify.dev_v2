@@ -1,10 +1,10 @@
-import { LandingPage } from "@/components/landing-page"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router";
+import { LandingPage } from "@/components/landing-page";
 
-export const Route = createFileRoute('/_app/')({
-  component: HomePage,
-})
+export const Route = createFileRoute("/_app/")({
+	component: HomePage,
+});
 
 function HomePage() {
-  return <LandingPage />
+	return <LandingPage />;
 }
