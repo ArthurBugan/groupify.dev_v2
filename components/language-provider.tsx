@@ -28,6 +28,7 @@ const translations = {
 		// Login Page
 		"login.welcome": "Welcome back! Please sign in to your account.",
 		"login.title": "Sign In",
+		"login.subtitle": "Enter your email and password to access your dashboard",
 		"login.description":
 			"Enter your email and password to access your dashboard",
 		"login.email": "Email",
@@ -78,7 +79,7 @@ const translations = {
 		"hero.badge": "New: Crunchyroll Integration",
 		"hero.title": "Organize Your YouTube Channels Like a Pro",
 		"hero.subtitle":
-			"Create smart groups, collaborate with your team, and get powerful analytics for all your YouTube channels in one beautiful dashboard.",
+			"Organize your YouTube channels with custom groups, collaborate with your team, and access powerful analytics — all in one sleek dashboard.",
 		"hero.starttrial": "Start Free Trial",
 		"hero.watchdemo": "Watch Demo",
 		"hero.freetrial": "Free 14-day trial",
@@ -214,6 +215,7 @@ const translations = {
 		// Login Page
 		"login.welcome": "Bem-vindo de volta! Faça login em sua conta.",
 		"login.title": "Entrar",
+		"login.subtitle": "Digite seu email e senha para acessar seu painel",
 		"login.description": "Digite seu email e senha para acessar seu painel",
 		"login.email": "Email",
 		"login.email.placeholder": "Digite seu email",
@@ -264,7 +266,7 @@ const translations = {
 		"hero.badge": "Novo: Integração Crunchyroll",
 		"hero.title": "Organize Seus Canais do YouTube Como um Profissional",
 		"hero.subtitle":
-			"Crie grupos inteligentes, colabore com sua equipe e obtenha análises poderosas para todos os seus canais do YouTube em um painel bonito.",
+			"Organize seus canais do YouTube com grupos personalizados, colabore com sua equipe e acesse análises avançadas — tudo em um painel intuitivo.",
 		"hero.starttrial": "Iniciar Teste Grátis",
 		"hero.watchdemo": "Ver Demo",
 		"hero.freetrial": "Teste grátis de 14 dias",
@@ -404,6 +406,7 @@ const translations = {
 		"login.welcome":
 			"¡Bienvenido de vuelta! Por favor, inicia sesión en tu cuenta.",
 		"login.title": "Iniciar Sesión",
+		"login.subtitle": "Ingresa tu email y contraseña para acceder a tu panel",
 		"login.description":
 			"Ingresa tu email y contraseña para acceder a tu panel",
 		"login.email": "Email",
@@ -496,7 +499,7 @@ const translations = {
 		"hero.badge": "Nuevo: Integración Crunchyroll",
 		"hero.title": "Organiza Tus Canales de YouTube Como un Profesional",
 		"hero.subtitle":
-			"Crea grupos inteligentes, colabora con tu equipo y obtén análisis poderosos para todos tus canales de YouTube en un hermoso panel.",
+			"Organiza tus canales de YouTube con grupos personalizados, colabora con tu equipo y accede a análisis detallados — todo en un panel intuitivo.",
 		"hero.starttrial": "Iniciar Prueba Gratuita",
 		"hero.watchdemo": "Ver Demo",
 		"hero.freetrial": "Prueba gratuita de 14 días",
@@ -529,7 +532,7 @@ const translations = {
 		"features.team.title": "Gestión de Equipo",
 		"features.team.desc":
 			"Invita colaboradores con diferentes niveles de permisos y gestiona el acceso a tus grupos.",
-		"features.responsive.title": "Diseño Responsivo",
+		"features.responsive.title": "Design Responsivo",
 		"features.responsive.desc":
 			"Accede a tu panel desde cualquier dispositivo con nuestra interfaz completamente responsiva y optimizada para móviles.",
 
@@ -562,12 +565,12 @@ const translations = {
 			"Elige el plan adecuado para ti. Actualiza o degrada en cualquier momento.",
 		"pricing.popular": "Más Popular",
 		"pricing.free.name": "Grátis",
-		"pricing.free.desc": "Perfecto para comenzar",
+		"pricing.free.desc": "Perfeito para começar",
 		"pricing.pro.name": "Pro",
-		"pricing.pro.desc": "Para creadores de contenido serios",
+		"pricing.pro.desc": "Para criadores de contenido serios",
 		"pricing.business.name": "Empresarial",
-		"pricing.business.desc": "Para agencias y equipos",
-		"pricing.getstarted": "Comenzar",
+		"pricing.business.desc": "Para agências e equipes",
+		"pricing.getstarted": "Começar",
 		"pricing.starttrial": "Iniciar Prueba Gratuita",
 		"pricing.contactsales": "Contactar Ventas",
 
@@ -575,7 +578,7 @@ const translations = {
 		"cta.badge": "Listo para Lanzar",
 		"cta.title": "¿Listo para Comenzar?",
 		"cta.subtitle":
-			"Únete a miles de creadores de contenido que já están usando o Groupify para organizar y hacer crecer su presencia en YouTube.",
+			"Únete a miles de creadores de contenido que já estão usando o Groupify para organizar y hacer crecer su presencia en YouTube.",
 
 		// Footer
 		"footer.description":

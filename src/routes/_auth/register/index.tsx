@@ -1,17 +1,23 @@
 "use client";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { z } from "zod";
+import { useLanguage } from "@/components/language-provider";
+import { MainNavbar } from "@/components/main-navbar";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Icons } from "@/components/ui/icons";
-import { MainNavbar } from "@/components/main-navbar";
-import { useLanguage } from "@/components/language-provider";
 
 export const Route = createFileRoute("/_auth/register/")({
 	component: RegisterPage,
@@ -31,31 +37,34 @@ function RegisterPage() {
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
 	// Create validation schema with translated messages
-	const registerSchema = z.object({
-		name: z.string()
-			.min(1, { message: t("register.validation.name.required") })
-			.min(2, { message: t("register.validation.name.min") }),
-		email: z.string()
-			.min(1, { message: t("register.validation.email.required") })
-			.email({ message: t("register.validation.email.invalid") }),
-		password: z.string()
-			.min(1, { message: t("register.validation.password.required") })
-			.min(6, { message: t("register.validation.password.min") }),
-		confirmPassword: z.string()
-			.min(1, { message: t("register.validation.confirmpassword.required") }),
-		agreeToTerms: z.boolean().refine((val) => val === true, {
-			message: "You must agree to the terms and conditions",
-		}),
-	}).refine((data) => data.password === data.confirmPassword, {
-		message: t("register.validation.confirmpassword.match"),
-		path: ["confirmPassword"],
-	});
+	const registerSchema = z
+		.object({
+			name: z
+				.string()
+				.min(1, { message: t("register.validation.name.required") })
+				.min(2, { message: t("register.validation.name.min") }),
+			email: z.email(),
+			password: z
+				.string()
+				.min(1, { message: t("register.validation.password.required") })
+				.min(6, { message: t("register.validation.password.min") }),
+			confirmPassword: z
+				.string()
+				.min(1, { message: t("register.validation.confirmpassword.required") }),
+			agreeToTerms: z.boolean().refine((val) => val === true, {
+				message: "You must agree to the terms and conditions",
+			}),
+		})
+		.refine((data) => data.password === data.confirmPassword, {
+			message: t("register.validation.confirmpassword.match"),
+			path: ["confirmPassword"],
+		});
 
 	const handleInputChange = (field: string, value: string | boolean) => {
-		setFormData(prev => ({ ...prev, [field]: value }));
+		setFormData((prev) => ({ ...prev, [field]: value }));
 		// Clear error when user starts typing
 		if (errors[field]) {
-			setErrors(prev => ({ ...prev, [field]: "" }));
+			setErrors((prev) => ({ ...prev, [field]: "" }));
 		}
 	};
 
@@ -66,16 +75,16 @@ function RegisterPage() {
 
 		try {
 			const validatedData = registerSchema.parse(formData);
-			
+
 			// Simulate API call
-			await new Promise(resolve => setTimeout(resolve, 2000));
-			
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+
 			// Navigate to dashboard or login
 			navigate({ to: "/dashboard" });
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				const newErrors: Record<string, string> = {};
-				error.errors.forEach((err) => {
+				error.issues.forEach((err) => {
 					if (err.path[0]) {
 						newErrors[err.path[0] as string] = err.message;
 					}
@@ -88,10 +97,10 @@ function RegisterPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background to-muted">
+		<div className="min-h-screen bg-background flex flex-col">
 			<MainNavbar />
-			
-			<div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
+
+			<div className="flex-1 flex items-center justify-center p-4">
 				<Card className="w-full max-w-md">
 					<CardHeader className="space-y-1">
 						<CardTitle className="text-2xl font-bold text-center">
@@ -106,7 +115,7 @@ function RegisterPage() {
 							<div className="space-y-2">
 								<Label htmlFor="name">{t("register.name")}</Label>
 								<Input
-									id="name"
+									id={useId()}
 									type="text"
 									placeholder={t("register.name.placeholder")}
 									value={formData.name}
@@ -121,7 +130,7 @@ function RegisterPage() {
 							<div className="space-y-2">
 								<Label htmlFor="email">{t("register.email")}</Label>
 								<Input
-									id="email"
+									id={useId()}
 									type="email"
 									placeholder={t("register.email.placeholder")}
 									value={formData.email}
@@ -136,11 +145,13 @@ function RegisterPage() {
 							<div className="space-y-2">
 								<Label htmlFor="password">{t("register.password")}</Label>
 								<Input
-									id="password"
+									id={useId()}
 									type="password"
 									placeholder={t("register.password.placeholder")}
 									value={formData.password}
-									onChange={(e) => handleInputChange("password", e.target.value)}
+									onChange={(e) =>
+										handleInputChange("password", e.target.value)
+									}
 									className={errors.password ? "border-destructive" : ""}
 								/>
 								{errors.password && (
@@ -149,25 +160,33 @@ function RegisterPage() {
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="confirmPassword">{t("register.confirmpassword")}</Label>
+								<Label htmlFor="confirmPassword">
+									{t("register.confirmpassword")}
+								</Label>
 								<Input
-									id="confirmPassword"
+									id={useId()}
 									type="password"
 									placeholder={t("register.confirmpassword.placeholder")}
 									value={formData.confirmPassword}
-									onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+									onChange={(e) =>
+										handleInputChange("confirmPassword", e.target.value)
+									}
 									className={errors.confirmPassword ? "border-destructive" : ""}
 								/>
 								{errors.confirmPassword && (
-									<p className="text-sm text-destructive">{errors.confirmPassword}</p>
+									<p className="text-sm text-destructive">
+										{errors.confirmPassword}
+									</p>
 								)}
 							</div>
 
 							<div className="flex items-center space-x-2">
 								<Checkbox
-									id="terms"
+									id={useId()}
 									checked={formData.agreeToTerms}
-									onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
+									onCheckedChange={(checked) =>
+										handleInputChange("agreeToTerms", checked as boolean)
+									}
 								/>
 								<Label htmlFor="terms" className="text-sm">
 									{t("register.terms")}{" "}
@@ -181,7 +200,9 @@ function RegisterPage() {
 								</Label>
 							</div>
 							{errors.agreeToTerms && (
-								<p className="text-sm text-destructive">{errors.agreeToTerms}</p>
+								<p className="text-sm text-destructive">
+									{errors.agreeToTerms}
+								</p>
 							)}
 
 							<Button type="submit" className="w-full" disabled={isLoading}>
@@ -226,7 +247,10 @@ function RegisterPage() {
 						</div>
 
 						<div className="text-center">
-							<Link to="/" className="text-sm text-muted-foreground hover:underline">
+							<Link
+								to="/"
+								className="text-sm text-muted-foreground hover:underline"
+							>
 								{t("register.backhome")}
 							</Link>
 						</div>

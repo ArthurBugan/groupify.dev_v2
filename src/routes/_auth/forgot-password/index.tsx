@@ -1,9 +1,11 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type React from "react";
-import { useId, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { useLanguage } from "@/components/language-provider";
 import { MainNavbar } from "@/components/main-navbar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -16,8 +18,19 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+	type ForgotPasswordRequest,
+	useForgotPasswordMutation,
+} from "@/hooks/mutations/useAuthMutations";
 
 export const Route = createFileRoute("/_auth/forgot-password/")({
 	component: ForgotPasswordPage,
@@ -25,69 +38,107 @@ export const Route = createFileRoute("/_auth/forgot-password/")({
 
 function ForgotPasswordPage() {
 	const { t } = useLanguage();
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState("");
-	const [email, setEmail] = useState("");
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setIsLoading(true);
-		setError("");
+	// Zod schema for forgot password form validation with translated messages
+	const forgotPasswordSchema = z.object({
+		email: z.email(),
+	});
 
-		// Simulate API call
+	type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+
+	// React Hook Form with Zod validation
+	const form = useForm<ForgotPasswordFormData>({
+		resolver: zodResolver(forgotPasswordSchema),
+		defaultValues: {
+			email: "",
+		},
+	});
+
+	// Use the new forgot password mutation hook
+	const forgotPasswordMutation = useForgotPasswordMutation();
+
+	// Handle form submission
+	const onSubmit = async (data: ForgotPasswordFormData) => {
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1500));
-			// Redirect to success page with email parameter
-			window.location.href = `/forgot-password/success/${encodeURIComponent(email)}`;
-		} catch (err) {
-			setError(t("forgot.error"));
-		} finally {
-			setIsLoading(false);
+			// Transform the data to match the API expected format
+			const requestData: ForgotPasswordRequest = {
+				email: data.email,
+				encrypted_password: "", // This might need to be handled differently based on your API
+			};
+
+			await forgotPasswordMutation.mutateAsync(requestData);
+		} catch (error) {
+			// Handle forgot password error
+			form.setError("root", {
+				type: "manual",
+				message: error instanceof Error ? error.message : t("forgot.error"),
+			});
 		}
 	};
 
 	return (
-		<div className="min-h-screen bg-background">
+		<div className="min-h-screen bg-background flex flex-col">
 			<MainNavbar />
-
-			<div className="flex items-center justify-center bg-muted/50 p-4 min-h-[calc(100vh-4rem)]">
-				<div className="w-full max-w-md space-y-6">
+			<div className="flex-1 flex items-center justify-center px-4 py-12">
+				<div className="w-full max-w-md space-y-8">
 					<Card>
-						<CardHeader className="text-center">
-							<CardTitle className="text-2xl">{t("forgot.title")}</CardTitle>
-							<CardDescription>{t("forgot.description")}</CardDescription>
+						<CardHeader className="space-y-1">
+							<CardTitle className="text-2xl font-bold text-center">
+								{t("forgot.title")}
+							</CardTitle>
+							<CardDescription className="text-center">
+								{t("forgot.subtitle")}
+							</CardDescription>
 						</CardHeader>
-						<form onSubmit={handleSubmit}>
-							<CardContent className="space-y-4">
-								{error && (
-									<Alert variant="destructive">
-										<AlertDescription>{error}</AlertDescription>
-									</Alert>
-								)}
-								<div className="space-y-2">
-									<Label htmlFor="email">{t("forgot.email")}</Label>
-									<Input
-										id={useId()}
-										type="email"
-										placeholder={t("forgot.email.placeholder")}
-										value={email}
-										onChange={(e) => setEmail(e.target.value)}
-										required
+						<Form {...form}>
+							<form onSubmit={form.handleSubmit(onSubmit)}>
+								<CardContent className="space-y-4">
+									{form.formState.errors.root && (
+										<Alert variant="destructive">
+											<AlertDescription>
+												{form.formState.errors.root.message}
+											</AlertDescription>
+										</Alert>
+									)}
+
+									<FormField
+										control={form.control}
+										name="email"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>{t("forgot.email")}</FormLabel>
+												<FormControl>
+													<Input
+														type="email"
+														placeholder={t("forgot.email.placeholder")}
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
 									/>
-								</div>
-							</CardContent>
-							<CardFooter className="flex flex-col space-y-3">
-								<Button type="submit" className="w-full" disabled={isLoading}>
-									{isLoading ? t("forgot.sending") : t("forgot.send")}
-								</Button>
-								<Button variant="ghost" className="w-full" asChild>
-									<Link to="/login">
-										<ArrowLeft className="mr-2 h-4 w-4" />
-										{t("forgot.backsignin")}
-									</Link>
-								</Button>
-							</CardFooter>
-						</form>
+								</CardContent>
+								<CardFooter className="flex flex-col space-y-4">
+									<Button
+										type="submit"
+										variant="ghost"
+										className="w-full mt-4"
+										disabled={forgotPasswordMutation.isPending}
+									>
+										{forgotPasswordMutation.isPending
+											? t("forgot.sending")
+											: t("forgot.send")}
+									</Button>
+									<Button variant="ghost" className="w-full" asChild>
+										<Link to="/login">
+											<ArrowLeft className="mr-2 h-4 w-4" />
+											{t("forgot.backsignin")}
+										</Link>
+									</Button>
+								</CardFooter>
+							</form>
+						</Form>
 					</Card>
 				</div>
 			</div>
