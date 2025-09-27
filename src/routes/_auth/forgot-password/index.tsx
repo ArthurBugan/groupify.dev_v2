@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
@@ -38,8 +37,6 @@ export const Route = createFileRoute("/_auth/forgot-password/")({
 
 function ForgotPasswordPage() {
 	const { t } = useLanguage();
-
-	// Zod schema for forgot password form validation with translated messages
 	const forgotPasswordSchema = z.object({
 		email: z.email(),
 	});
@@ -60,10 +57,9 @@ function ForgotPasswordPage() {
 	// Handle form submission
 	const onSubmit = async (data: ForgotPasswordFormData) => {
 		try {
-			// Transform the data to match the API expected format
 			const requestData: ForgotPasswordRequest = {
 				email: data.email,
-				encrypted_password: "", // This might need to be handled differently based on your API
+				encrypted_password: "",
 			};
 
 			await forgotPasswordMutation.mutateAsync(requestData);
@@ -86,9 +82,6 @@ function ForgotPasswordPage() {
 							<CardTitle className="text-2xl font-bold text-center">
 								{t("forgot.title")}
 							</CardTitle>
-							<CardDescription className="text-center">
-								{t("forgot.subtitle")}
-							</CardDescription>
 						</CardHeader>
 						<Form {...form}>
 							<form onSubmit={form.handleSubmit(onSubmit)}>

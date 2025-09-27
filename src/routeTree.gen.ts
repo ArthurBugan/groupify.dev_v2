@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppTermsRouteImport } from './routes/_app/terms'
 import { Route as AppPrivacyRouteImport } from './routes/_app/privacy'
 import { Route as AppDashboardLayoutRouteImport } from './routes/_app/dashboard/layout'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
@@ -40,6 +41,11 @@ import { Route as AppDashboardChannelsChangeGroupIdIndexRouteImport } from './ro
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/_app/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTermsRoute = AppTermsRouteImport.update({
+  id: '/_app/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppPrivacyRoute = AppPrivacyRouteImport.update({
@@ -193,6 +199,7 @@ const AppDashboardChannelsChangeGroupIdIndexRoute =
 export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardLayoutRouteWithChildren
   '/privacy': typeof AppPrivacyRoute
+  '/terms': typeof AppTermsRoute
   '/': typeof AppIndexRoute
   '/dashboard/settings': typeof AppDashboardSettingsLayoutRouteWithChildren
   '/dashboard/': typeof AppDashboardIndexRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/privacy': typeof AppPrivacyRoute
+  '/terms': typeof AppTermsRoute
   '/': typeof AppIndexRoute
   '/dashboard/settings': typeof AppDashboardSettingsLayoutRouteWithChildren
   '/dashboard': typeof AppDashboardIndexRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app/dashboard': typeof AppDashboardLayoutRouteWithChildren
   '/_app/privacy': typeof AppPrivacyRoute
+  '/_app/terms': typeof AppTermsRoute
   '/_app/': typeof AppIndexRoute
   '/_app/dashboard/settings': typeof AppDashboardSettingsLayoutRouteWithChildren
   '/_app/dashboard/': typeof AppDashboardIndexRoute
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/dashboard'
     | '/privacy'
+    | '/terms'
     | '/'
     | '/dashboard/settings'
     | '/dashboard/'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/privacy'
+    | '/terms'
     | '/'
     | '/dashboard/settings'
     | '/dashboard'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_app/dashboard'
     | '/_app/privacy'
+    | '/_app/terms'
     | '/_app/'
     | '/_app/dashboard/settings'
     | '/_app/dashboard/'
@@ -369,6 +381,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppDashboardLayoutRoute: typeof AppDashboardLayoutRouteWithChildren
   AppPrivacyRoute: typeof AppPrivacyRoute
+  AppTermsRoute: typeof AppTermsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppSupportIndexRoute: typeof AppSupportIndexRoute
   AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/terms': {
+      id: '/_app/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof AppTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/privacy': {
@@ -640,6 +660,7 @@ const AppDashboardLayoutRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AppDashboardLayoutRoute: AppDashboardLayoutRouteWithChildren,
   AppPrivacyRoute: AppPrivacyRoute,
+  AppTermsRoute: AppTermsRoute,
   AppIndexRoute: AppIndexRoute,
   AppSupportIndexRoute: AppSupportIndexRoute,
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
