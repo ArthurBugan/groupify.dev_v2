@@ -39,7 +39,7 @@ function SuccessContent() {
 							</CardTitle>
 							<CardDescription className="text-base">
 								{t("forgot.success.description")} <br />
-								<strong className="text-foreground">{email}</strong>
+								<strong className="text-foreground">{decodeURIComponent(email)}</strong>
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
