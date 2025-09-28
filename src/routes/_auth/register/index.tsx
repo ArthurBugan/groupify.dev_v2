@@ -25,8 +25,11 @@ export const Route = createFileRoute("/_auth/register/")({
 	component: RegisterPage,
 });
 
+// Discord OAuth configuration
+const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID;
+const DISCORD_REDIRECT_URI = import.meta.env.VITE_DISCORD_REDIRECT_URI;
+
 function RegisterPage() {
-	const navigate = useNavigate();
 	const { t } = useLanguage();
 	const registerMutation = useRegisterMutation();
 	const [showPassword, setShowPassword] = useState(false);
@@ -100,6 +103,29 @@ function RegisterPage() {
 				setErrors({ general: "Registration failed. Please try again." });
 			}
 		}
+	};
+
+	const handleDiscordAuth = () => {
+		if (!DISCORD_CLIENT_ID) {
+			console.error("Discord client ID not configured");
+			setErrors({ general: "Discord authentication is not configured" });
+			return;
+		}
+
+		// Generate a random state for security
+		const state = Math.random().toString(36).substring(2, 15);
+		localStorage.setItem("discord_oauth_state", state);
+
+		// Build Discord OAuth URL
+		const discordAuthUrl = new URL("https://discord.com/api/oauth2/authorize");
+		discordAuthUrl.searchParams.set("client_id", DISCORD_CLIENT_ID);
+		discordAuthUrl.searchParams.set("redirect_uri", DISCORD_REDIRECT_URI);
+		discordAuthUrl.searchParams.set("response_type", "code");
+		discordAuthUrl.searchParams.set("scope", "identify email");
+		discordAuthUrl.searchParams.set("state", state);
+
+		// Redirect to Discord OAuth
+		window.location.href = discordAuthUrl.toString();
 	};
 
 	return (
@@ -252,6 +278,7 @@ function RegisterPage() {
 							<Button
 								type="submit"
 								className="w-full"
+								variant="destructive"
 								disabled={registerMutation.isPending}
 							>
 								{registerMutation.isPending ? (
@@ -289,9 +316,10 @@ function RegisterPage() {
 								variant="outline"
 								type="button"
 								disabled={registerMutation.isPending}
+								onClick={handleDiscordAuth}
 							>
-								<Icons.gitHub className="mr-2 h-4 w-4" />
-								{t("register.github")}
+								<Icons.discord className="mr-2 h-4 w-4 text-white" />
+								{t("register.discord")}
 							</Button>
 						</div>
 

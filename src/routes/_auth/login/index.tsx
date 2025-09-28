@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
-import type React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,25 +27,25 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
 	type LoginCredentials,
 	useLoginMutation,
 } from "@/hooks/mutations/useAuthMutations";
+import { Icons } from "@/components/ui/icons";
 
 export const Route = createFileRoute("/_auth/login/")({
 	component: LoginPage,
 });
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 function LoginPage() {
 	const [showPassword, setShowPassword] = useState(false);
 	const { t } = useLanguage();
 
-	// Zod schema for login form validation with translated messages
 	const loginSchema = z.object({
-		email: z
-			.string()
-			.min(1, t("login.validation.email.required"))
-			.email(t("login.validation.email.invalid")),
+		email: z.email(),
 		password: z
 			.string()
 			.min(1, t("login.validation.password.required"))
@@ -64,7 +63,6 @@ function LoginPage() {
 		},
 	});
 
-	// Use the new login mutation hook
 	const loginMutation = useLoginMutation();
 
 	// Handle form submission
@@ -82,6 +80,17 @@ function LoginPage() {
 			});
 		}
 	};
+
+	// Handle Discord authentication
+	const handleDiscordAuth = (e) => {
+		e.preventDefault();
+		window.location.href = `${VITE_BASE_URL}/auth/discord`;
+	};
+
+	function handleGoogleAuth(e) {
+		e.preventDefault();
+		window.location.href = `${VITE_BASE_URL}/auth/google`;
+	}
 
 	return (
 		<div className="min-h-screen bg-background flex flex-col">
@@ -107,6 +116,16 @@ function LoginPage() {
 											</AlertDescription>
 										</Alert>
 									)}
+									<div className="relative">
+										<div className="absolute inset-0 flex items-center">
+											<Separator className="w-full" />
+										</div>
+										<div className="relative flex justify-center text-xs uppercase">
+											<span className="bg-background px-2 text-muted-foreground">
+												Or continue with email
+											</span>
+										</div>
+									</div>
 
 									<FormField
 										control={form.control}
@@ -169,6 +188,20 @@ function LoginPage() {
 										{loginMutation.isPending
 											? t("login.signing")
 											: t("login.signin")}
+									</Button>
+									<Button
+										onClick={handleDiscordAuth}
+										className="w-full mt-4 flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+									>
+										<Icons.discord />
+										<span>Continue with Discord</span>
+									</Button>
+									<Button
+										onClick={handleGoogleAuth}
+										className="w-full mt-4 flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+									>
+										<Icons.google />
+										<span>Continue with Google</span>
 									</Button>
 									<div className="flex items-center justify-between w-full text-sm">
 										<Link
