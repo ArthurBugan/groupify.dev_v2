@@ -135,7 +135,7 @@ function DonationSupportCard() {
 	};
 
 	return (
-		<Card className="border-primary/20">
+		<Card className="border-secondary/20">
 			<div className="absolute top-0 right-0 w-24 h-24 -mt-8 -mr-8 bg-primary/10 rounded-full blur-2xl"></div>
 
 			<CardHeader>

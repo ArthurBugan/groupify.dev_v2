@@ -46,7 +46,7 @@ const defaultSettings: AppearanceSettings = {
 
 const accentColors = {
 	blue: {
-		light: "217.2 91.2% 59.8%",
+		light: "221.2 83.2% 53.3%",
 		dark: "217.2 91.2% 59.8%",
 	},
 	green: {
@@ -74,6 +74,18 @@ export function AppearanceProvider({
 	const { resolvedTheme } = useTheme();
 	const [mounted, setMounted] = React.useState(false);
 	const [settings, setSettings] = React.useState<AppearanceSettings>(() => {
+		if (typeof window !== "undefined") {
+			// Try to load from localStorage first
+			const saved = localStorage.getItem("appearance-settings");
+			if (saved) {
+				try {
+					return JSON.parse(saved);
+				} catch {
+					// Fall through to other options
+				}
+			}
+		}
+
 		if (initialSettings) {
 			try {
 				return JSON.parse(initialSettings);
@@ -100,7 +112,13 @@ export function AppearanceProvider({
 		const accentColorValue = isDark
 			? accentColors[settings.accentColor].dark
 			: accentColors[settings.accentColor].light;
+
+		// Set both primary and primary-foreground for better compatibility
 		root.style.setProperty("--primary", accentColorValue);
+		root.style.setProperty(
+			"--primary-foreground",
+			isDark ? "210 40% 98%" : "210 40% 2%",
+		);
 
 		// Apply font size
 		const fontSizeMap = {
@@ -130,7 +148,10 @@ export function AppearanceProvider({
 			root.classList.remove("no-animations");
 		}
 
-		// Save to cookie for SSR
+		// Save to localStorage and cookie for persistence
+		if (typeof window !== "undefined") {
+			localStorage.setItem("appearance-settings", JSON.stringify(settings));
+		}
 		document.cookie = `appearance-settings=${JSON.stringify(settings)}; path=/; max-age=${60 * 60 * 24 * 365}`;
 	}, [settings, resolvedTheme, mounted]);
 

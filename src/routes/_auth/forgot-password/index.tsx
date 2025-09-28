@@ -115,7 +115,7 @@ function ForgotPasswordPage() {
 								<CardFooter className="flex flex-col space-y-4">
 									<Button
 										type="submit"
-										variant="ghost"
+										variant="outline"
 										className="w-full mt-4"
 										disabled={forgotPasswordMutation.isPending}
 									>
