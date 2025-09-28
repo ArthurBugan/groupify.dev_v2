@@ -1,35 +1,28 @@
 import {
-	Calendar,
 	ChevronUp,
 	FolderKanban,
-	Home,
-	Inbox,
 	LayoutDashboard,
-	Search,
 	Settings,
 	User2,
 	Youtube,
 } from "lucide-react";
-
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
-	SidebarGroupLabel,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "./dropdown-menu";
 
-// Menu items.
 const items = [
 	{
 		title: "Dashboard",
@@ -55,10 +48,9 @@ const items = [
 
 export function AppSidebar() {
 	return (
-		<Sidebar>
+		<Sidebar variant="sidebar">
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>Application</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{items.map((item) => (
@@ -75,6 +67,34 @@ export function AppSidebar() {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
+			<SidebarFooter>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<SidebarMenuButton>
+									<User2 /> Username
+									<ChevronUp className="ml-auto" />
+								</SidebarMenuButton>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								side="top"
+								className="w-[--radix-popper-anchor-width]"
+							>
+								<DropdownMenuItem>
+									<span>Account</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<span>Billing</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<span>Sign out</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

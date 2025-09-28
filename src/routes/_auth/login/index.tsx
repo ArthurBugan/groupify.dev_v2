@@ -162,7 +162,7 @@ function LoginPage() {
 								<CardFooter className="flex flex-col space-y-4">
 									<Button
 										type="submit"
-										variant="ghost"
+										variant="secondary"
 										className="w-full mt-4"
 										disabled={loginMutation.isPending}
 									>

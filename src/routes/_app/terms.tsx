@@ -124,8 +124,7 @@ function RouteComponent() {
 				<p>If you have any questions about these Terms, you can contact us:</p>
 				<ul>
 					<li>
-						By email:{" "}
-						<a href="mailto:admin@groupify.dev">admin@groupify.dev</a>
+						By email: <a href="mailto:admin@groupify.dev">admin@groupify.dev</a>
 					</li>
 				</ul>
 			</article>

@@ -176,10 +176,10 @@ function ChangeGroupPage({ params }: ChangeGroupPageProps) {
 										>
 											<RadioGroupItem
 												value={group.id}
-												id={`group-${group.id}`}
+												id={"group-${group.id}"}
 											/>
 											<Label
-												htmlFor={`group-${group.id}`}
+												htmlFor={"group-${group.id}"}
 												className="flex items-center gap-3 cursor-pointer"
 											>
 												<FolderKanban className="h-4 w-4 text-muted-foreground" />

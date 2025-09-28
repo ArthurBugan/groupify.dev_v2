@@ -2,7 +2,7 @@
 
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useAppearance } from "@/components/appearance-provider";
 import {
 	Card,
@@ -36,6 +36,21 @@ export function AppearanceSettings() {
 		setAnimations,
 	} = useAppearance();
 
+	// Generate unique IDs
+	const lightId = useId();
+	const darkId = useId();
+	const systemId = useId();
+	const compactModeId = useId();
+	const animationsId = useId();
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
+	if (!mounted) {
+		return null; // Prevent hydration mismatch
+	}
+
 	return (
 		<div className="space-y-6">
 			<Card>
@@ -49,9 +64,9 @@ export function AppearanceSettings() {
 					<RadioGroup value={theme} onValueChange={setTheme}>
 						<div className="grid gap-4">
 							<div className="flex items-center space-x-3 space-y-0">
-								<RadioGroupItem value="light" id="light" />
+								<RadioGroupItem value="light" id={lightId} />
 								<Label
-									htmlFor="light"
+									htmlFor={lightId}
 									className="flex items-center gap-3 cursor-pointer"
 								>
 									<Sun className="h-4 w-4" />
@@ -64,9 +79,9 @@ export function AppearanceSettings() {
 								</Label>
 							</div>
 							<div className="flex items-center space-x-3 space-y-0">
-								<RadioGroupItem value="dark" id={useId()} />
+								<RadioGroupItem value="dark" id={darkId} />
 								<Label
-									htmlFor="dark"
+									htmlFor={darkId}
 									className="flex items-center gap-3 cursor-pointer"
 								>
 									<Moon className="h-4 w-4" />
@@ -79,9 +94,9 @@ export function AppearanceSettings() {
 								</Label>
 							</div>
 							<div className="flex items-center space-x-3 space-y-0">
-								<RadioGroupItem value="system" id={useId()} />
+								<RadioGroupItem value="system" id={systemId} />
 								<Label
-									htmlFor="system"
+									htmlFor={systemId}
 									className="flex items-center gap-3 cursor-pointer"
 								>
 									<Monitor className="h-4 w-4" />
@@ -182,13 +197,13 @@ export function AppearanceSettings() {
 
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
-							<Label htmlFor="compact-mode">Compact Mode</Label>
+							<Label htmlFor={compactModeId}>Compact Mode</Label>
 							<p className="text-sm text-muted-foreground">
 								Reduce spacing and padding in the UI
 							</p>
 						</div>
 						<Switch
-							id="compact-mode"
+							id={compactModeId}
 							checked={compactMode}
 							onCheckedChange={setCompactMode}
 						/>
@@ -196,13 +211,13 @@ export function AppearanceSettings() {
 
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
-							<Label htmlFor="animations">Enable Animations</Label>
+							<Label htmlFor={animationsId}>Enable Animations</Label>
 							<p className="text-sm text-muted-foreground">
 								Show smooth transitions and animations
 							</p>
 						</div>
 						<Switch
-							id="animations"
+							id={animationsId}
 							checked={animations}
 							onCheckedChange={setAnimations}
 						/>
@@ -218,10 +233,16 @@ export function AppearanceSettings() {
 				<CardContent>
 					<div className="space-y-4">
 						<div className="flex gap-2">
-							<button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+							<button
+								type="button"
+								className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+							>
 								Primary Button
 							</button>
-							<button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+							<button
+								type="button"
+								className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+							>
 								Secondary Button
 							</button>
 						</div>

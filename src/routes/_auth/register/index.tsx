@@ -1,6 +1,7 @@
 "use client";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
 import { useLanguage } from "@/components/language-provider";
@@ -18,6 +19,7 @@ import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useRegisterMutation } from "@/hooks/mutations/useAuthMutations";
 
 export const Route = createFileRoute("/_auth/register/")({
 	component: RegisterPage,
@@ -26,7 +28,9 @@ export const Route = createFileRoute("/_auth/register/")({
 function RegisterPage() {
 	const navigate = useNavigate();
 	const { t } = useLanguage();
-	const [isLoading, setIsLoading] = useState(false);
+	const registerMutation = useRegisterMutation();
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -70,17 +74,18 @@ function RegisterPage() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setIsLoading(true);
 		setErrors({});
 
 		try {
 			const validatedData = registerSchema.parse(formData);
 
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 2000));
-
-			// Navigate to dashboard or login
-			navigate({ to: "/dashboard" });
+			// Use the register mutation
+			await registerMutation.mutateAsync({
+				name: validatedData.name,
+				email: validatedData.email,
+				password: validatedData.password,
+				confirmPassword: validatedData.confirmPassword,
+			});
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				const newErrors: Record<string, string> = {};
@@ -90,9 +95,10 @@ function RegisterPage() {
 					}
 				});
 				setErrors(newErrors);
+			} else {
+				console.error("Registration error:", error);
+				setErrors({ general: "Registration failed. Please try again." });
 			}
-		} finally {
-			setIsLoading(false);
 		}
 	};
 
@@ -112,6 +118,12 @@ function RegisterPage() {
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<form onSubmit={handleSubmit} className="space-y-4">
+							{errors.general && (
+								<div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+									{errors.general}
+								</div>
+							)}
+
 							<div className="space-y-2">
 								<Label htmlFor="name">{t("register.name")}</Label>
 								<Input
@@ -144,16 +156,31 @@ function RegisterPage() {
 
 							<div className="space-y-2">
 								<Label htmlFor="password">{t("register.password")}</Label>
-								<Input
-									id={useId()}
-									type="password"
-									placeholder={t("register.password.placeholder")}
-									value={formData.password}
-									onChange={(e) =>
-										handleInputChange("password", e.target.value)
-									}
-									className={errors.password ? "border-destructive" : ""}
-								/>
+								<div className="relative">
+									<Input
+										id={useId()}
+										type={showPassword ? "text" : "password"}
+										placeholder={t("register.password.placeholder")}
+										value={formData.password}
+										onChange={(e) =>
+											handleInputChange("password", e.target.value)
+										}
+										className={
+											errors.password ? "border-destructive pr-10" : "pr-10"
+										}
+									/>
+									<button
+										type="button"
+										onClick={() => setShowPassword(!showPassword)}
+										className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+									>
+										{showPassword ? (
+											<EyeOff className="h-4 w-4" />
+										) : (
+											<Eye className="h-4 w-4" />
+										)}
+									</button>
+								</div>
 								{errors.password && (
 									<p className="text-sm text-destructive">{errors.password}</p>
 								)}
@@ -163,16 +190,33 @@ function RegisterPage() {
 								<Label htmlFor="confirmPassword">
 									{t("register.confirmpassword")}
 								</Label>
-								<Input
-									id={useId()}
-									type="password"
-									placeholder={t("register.confirmpassword.placeholder")}
-									value={formData.confirmPassword}
-									onChange={(e) =>
-										handleInputChange("confirmPassword", e.target.value)
-									}
-									className={errors.confirmPassword ? "border-destructive" : ""}
-								/>
+								<div className="relative">
+									<Input
+										id={useId()}
+										type={showConfirmPassword ? "text" : "password"}
+										placeholder={t("register.confirmpassword.placeholder")}
+										value={formData.confirmPassword}
+										onChange={(e) =>
+											handleInputChange("confirmPassword", e.target.value)
+										}
+										className={
+											errors.confirmPassword
+												? "border-destructive pr-10"
+												: "pr-10"
+										}
+									/>
+									<button
+										type="button"
+										onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+										className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+									>
+										{showConfirmPassword ? (
+											<EyeOff className="h-4 w-4" />
+										) : (
+											<Eye className="h-4 w-4" />
+										)}
+									</button>
+								</div>
 								{errors.confirmPassword && (
 									<p className="text-sm text-destructive">
 										{errors.confirmPassword}
@@ -182,7 +226,7 @@ function RegisterPage() {
 
 							<div className="flex items-center space-x-2">
 								<Checkbox
-									id={useId()}
+									id={"terms"}
 									checked={formData.agreeToTerms}
 									onCheckedChange={(checked) =>
 										handleInputChange("agreeToTerms", checked as boolean)
@@ -205,8 +249,12 @@ function RegisterPage() {
 								</p>
 							)}
 
-							<Button type="submit" className="w-full" disabled={isLoading}>
-								{isLoading ? (
+							<Button
+								type="submit"
+								className="w-full"
+								disabled={registerMutation.isPending}
+							>
+								{registerMutation.isPending ? (
 									<>
 										<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
 										{t("register.signing")}
@@ -229,11 +277,19 @@ function RegisterPage() {
 						</div>
 
 						<div className="grid grid-cols-2 gap-4">
-							<Button variant="outline" type="button" disabled={isLoading}>
+							<Button
+								variant="outline"
+								type="button"
+								disabled={registerMutation.isPending}
+							>
 								<Icons.google className="mr-2 h-4 w-4" />
 								{t("register.google")}
 							</Button>
-							<Button variant="outline" type="button" disabled={isLoading}>
+							<Button
+								variant="outline"
+								type="button"
+								disabled={registerMutation.isPending}
+							>
 								<Icons.gitHub className="mr-2 h-4 w-4" />
 								{t("register.github")}
 							</Button>

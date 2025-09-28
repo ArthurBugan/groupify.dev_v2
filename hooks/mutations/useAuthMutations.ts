@@ -8,6 +8,13 @@ export type LoginCredentials = {
 	password: string;
 };
 
+export type RegisterCredentials = {
+	name: string;
+	email: string;
+	password: string;
+	confirmPassword: string;
+};
+
 export type LoginResponse = {
 	user: {
 		id: string;
@@ -15,6 +22,16 @@ export type LoginResponse = {
 		name: string;
 	};
 	token?: string;
+};
+
+export type RegisterResponse = {
+	user: {
+		id: string;
+		email: string;
+		name: string;
+	};
+	token?: string;
+	message: string;
 };
 
 export type ForgotPasswordRequest = {
@@ -33,6 +50,22 @@ const loginUser = async (
 ): Promise<LoginResponse> => {
 	const response = await apiClient.post<ApiResponse<LoginResponse>>(
 		"/authorize",
+		credentials,
+	);
+
+	if (response.data.token) {
+		localStorage.setItem("authToken", response.data.token);
+		apiClient.setAuthToken(response.data.token);
+	}
+
+	return response.data;
+};
+
+const registerUser = async (
+	credentials: RegisterCredentials,
+): Promise<RegisterResponse> => {
+	const response = await apiClient.post<ApiResponse<RegisterResponse>>(
+		"/register",
 		credentials,
 	);
 
@@ -80,6 +113,30 @@ export const useLoginMutation = () => {
 	});
 };
 
+export const useRegisterMutation = () => {
+	const navigate = useNavigate();
+
+	return useMutation({
+		mutationFn: (credentials: RegisterCredentials) => registerUser(credentials),
+		onSuccess: (data) => {
+			// Handle successful registration
+			console.log("Registration successful:", data);
+
+			// Store user data in localStorage or context
+			localStorage.setItem("user", JSON.stringify(data.user));
+			if (data.token) {
+				localStorage.setItem("authToken", data.token);
+			}
+
+			navigate({ to: "/dashboard" });
+		},
+		onError: (error) => {
+			console.error("Registration failed:", error);
+			throw error; // Re-throw to let component handle the error
+		},
+	});
+};
+
 export const useForgotPasswordMutation = () => {
 	const navigate = useNavigate();
 
@@ -103,4 +160,4 @@ export const useForgotPasswordMutation = () => {
 };
 
 // Export API functions for direct use if needed
-export { loginUser, forgotPassword };
+export { loginUser, registerUser, forgotPassword };
