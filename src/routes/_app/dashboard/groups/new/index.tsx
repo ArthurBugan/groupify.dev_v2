@@ -1,57 +1,105 @@
 "use client";
 
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import * as LucideIcons from "lucide-react";
-import { ArrowLeft, Save } from "lucide-react";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useGroups } from "@/hooks/useQuery/useGroups";
+import { ArrowLeft, Loader2, FolderKanban } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { IconPicker } from "@/components/icon-picker";
+import { IconPicker, IconPickerContent, IconPickerTrigger, IconViewer } from "@/components/icon-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 export const Route = createFileRoute("/_app/dashboard/groups/new/")({
 	component: NewGroupPage,
+	validateSearch: (search: Record<string, unknown>) => ({
+		parentId: (search.parentId as string) || undefined,
+	}),
 });
 
-function NewGroupPage() {
-	const router = useNavigate();
-	const [isLoading, setIsLoading] = useState(false);
-	const [parentGroup, setParentGroup] = useState<string | null>(null);
+// Zod schema for form validation
+const createGroupSchema = z.object({
+	name: z.string()
+		.min(1, "Group name is required")
+		.max(50, "Group name must be less than 50 characters")
+		.regex(/^[a-zA-Z0-9\s\-_]+$/, "Group name can only contain letters, numbers, spaces, hyphens, and underscores"),
+	description: z.string()
+		.max(200, "Description must be less than 200 characters")
+		.optional(),
+	category: z.string()
+		.min(1, "Please select a category"),
+	icon: z.string()
+		.min(1, "Please select an icon"),
+	parentId: z.string().optional(),
+});
 
-	const [group, setGroup] = useState({
-		name: "",
-		description: "",
-		category: "",
-		icon: "FolderKanban", // Default icon
+type CreateGroupFormData = z.infer<typeof createGroupSchema>;
+
+function NewGroupPage() {
+	const navigate = useNavigate();
+	const search = useSearch({ from: '/_app/dashboard/groups/new/' });
+	const { data: groupsData, isLoading: isGroupsLoading } = useGroups();
+	const [isLoading, setIsLoading] = useState(false);
+
+	// Initialize React Hook Form with Zod validation
+	const form = useForm<CreateGroupFormData>({
+		resolver: zodResolver(createGroupSchema),
+		defaultValues: {
+			name: "",
+			description: "",
+			category: "",
+			icon: "twemoji:rocket",
+			parentId: "",
+		},
 	});
 
-	// Mock data for parent groups
-	const availableParentGroups = [
-		{ id: "1", name: "Gaming Channels", icon: "Gamepad2" },
-		{ id: "2", name: "Tech Reviews", icon: "Laptop" },
-		{ id: "3", name: "Cooking Tutorials", icon: "Utensils" },
-		{ id: "4", name: "Fitness & Health", icon: "Dumbbell" },
-	];
+	const { control, handleSubmit, formState: { errors }, setValue, watch } = form;
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
+	// Set parent group from URL parameter
+	useEffect(() => {
+		if (search.parentId) {
+			setValue("parentId", search.parentId);
+		}
+	}, [search.parentId, setValue]);
+
+	const parentId = watch("parentId");
+
+	// Get available parent groups (top-level groups only)
+	const availableParentGroups = groupsData?.groups?.filter(
+		g => !g.channels?.some(channel => channel.category === 'subgroup')
+	) || [];
+
+	const onSubmit = async (data: CreateGroupFormData) => {
 		setIsLoading(true);
 
-		// Simulate API call to create group
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		try {
+			// Prepare group data with parent group if selected
+			const groupData = {
+				name: data.name,
+				description: data.description,
+				category: data.category,
+				icon: data.icon,
+				...(data.parentId && { parentId: data.parentId })
+			};
 
-		setIsLoading(false);
-		router.push("/dashboard/groups");
+			// Simulate API call to create group
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// TODO: Replace with actual API call using useCreateGroupMutation
+			console.log("Creating group with data:", groupData);
+
+			setIsLoading(false);
+			navigate({ to: "/dashboard/groups" });
+		} catch (error) {
+			console.error("Error creating group:", error);
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -71,137 +119,167 @@ function NewGroupPage() {
 
 			<Card>
 				<CardContent className="pt-6">
-					<form onSubmit={handleSubmit} className="space-y-6">
-						<div className="grid gap-4">
-							<div className="grid gap-2">
-								<Label htmlFor="name">Group Name</Label>
-								<Input
-									id="name"
-									placeholder="Enter group name..."
-									value={group.name}
-									onChange={(e) => setGroup({ ...group, name: e.target.value })}
-									required
-								/>
-							</div>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+							<div className="grid gap-4">
+							<FormField
+								control={control}
+								name="name"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Group Name</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Enter group name..."
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-							<div className="grid gap-2">
-								<Label htmlFor="description">Description</Label>
-								<Textarea
-									id="description"
-									placeholder="Describe what this group is about..."
-									value={group.description}
-									onChange={(e) =>
-										setGroup({ ...group, description: e.target.value })
-									}
-									rows={3}
-								/>
-							</div>
+							<FormField
+								control={control}
+								name="description"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Description</FormLabel>
+										<FormControl>
+											<Textarea
+												placeholder="Describe what this group is about..."
+												rows={3}
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-							<div className="grid gap-2">
-								<Label htmlFor="category">Category</Label>
-								<Select
-									value={group.category}
-									onValueChange={(value) =>
-										setGroup({ ...group, category: value })
-									}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder="Select a category" />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="Gaming">Gaming</SelectItem>
-										<SelectItem value="Technology">Technology</SelectItem>
-										<SelectItem value="Food">Food</SelectItem>
-										<SelectItem value="Fitness">Fitness</SelectItem>
-										<SelectItem value="Travel">Travel</SelectItem>
-										<SelectItem value="DIY">DIY</SelectItem>
-										<SelectItem value="Music">Music</SelectItem>
-										<SelectItem value="Education">Education</SelectItem>
-										<SelectItem value="Entertainment">Entertainment</SelectItem>
-										<SelectItem value="Lifestyle">Lifestyle</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
+							<FormField
+								control={control}
+								name="category"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Category</FormLabel>
+										<Select onValueChange={field.onChange} defaultValue={field.value}>
+											<FormControl>
+												<SelectTrigger>
+													<SelectValue placeholder="Select a category" />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												<SelectItem value="Gaming">Gaming</SelectItem>
+												<SelectItem value="Technology">Technology</SelectItem>
+												<SelectItem value="Food">Food</SelectItem>
+												<SelectItem value="Fitness">Fitness</SelectItem>
+												<SelectItem value="Travel">Travel</SelectItem>
+												<SelectItem value="DIY">DIY</SelectItem>
+												<SelectItem value="Music">Music</SelectItem>
+												<SelectItem value="Education">Education</SelectItem>
+												<SelectItem value="Entertainment">Entertainment</SelectItem>
+												<SelectItem value="Lifestyle">Lifestyle</SelectItem>
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 
-							<div className="grid gap-2">
-								<Label htmlFor="icon">Icon</Label>
-								<IconPicker
-									value="twemoji:file-folder"
-									onChange={(value) => setGroup({ ...group, icon: value })}
-								/>
-								<p className="text-sm text-muted-foreground">
-									Choose an icon to represent this group
-								</p>
-							</div>
-
-							<div className="grid gap-2">
-								<Label htmlFor="parent-group">Parent Group (Optional)</Label>
-								<Select
-									value={parentGroup || ""}
-									onValueChange={(value) => setParentGroup(value || null)}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder="None (Top-level group)" />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="none">None (Top-level group)</SelectItem>
-										{availableParentGroups.map((pg) => (
-											<SelectItem key={pg.id} value={pg.id}>
-												<div className="flex items-center gap-2">
-													{pg.icon &&
-														(
-															LucideIcons as Record<
-																string,
-																React.FC<React.SVGProps<SVGSVGElement>>
-															>
-														)[pg.icon] &&
-														React.createElement(
-															(
-																LucideIcons as Record<
-																	string,
-																	React.FC<React.SVGProps<SVGSVGElement>>
-																>
-															)[pg.icon],
-															{ className: "h-4 w-4 mr-2" },
-														)}
-													{pg.name}
-												</div>
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-								<p className="text-sm text-muted-foreground">
-									Creating a subgroup allows you to organize channels
-									hierarchically
-								</p>
-							</div>
+							<FormField
+								control={control}
+								name="icon"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Icon</FormLabel>
+										<FormControl>
+											<IconPicker
+												value={field.value}
+												onChange={(value) => field.onChange(`twemoji:${value}`)}
+											>
+												<IconPickerTrigger />
+												<IconPickerContent />
+											</IconPicker>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={control}
+								name="parentId"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Parent Group (Optional)</FormLabel>
+										<Select onValueChange={field.onChange} defaultValue={field.value}>
+											<FormControl>
+												<SelectTrigger>
+													<SelectValue placeholder={isGroupsLoading ? "Loading groups..." : "None (Top-level group)"} />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												<SelectItem value="none">None (Top-level group)</SelectItem>
+												{isGroupsLoading ? (
+													<SelectItem value="loading" disabled>
+														<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+														Loading groups...
+													</SelectItem>
+												) : availableParentGroups.length === 0 ? (
+													<SelectItem value="no-groups" disabled>
+														<span className="flex items-center gap-2">
+															<FolderKanban className="h-4 w-4" />
+															No parent groups available
+														</span>
+													</SelectItem>
+												) : (
+													availableParentGroups.map((pg) => (
+														<SelectItem key={pg.id} value={pg.id}>
+															<div className="flex items-center gap-2">
+																<IconViewer icon={pg.icon || "FolderKanban"} size={32} />
+																{pg.name}
+															</div>
+														</SelectItem>
+													))
+												)}
+										</SelectContent>
+									</Select>
+									<FormDescription>
+										Creating a subgroup allows you to organize channels
+										hierarchically. {availableParentGroups.length === 0 && !isGroupsLoading && "Create a main group first to use as a parent group."}
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+							/>
 						</div>
 
 						<div className="flex justify-end gap-2">
 							<Button
-								variant="outline"
+								variant="destructive"
 								type="button"
-								onClick={() => router.back()}
+								onClick={() => navigate({ to: "/dashboard/groups" })}
 							>
 								Cancel
 							</Button>
 							<Button
 								type="submit"
-								variant="outline"
-								type="button"
+																		className="flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+
 								disabled={isLoading}
 							>
 								{isLoading ? (
-									"Creating..."
-								) : (
 									<>
-										<Save className="mr-2 h-4 w-4" />
-										Create Group
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										Creating...
 									</>
+								) : (
+									"Create Group"
 								)}
 							</Button>
 						</div>
 					</form>
+				</Form>
 				</CardContent>
 			</Card>
 		</div>

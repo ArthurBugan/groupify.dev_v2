@@ -36,7 +36,9 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 
-interface Group {
+import { useGroups, type Group as ApiGroup } from "@/hooks/useQuery/useGroups";
+
+interface TableGroup {
 	id: string;
 	name: string;
 	channelCount: number;
@@ -51,171 +53,38 @@ interface Group {
 
 export function GroupsTable() {
 	const { toast } = useToast();
+	const { data: apiGroups } = useGroups();
 
-	// Mock data - in a real app, this would come from your database
-	const initialGroups: Group[] = [
-		{
-			id: "1",
-			name: "Gaming Channels",
-			channelCount: 8,
-			category: "Gaming",
-			createdAt: "2023-05-12",
-			icon: "Gamepad2",
-			parentId: null,
+	// Transform API groups to table format
+	const transformApiGroups = (apiGroups?: ApiGroup[]): TableGroup[] => {
+		console.log(apiGroups)
+		if (!apiGroups) return [];
+		
+		return apiGroups.map((group, index) => ({
+			id: group.id,
+			name: group.name,
+			channelCount: group.channels?.length || 0,
+			category: "General", // Default category, can be enhanced later
+			createdAt: new Date(group.createdAt).toLocaleDateString(),
+			icon: group.icon || "FolderKanban",
+			parentId: null, // Flat structure for now, can add hierarchical support later
 			expanded: true,
 			level: 0,
-			order: 0,
-		},
-		{
-			id: "101",
-			name: "RPG Games",
-			channelCount: 3,
-			category: "Gaming",
-			createdAt: "2023-06-15",
-			icon: "Swords",
-			parentId: "1",
-			expanded: false,
-			level: 1,
-			order: 0,
-		},
-		{
-			id: "102",
-			name: "FPS Games",
-			channelCount: 4,
-			category: "Gaming",
-			createdAt: "2023-06-20",
-			icon: "Target",
-			parentId: "1",
-			expanded: false,
-			level: 1,
-			order: 1,
-		},
-		{
-			id: "2",
-			name: "Tech Reviews",
-			channelCount: 12,
-			category: "Technology",
-			createdAt: "2023-06-24",
-			icon: "Laptop",
-			parentId: null,
-			expanded: true,
-			level: 0,
-			order: 1,
-		},
-		{
-			id: "201",
-			name: "Smartphones",
-			channelCount: 5,
-			category: "Technology",
-			createdAt: "2023-07-05",
-			icon: "Smartphone",
-			parentId: "2",
-			expanded: false,
-			level: 1,
-			order: 0,
-		},
-		{
-			id: "202",
-			name: "Laptops & PCs",
-			channelCount: 4,
-			category: "Technology",
-			createdAt: "2023-07-10",
-			icon: "Monitor",
-			parentId: "2",
-			expanded: false,
-			level: 1,
-			order: 1,
-		},
-		{
-			id: "203",
-			name: "Accessories",
-			channelCount: 3,
-			category: "Technology",
-			createdAt: "2023-07-15",
-			icon: "Headphones",
-			parentId: "2",
-			expanded: false,
-			level: 1,
-			order: 2,
-		},
-		{
-			id: "3",
-			name: "Cooking Tutorials",
-			channelCount: 6,
-			category: "Food",
-			createdAt: "2023-07-15",
-			icon: "Utensils",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 2,
-		},
-		{
-			id: "4",
-			name: "Fitness & Health",
-			channelCount: 9,
-			category: "Fitness",
-			createdAt: "2023-08-03",
-			icon: "Dumbbell",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 3,
-		},
-		{
-			id: "5",
-			name: "Travel Vlogs",
-			channelCount: 7,
-			category: "Travel",
-			createdAt: "2023-09-18",
-			icon: "Plane",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 4,
-		},
-		{
-			id: "6",
-			name: "DIY Projects",
-			channelCount: 5,
-			category: "DIY",
-			createdAt: "2023-10-05",
-			icon: "Hammer",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 5,
-		},
-		{
-			id: "7",
-			name: "Music Reviews",
-			channelCount: 10,
-			category: "Music",
-			createdAt: "2023-11-12",
-			icon: "Music",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 6,
-		},
-		{
-			id: "8",
-			name: "Educational Content",
-			channelCount: 15,
-			category: "Education",
-			createdAt: "2023-12-01",
-			icon: "GraduationCap",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 7,
-		},
-	];
+			order: index,
+		}));
+	};
+
+	const initialGroups: TableGroup[] = transformApiGroups(apiGroups);
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [groups, setGroups] = useState(initialGroups);
-	const [draggedGroup, setDraggedGroup] = useState<Group | null>(null);
+	const [draggedGroup, setDraggedGroup] = useState<TableGroup | null>(null);
 	const [dragOverGroup, setDragOverGroup] = useState<string | null>(null);
+
+	// Update groups when API data changes
+	useEffect(() => {
+		setGroups(transformApiGroups(apiGroups));
+	}, [apiGroups]);
 
 	// Save groups order to localStorage
 	useEffect(() => {
@@ -252,7 +121,7 @@ export function GroupsTable() {
 	);
 
 	// Function to determine if a group should be visible based on parent's expanded state
-	const isVisible = (group: Group) => {
+	const isVisible = (group: TableGroup) => {
 		if (group.parentId === null) return true;
 
 		// If searching, show all matches
@@ -295,12 +164,12 @@ export function GroupsTable() {
 	};
 
 	// Drag and drop handlers
-	const handleDragStart = (e: React.DragEvent, group: Group) => {
+	const handleDragStart = (e: React.DragEvent, group: TableGroup) => {
 		setDraggedGroup(group);
 		e.dataTransfer.effectAllowed = "move";
 	};
 
-	const handleDragOver = (e: React.DragEvent, group: Group) => {
+	const handleDragOver = (e: React.DragEvent, group: TableGroup) => {
 		e.preventDefault();
 		if (
 			draggedGroup &&
@@ -316,7 +185,7 @@ export function GroupsTable() {
 		setDragOverGroup(null);
 	};
 
-	const handleDrop = (e: React.DragEvent, targetGroup: Group) => {
+	const handleDrop = (e: React.DragEvent, targetGroup: TableGroup) => {
 		e.preventDefault();
 		setDragOverGroup(null);
 
@@ -387,7 +256,7 @@ export function GroupsTable() {
 	};
 
 	// Move group up/down
-	const moveGroup = (group: Group, direction: "up" | "down") => {
+	const moveGroup = (group: TableGroup, direction: "up" | "down") => {
 		const siblingGroups = groups
 			.filter((g) => g.parentId === group.parentId)
 			.sort((a, b) => a.order - b.order);
@@ -458,7 +327,16 @@ export function GroupsTable() {
 						{sortedGroups.length === 0 ? (
 							<TableRow>
 								<TableCell colSpan={6} className="h-24 text-center">
-									No groups found.
+									<div className="flex flex-col items-center justify-center space-y-2">
+										{searchTerm ? (
+											<>
+												<p className="text-sm text-muted-foreground">No groups match "{searchTerm}"</p>
+												<p className="text-xs text-muted-foreground">Try adjusting your search terms</p>
+											</>
+										) : (
+											<p className="text-sm text-muted-foreground">No groups found</p>
+										)}
+									</div>
 								</TableCell>
 							</TableRow>
 						) : (

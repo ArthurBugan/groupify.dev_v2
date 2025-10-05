@@ -32,7 +32,7 @@ const loginUser = async (
 		credentials,
 	);
 
-	if (response.data.token) {
+	if (response?.data?.token) {
 		localStorage.setItem("authToken", response.data.token);
 		apiClient.setAuthToken(response.data.token);
 	}

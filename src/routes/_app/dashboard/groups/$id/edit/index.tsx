@@ -3,9 +3,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import * as LucideIcons from "lucide-react";
 import { ArrowLeft, Save } from "lucide-react";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useId, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { IconPicker } from "@/components/icon-picker";
+import { IconPicker, IconPickerContent, IconPickerTrigger, IconViewer } from "@/components/icon-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -160,7 +160,7 @@ function GroupEditPage({ params }: GroupEditPageProps) {
 							<div className="grid gap-2">
 								<Label htmlFor="name">Group Name</Label>
 								<Input
-									id="name"
+									id={useId()}
 									placeholder="Enter group name..."
 									value={group.name}
 									onChange={(e) => setGroup({ ...group, name: e.target.value })}
@@ -171,7 +171,7 @@ function GroupEditPage({ params }: GroupEditPageProps) {
 							<div className="grid gap-2">
 								<Label htmlFor="description">Description</Label>
 								<Textarea
-									id="description"
+									id={useId()}
 									placeholder="Describe what this group is about..."
 									value={group.description}
 									onChange={(e) =>
@@ -210,9 +210,12 @@ function GroupEditPage({ params }: GroupEditPageProps) {
 							<div className="grid gap-2">
 								<Label htmlFor="icon">Icon</Label>
 								<IconPicker
-									value="twemoji:file-folder"
+									value={"twemoji:file-folder"}
 									onChange={(value) => setGroup({ ...group, icon: value })}
-								/>
+								>
+									<IconPickerTrigger />
+									<IconPickerContent />
+								</IconPicker>
 								<p className="text-sm text-muted-foreground">
 									Choose an icon to represent this group
 								</p>
