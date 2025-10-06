@@ -26,13 +26,13 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
 	type LoginCredentials,
 	useLoginMutation,
 } from "@/hooks/mutations/useAuthMutations";
-import { Icons } from "@/components/ui/icons";
 
 export const Route = createFileRoute("/_auth/login/")({
 	component: LoginPage,
@@ -73,10 +73,7 @@ function LoginPage() {
 			// Handle login error
 			form.setError("root", {
 				type: "manual",
-				message:
-					error instanceof Error
-						? error.message
-						: "Login failed. Please try again.",
+				message: error ? error.message : "Login failed. Please try again.",
 			});
 		}
 	};
@@ -116,17 +113,6 @@ function LoginPage() {
 											</AlertDescription>
 										</Alert>
 									)}
-									<div className="relative">
-										<div className="absolute inset-0 flex items-center">
-											<Separator className="w-full" />
-										</div>
-										<div className="relative flex justify-center text-xs uppercase">
-											<span className="bg-background px-2 text-muted-foreground">
-												Or continue with email
-											</span>
-										</div>
-									</div>
-
 									<FormField
 										control={form.control}
 										name="email"
@@ -182,7 +168,7 @@ function LoginPage() {
 									<Button
 										type="submit"
 										variant="secondary"
-										className="w-full mt-4"
+										className="w-full"
 										disabled={loginMutation.isPending}
 									>
 										{loginMutation.isPending
@@ -191,17 +177,17 @@ function LoginPage() {
 									</Button>
 									<Button
 										onClick={handleDiscordAuth}
-										className="w-full mt-4 flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+										className="w-full flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 									>
 										<Icons.discord />
-										<span>Continue with Discord</span>
+										<span>{t("login.discord")}</span>
 									</Button>
 									<Button
 										onClick={handleGoogleAuth}
-										className="w-full mt-4 flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+										className="w-full flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 									>
 										<Icons.google />
-										<span>Continue with Google</span>
+										<span>{t("login.google")}</span>
 									</Button>
 									<div className="flex items-center justify-between w-full text-sm">
 										<Link

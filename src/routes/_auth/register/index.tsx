@@ -1,6 +1,6 @@
 "use client";
 
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
@@ -38,7 +38,7 @@ function RegisterPage() {
 		name: "",
 		email: "",
 		password: "",
-		confirmPassword: "",
+		encryptedPassword: "",
 		agreeToTerms: false,
 	});
 	const [errors, setErrors] = useState<Record<string, string>>({});
@@ -55,16 +55,16 @@ function RegisterPage() {
 				.string()
 				.min(1, { message: t("register.validation.password.required") })
 				.min(6, { message: t("register.validation.password.min") }),
-			confirmPassword: z
-				.string()
-				.min(1, { message: t("register.validation.confirmpassword.required") }),
+			encryptedPassword: z.string().min(1, {
+				message: t("register.validation.encryptedPassword.required"),
+			}),
 			agreeToTerms: z.boolean().refine((val) => val === true, {
 				message: "You must agree to the terms and conditions",
 			}),
 		})
-		.refine((data) => data.password === data.confirmPassword, {
-			message: t("register.validation.confirmpassword.match"),
-			path: ["confirmPassword"],
+		.refine((data) => data.password === data.encryptedPassword, {
+			message: t("register.validation.encryptedPassword.match"),
+			path: ["encryptedPassword"],
 		});
 
 	const handleInputChange = (field: string, value: string | boolean) => {
@@ -87,7 +87,7 @@ function RegisterPage() {
 				name: validatedData.name,
 				email: validatedData.email,
 				password: validatedData.password,
-				confirmPassword: validatedData.confirmPassword,
+				encryptedPassword: validatedData.encryptedPassword,
 			});
 		} catch (error) {
 			if (error instanceof z.ZodError) {
@@ -100,7 +100,9 @@ function RegisterPage() {
 				setErrors(newErrors);
 			} else {
 				console.error("Registration error:", error);
-				setErrors({ general: "Registration failed. Please try again." });
+				setErrors({
+					message: error?.message ?? "Registration failed. Please try again.",
+				});
 			}
 		}
 	};
@@ -144,9 +146,9 @@ function RegisterPage() {
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<form onSubmit={handleSubmit} className="space-y-4">
-							{errors.general && (
+							{errors.message && (
 								<div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-									{errors.general}
+									{errors.message}
 								</div>
 							)}
 
@@ -221,9 +223,9 @@ function RegisterPage() {
 										id={useId()}
 										type={showConfirmPassword ? "text" : "password"}
 										placeholder={t("register.confirmpassword.placeholder")}
-										value={formData.confirmPassword}
+										value={formData.encryptedPassword}
 										onChange={(e) =>
-											handleInputChange("confirmPassword", e.target.value)
+											handleInputChange("encryptedPassword", e.target.value)
 										}
 										className={
 											errors.confirmPassword
@@ -305,7 +307,7 @@ function RegisterPage() {
 
 						<div className="grid grid-cols-2 gap-4">
 							<Button
-								variant="outline"
+								className="w-full flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 								type="button"
 								disabled={registerMutation.isPending}
 							>
@@ -313,8 +315,8 @@ function RegisterPage() {
 								{t("register.google")}
 							</Button>
 							<Button
-								variant="outline"
 								type="button"
+								className="w-full flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 								disabled={registerMutation.isPending}
 								onClick={handleDiscordAuth}
 							>

@@ -3,7 +3,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Save, Youtube } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,7 @@ function ChannelEditPage({ params }: ChannelEditPageProps) {
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		setIsLoading(false);
-		router.push("/dashboard/channels");
+		router({ to: "/dashboard/channels" });
 	};
 
 	return (
@@ -134,7 +134,7 @@ function ChannelEditPage({ params }: ChannelEditPageProps) {
 							<div className="grid gap-2">
 								<Label htmlFor="name">Channel Name</Label>
 								<Input
-									id="name"
+									id={useId()}
 									value={channel.name}
 									onChange={(e) =>
 										setChannel({ ...channel, name: e.target.value })
@@ -146,7 +146,7 @@ function ChannelEditPage({ params }: ChannelEditPageProps) {
 							<div className="grid gap-2">
 								<Label htmlFor="url">Channel URL</Label>
 								<Input
-									id="url"
+									id={useId()}
 									type="url"
 									value={channel.url}
 									onChange={(e) =>
@@ -159,7 +159,7 @@ function ChannelEditPage({ params }: ChannelEditPageProps) {
 							<div className="grid gap-2">
 								<Label htmlFor="description">Description</Label>
 								<Textarea
-									id="description"
+									id={useId()}
 									value={channel.description}
 									onChange={(e) =>
 										setChannel({ ...channel, description: e.target.value })
@@ -173,7 +173,7 @@ function ChannelEditPage({ params }: ChannelEditPageProps) {
 							<Button
 								variant="outline"
 								type="button"
-								onClick={() => router.back()}
+								onClick={() => router({ to: "/dashboard/channels" })}
 							>
 								Cancel
 							</Button>

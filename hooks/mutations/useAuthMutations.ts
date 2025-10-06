@@ -12,7 +12,7 @@ export type RegisterCredentials = {
 	name: string;
 	email: string;
 	password: string;
-	confirmPassword: string;
+	encryptedPassword: string;
 };
 
 export type LoginResponse = {
@@ -53,7 +53,7 @@ const loginUser = async (
 		credentials,
 	);
 
-	if (response.data.token) {
+	if (response?.data?.token) {
 		localStorage.setItem("authToken", response.data.token);
 		apiClient.setAuthToken(response.data.token);
 	}
@@ -65,11 +65,11 @@ const registerUser = async (
 	credentials: RegisterCredentials,
 ): Promise<RegisterResponse> => {
 	const response = await apiClient.post<ApiResponse<RegisterResponse>>(
-		"/register",
+		"/registration",
 		credentials,
 	);
 
-	if (response.data.token) {
+	if (response?.data?.token) {
 		localStorage.setItem("authToken", response.data.token);
 		apiClient.setAuthToken(response.data.token);
 	}
@@ -100,7 +100,7 @@ export const useLoginMutation = () => {
 
 			// Store user data in localStorage or context
 			localStorage.setItem("user", JSON.stringify(data.user));
-			if (data.token) {
+			if (data?.token) {
 				localStorage.setItem("authToken", data.token);
 			}
 
@@ -121,13 +121,6 @@ export const useRegisterMutation = () => {
 		onSuccess: (data) => {
 			// Handle successful registration
 			console.log("Registration successful:", data);
-
-			// Store user data in localStorage or context
-			localStorage.setItem("user", JSON.stringify(data.user));
-			if (data.token) {
-				localStorage.setItem("authToken", data.token);
-			}
-
 			navigate({ to: "/dashboard" });
 		},
 		onError: (error) => {
@@ -159,5 +152,37 @@ export const useForgotPasswordMutation = () => {
 	});
 };
 
+export type SubscriptionConfirmRequest = {
+	token: string;
+};
+
+export type SubscriptionConfirmResponse = {
+	success: boolean;
+	message: string;
+};
+
+const confirmSubscription = async (
+	data: SubscriptionConfirmRequest,
+): Promise<SubscriptionConfirmResponse> => {
+	const response = await apiClient.post<
+		ApiResponse<SubscriptionConfirmResponse>
+	>(`/subscription/confirm/${data.token}`, {});
+
+	return response.data;
+};
+
+export const useConfirmSubscriptionMutation = () => {
+	return useMutation({
+		mutationFn: (data: SubscriptionConfirmRequest) => confirmSubscription(data),
+		onSuccess: (data) => {
+			console.log("Subscription confirmed successfully:", data);
+		},
+		onError: (error) => {
+			console.error("Subscription confirmation failed:", error);
+			throw error; // Re-throw to let component handle the error
+		},
+	});
+};
+
 // Export API functions for direct use if needed
-export { loginUser, registerUser, forgotPassword };
+export { loginUser, registerUser, forgotPassword, confirmSubscription };

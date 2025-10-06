@@ -2,6 +2,7 @@
 
 import { Plus, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,10 +22,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
 
 export function GroupSettings() {
-	const { toast } = useToast();
 	const [maxChannels, setMaxChannels] = useState("50");
 	const [allowDuplicates, setAllowDuplicates] = useState(false);
 	const [autoSort, setAutoSort] = useState(true);
@@ -97,10 +96,7 @@ export function GroupSettings() {
 
 		setIsSaving(false);
 
-		toast({
-			title: "Settings saved",
-			description: "Your group settings have been saved successfully.",
-		});
+		toast("Settings saved");
 
 		// Apply settings by refreshing the groups page
 		// router.refresh()

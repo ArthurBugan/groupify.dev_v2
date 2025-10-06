@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@tanstack/react-router";
-import * as LucideIcons from "lucide-react";
 import {
 	ArrowDown,
 	ArrowUp,
@@ -15,6 +14,8 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { IconViewer } from "@/components/icon-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
 	Table,
 	TableBody,
 	TableCell,
@@ -33,10 +50,15 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
+import {
+	type Group as ApiGroup,
+	useGroups,
+	useUpdateGroupDisplayOrder,
+	useDeleteGroup,
+} from "@/hooks/useQuery/useGroups";
 import { cn } from "@/lib/utils";
 
-interface Group {
+interface TableGroup {
 	id: string;
 	name: string;
 	channelCount: number;
@@ -50,172 +72,83 @@ interface Group {
 }
 
 export function GroupsTable() {
-	const { toast } = useToast();
-
-	// Mock data - in a real app, this would come from your database
-	const initialGroups: Group[] = [
-		{
-			id: "1",
-			name: "Gaming Channels",
-			channelCount: 8,
-			category: "Gaming",
-			createdAt: "2023-05-12",
-			icon: "Gamepad2",
-			parentId: null,
-			expanded: true,
-			level: 0,
-			order: 0,
-		},
-		{
-			id: "101",
-			name: "RPG Games",
-			channelCount: 3,
-			category: "Gaming",
-			createdAt: "2023-06-15",
-			icon: "Swords",
-			parentId: "1",
-			expanded: false,
-			level: 1,
-			order: 0,
-		},
-		{
-			id: "102",
-			name: "FPS Games",
-			channelCount: 4,
-			category: "Gaming",
-			createdAt: "2023-06-20",
-			icon: "Target",
-			parentId: "1",
-			expanded: false,
-			level: 1,
-			order: 1,
-		},
-		{
-			id: "2",
-			name: "Tech Reviews",
-			channelCount: 12,
-			category: "Technology",
-			createdAt: "2023-06-24",
-			icon: "Laptop",
-			parentId: null,
-			expanded: true,
-			level: 0,
-			order: 1,
-		},
-		{
-			id: "201",
-			name: "Smartphones",
-			channelCount: 5,
-			category: "Technology",
-			createdAt: "2023-07-05",
-			icon: "Smartphone",
-			parentId: "2",
-			expanded: false,
-			level: 1,
-			order: 0,
-		},
-		{
-			id: "202",
-			name: "Laptops & PCs",
-			channelCount: 4,
-			category: "Technology",
-			createdAt: "2023-07-10",
-			icon: "Monitor",
-			parentId: "2",
-			expanded: false,
-			level: 1,
-			order: 1,
-		},
-		{
-			id: "203",
-			name: "Accessories",
-			channelCount: 3,
-			category: "Technology",
-			createdAt: "2023-07-15",
-			icon: "Headphones",
-			parentId: "2",
-			expanded: false,
-			level: 1,
-			order: 2,
-		},
-		{
-			id: "3",
-			name: "Cooking Tutorials",
-			channelCount: 6,
-			category: "Food",
-			createdAt: "2023-07-15",
-			icon: "Utensils",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 2,
-		},
-		{
-			id: "4",
-			name: "Fitness & Health",
-			channelCount: 9,
-			category: "Fitness",
-			createdAt: "2023-08-03",
-			icon: "Dumbbell",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 3,
-		},
-		{
-			id: "5",
-			name: "Travel Vlogs",
-			channelCount: 7,
-			category: "Travel",
-			createdAt: "2023-09-18",
-			icon: "Plane",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 4,
-		},
-		{
-			id: "6",
-			name: "DIY Projects",
-			channelCount: 5,
-			category: "DIY",
-			createdAt: "2023-10-05",
-			icon: "Hammer",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 5,
-		},
-		{
-			id: "7",
-			name: "Music Reviews",
-			channelCount: 10,
-			category: "Music",
-			createdAt: "2023-11-12",
-			icon: "Music",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 6,
-		},
-		{
-			id: "8",
-			name: "Educational Content",
-			channelCount: 15,
-			category: "Education",
-			createdAt: "2023-12-01",
-			icon: "GraduationCap",
-			parentId: null,
-			expanded: false,
-			level: 0,
-			order: 7,
-		},
-	];
-
+	const [currentPage, setCurrentPage] = useState(1);
+	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+	const { data: apiGroups, isLoading } = useGroups({
+		page: currentPage,
+		limit: itemsPerPage,
+		search: debouncedSearchTerm,
+	});
+
+	const updateDisplayOrder = useUpdateGroupDisplayOrder();
+	const deleteGroup = useDeleteGroup();
+
+	// Transform API groups to table format
+	const transformApiGroups = (apiGroups?: ApiGroup[]): TableGroup[] => {
+		if (!apiGroups) return [];
+
+		return apiGroups?.map((group, index) => ({
+			id: group.id,
+			name: group.name,
+			channelCount: group.channels?.length || 0,
+			category: group.category || "General", // Default category, can be enhanced later
+			createdAt: new Date(group.createdAt).toLocaleDateString(),
+			icon: group.icon || "FolderKanban",
+			parentId: group.parentId || null, // Flat structure for now, can add hierarchical support later
+			expanded: false,
+			level: group.nestingLevel || 0,
+			order: group.displayOrder || index,
+		}));
+	};
+
+	const initialGroups: TableGroup[] = transformApiGroups(apiGroups?.data);
+
 	const [groups, setGroups] = useState(initialGroups);
-	const [draggedGroup, setDraggedGroup] = useState<Group | null>(null);
+	const [draggedGroup, setDraggedGroup] = useState<TableGroup | null>(null);
 	const [dragOverGroup, setDragOverGroup] = useState<string | null>(null);
+
+	// Debounce search term
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedSearchTerm(searchTerm);
+		}, 300);
+
+		return () => clearTimeout(timer);
+	}, [searchTerm]);
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, []);
+
+	// Update groups when API data changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <cant apply the rule as the transformApiGroups changes on every render>
+		useEffect(() => {
+		if (apiGroups?.data) {
+			console.log("apiGroups?.data", apiGroups?.data);
+			const newGroups = transformApiGroups(apiGroups.data);
+			const savedOrder = localStorage.getItem("groupsOrder");
+
+			if (savedOrder) {
+				try {
+					const orderData = JSON.parse(savedOrder);
+					setGroups(
+						newGroups.map((group) => ({
+							...group,
+							order: orderData[group.id] ?? group.order,
+						})),
+					);
+				} catch (error) {
+					console.error("Error loading groups order:", error);
+					setGroups(newGroups);
+				}
+			} else {
+				setGroups(newGroups);
+			}
+		}
+	}, [apiGroups?.data]);
 
 	// Save groups order to localStorage
 	useEffect(() => {
@@ -244,63 +177,64 @@ export function GroupsTable() {
 		);
 	};
 
-	// Filter groups based on search term
-	const filteredGroups = groups.filter(
-		(group) =>
-			group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			group.category.toLowerCase().includes(searchTerm.toLowerCase()),
-	);
-
-	// Function to determine if a group should be visible based on parent's expanded state
-	const isVisible = (group: Group) => {
+	// Note: isVisible logic is now handled within getSortedGroups function
+	// This function is kept for reference but not used in rendering
+	const isVisible = (group: TableGroup) => {
 		if (group.parentId === null) return true;
+		if (debouncedSearchTerm) return true;
 
-		// If searching, show all matches
-		if (searchTerm) return true;
-
-		// Find the parent group
+		// If parent doesn't exist in current dataset, show the group as a root-level item
 		const parent = groups.find((g) => g.id === group.parentId);
+		if (!parent) return true; // Parent not in current dataset, show as root
+		
 		return parent?.expanded;
 	};
 
-	// Function to render the icon
-	const renderIcon = (iconName: string) => {
-		const IconComponent =
-			(LucideIcons as Record<string, React.FC<React.SVGProps<SVGSVGElement>>>)[
-				iconName
-			] || LucideIcons.FolderKanban;
-
-		return <IconComponent className="h-4 w-4 text-muted-foreground" />;
-	};
-
 	// Get sorted groups
+	// Handles pagination scenarios where parent and child groups might be split across pages
 	const getSortedGroups = () => {
-		const topLevelGroups = filteredGroups
-			.filter((g) => g.parentId === null)
-			.sort((a, b) => a.order - b.order);
-		const result: Group[] = [];
+		const result: TableGroup[] = [];
+		const processedGroups = new Set<string>();
 
-		const addGroupAndChildren = (group: Group) => {
+		// First, add all groups that don't have parents in the current dataset
+		// This includes actual root groups and orphaned child groups whose parents are on other pages
+		const groupsWithoutParentsInDataset = groups.filter(group => {
+			if (group.parentId === null) return true;
+			// Check if parent exists in current dataset
+			const parentExists = groups.some(g => g.id === group.parentId);
+			return !parentExists;
+		});
+
+		// Sort groups without parents by order
+		const sortedRootGroups = groupsWithoutParentsInDataset
+			.sort((a, b) => a.order - b.order);
+
+		const addGroupAndChildren = (group: TableGroup) => {
+			if (processedGroups.has(group.id)) return;
+			
 			result.push(group);
+			processedGroups.add(group.id);
+
+			// Add children if expanded (only if they exist in current dataset)
 			if (group.expanded) {
-				const children = filteredGroups
+				const children = groups
 					.filter((g) => g.parentId === group.id)
 					.sort((a, b) => a.order - b.order);
 				children.forEach(addGroupAndChildren);
 			}
 		};
 
-		topLevelGroups.forEach(addGroupAndChildren);
+		sortedRootGroups.forEach(addGroupAndChildren);
 		return result;
 	};
 
 	// Drag and drop handlers
-	const handleDragStart = (e: React.DragEvent, group: Group) => {
+	const handleDragStart = (e: React.DragEvent, group: TableGroup) => {
 		setDraggedGroup(group);
 		e.dataTransfer.effectAllowed = "move";
 	};
 
-	const handleDragOver = (e: React.DragEvent, group: Group) => {
+	const handleDragOver = (e: React.DragEvent, group: TableGroup) => {
 		e.preventDefault();
 		if (
 			draggedGroup &&
@@ -316,7 +250,7 @@ export function GroupsTable() {
 		setDragOverGroup(null);
 	};
 
-	const handleDrop = (e: React.DragEvent, targetGroup: Group) => {
+	const handleDrop = (e: React.DragEvent, targetGroup: TableGroup) => {
 		e.preventDefault();
 		setDragOverGroup(null);
 
@@ -324,16 +258,28 @@ export function GroupsTable() {
 
 		// Only allow reordering within the same parent level
 		if (draggedGroup.parentId !== targetGroup.parentId) {
-			toast({
-				title: "Cannot move group",
-				description: "Groups can only be reordered within the same level",
+			toast.error("Cannot move group", {
+				description: "Groups can only be reordered within the same level.",
+			});
+			return;
+		}
+
+		// Additional safety check: ensure both groups have valid parent relationships in current dataset
+		if (draggedGroup.parentId && !groups.some(g => g.id === draggedGroup.parentId)) {
+			toast.error("Cannot move group", {
+				description: "Parent group not available in current view.",
+			});
+			return;
+		}
+		if (targetGroup.parentId && !groups.some(g => g.id === targetGroup.parentId)) {
+			toast.error("Cannot move group", {
+				description: "Target parent group not available in current view.",
 			});
 			return;
 		}
 
 		const newGroups = [...groups];
 		const draggedIndex = newGroups.findIndex((g) => g.id === draggedGroup.id);
-		const targetIndex = newGroups.findIndex((g) => g.id === targetGroup.id);
 
 		// Update order values
 		const siblingGroups = newGroups.filter(
@@ -375,10 +321,23 @@ export function GroupsTable() {
 		});
 		localStorage.setItem("groupsOrder", JSON.stringify(orderData));
 
-		toast({
-			title: "Groups reordered",
-			description: "The group order has been updated",
-		});
+		// Update display order via API
+		updateDisplayOrder.mutate(
+			{ groupId: draggedGroup.id, displayOrder: targetSiblingIndex },
+			{
+				onSuccess: () => {
+					toast.success("Groups reordered", {
+						description: "The group order has been updated",
+					});
+				},
+				onError: (error) => {
+					toast.error("Failed to reorder groups", {
+						description: "Please try again later",
+					});
+					console.error("Error updating group display order:", error);
+				},
+			},
+		);
 	};
 
 	const handleDragEnd = () => {
@@ -386,8 +345,25 @@ export function GroupsTable() {
 		setDragOverGroup(null);
 	};
 
-	// Move group up/down
-	const moveGroup = (group: Group, direction: "up" | "down") => {
+	const handleDeleteGroup = (groupId: string, groupName: string) => {
+		if (confirm(`Are you sure you want to delete "${groupName}"? This action cannot be undone.`)) {
+			deleteGroup.mutate(groupId, {
+				onSuccess: () => {
+					toast.success("Group deleted successfully", {
+						description: `"${groupName}" has been deleted.`,
+					});
+				},
+				onError: (error) => {
+					toast.error("Failed to delete group", {
+						description: "Please try again later.",
+					});
+					console.error("Error deleting group:", error);
+				},
+			});
+		}
+	};
+
+	const moveGroup = (group: TableGroup, direction: "up" | "down") => {
 		const siblingGroups = groups
 			.filter((g) => g.parentId === group.parentId)
 			.sort((a, b) => a.order - b.order);
@@ -424,10 +400,62 @@ export function GroupsTable() {
 		});
 		localStorage.setItem("groupsOrder", JSON.stringify(orderData));
 
-		toast({
-			title: "Group moved",
-			description: `${group.name} moved ${direction}`,
-		});
+		// Update display order via API
+		updateDisplayOrder.mutate(
+			{ groupId: group.id, displayOrder: newGroups[groupIndex].order },
+			{
+				onSuccess: () => {
+					toast.success("Group moved", {
+						description: `${group.name} moved ${direction}`,
+					});
+				},
+				onError: (error) => {
+					toast.error("Failed to move group", {
+						description: "Please try again later",
+					});
+					console.error("Error updating group display order:", error);
+				},
+			},
+		);
+	};
+
+	const getPaginationPages = (): (number | string)[] => {
+		if (!apiGroups?.data) return [];
+
+		const totalPages = Math.ceil(apiGroups.pagination.total / itemsPerPage);
+		const pages: (number | string)[] = [];
+		const maxVisiblePages = 5;
+
+		if (totalPages <= maxVisiblePages) {
+			// Show all pages if there are few pages
+			for (let i = 1; i <= totalPages; i++) {
+				pages.push(i);
+			}
+		} else {
+			// Show first page
+			pages.push(1);
+
+			if (currentPage > 3) {
+				pages.push("...");
+			}
+
+			// Show pages around current page
+			const startPage = Math.max(2, currentPage - 1);
+			const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+			for (let i = startPage; i <= endPage; i++) {
+				pages.push(i);
+			}
+
+			if (currentPage < totalPages - 2) {
+				pages.push("...");
+			}
+
+			// Show last page
+			pages.push(totalPages);
+		}
+
+		return pages;
 	};
 
 	const sortedGroups = getSortedGroups();
@@ -455,14 +483,39 @@ export function GroupsTable() {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{sortedGroups.length === 0 ? (
+						{isLoading ? (
 							<TableRow>
 								<TableCell colSpan={6} className="h-24 text-center">
-									No groups found.
+									<div className="flex flex-col items-center justify-center space-y-2">
+										<p className="text-sm text-muted-foreground">
+											Loading groups...
+										</p>
+									</div>
+								</TableCell>
+							</TableRow>
+						) : sortedGroups.length === 0 ? (
+							<TableRow>
+								<TableCell colSpan={6} className="h-24 text-center">
+									<div className="flex flex-col items-center justify-center space-y-2">
+										{debouncedSearchTerm ? (
+											<>
+												<p className="text-sm text-muted-foreground">
+													No groups match "{debouncedSearchTerm}"
+												</p>
+												<p className="text-xs text-muted-foreground">
+													Try adjusting your search terms
+												</p>
+											</>
+										) : (
+											<p className="text-sm text-muted-foreground">
+												No groups found
+											</p>
+										)}
+									</div>
 								</TableCell>
 							</TableRow>
 						) : (
-							sortedGroups.map((group) => {
+								sortedGroups.filter(isVisible).map((group) => {
 								const siblingGroups = groups
 									.filter((g) => g.parentId === group.parentId)
 									.sort((a, b) => a.order - b.order);
@@ -480,7 +533,7 @@ export function GroupsTable() {
 											dragOverGroup === group.id && "bg-accent/50",
 											draggedGroup?.id === group.id && "opacity-50",
 										)}
-										draggable={!searchTerm}
+										draggable={!debouncedSearchTerm}
 										onDragStart={(e) => handleDragStart(e, group)}
 										onDragOver={(e) => handleDragOver(e, group)}
 										onDragLeave={handleDragLeave}
@@ -488,7 +541,7 @@ export function GroupsTable() {
 										onDragEnd={handleDragEnd}
 									>
 										<TableCell>
-											{!searchTerm && (
+											{!debouncedSearchTerm && (
 												<div className="flex items-center gap-1">
 													<GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
 												</div>
@@ -496,10 +549,9 @@ export function GroupsTable() {
 										</TableCell>
 										<TableCell>
 											<div
-												className="flex items-center gap-2"
-												style={{ paddingLeft: `${group.level * 1.5}rem` }}
-											>
-												{/* Expand/collapse button for parent groups */}
+											className="flex items-center gap-2"
+											style={{ paddingLeft: `${group.parentId && !groups.some(g => g.id === group.parentId) ? 0 : group.level * 1.5}rem` }}
+										>
 												{groups.some((g) => g.parentId === group.id) ? (
 													<Button
 														variant="ghost"
@@ -517,13 +569,22 @@ export function GroupsTable() {
 													<div className="w-6"></div> // Spacer for alignment
 												)}
 
-												{renderIcon(group.icon)}
-												<Link
-													to={`/dashboard/groups/${group.id}`}
-													className="font-medium hover:underline"
-												>
-													{group.name}
-												</Link>
+												<IconViewer
+												icon={group.icon}
+												className="h-4 w-4 mr-4 text-muted-foreground"
+											/>
+											<Link
+												to={`/dashboard/groups/$id`}
+												params={{ id: group.id }}
+												className="font-medium hover:underline"
+											>
+												{group.name}
+												{group.parentId && !groups.some(g => g.id === group.parentId) && (
+													<span className="ml-2 text-xs text-muted-foreground">
+														(subgroup)
+													</span>
+												)}
+											</Link>
 
 												{/* Add subgroup button */}
 												<Button
@@ -533,7 +594,8 @@ export function GroupsTable() {
 													asChild
 												>
 													<Link
-														to={`/dashboard/groups/new?parentId=${group.id}`}
+														to="/dashboard/groups/new"
+														search={{ parentId: group.id }}
 													>
 														<Plus className="h-3 w-3" />
 														<span className="sr-only">Add subgroup</span>
@@ -556,19 +618,26 @@ export function GroupsTable() {
 												</DropdownMenuTrigger>
 												<DropdownMenuContent align="end">
 													<DropdownMenuItem asChild>
-														<Link to={`/dashboard/groups/${group.id}`}>
+														<Link
+															to={`/dashboard/groups/$id`}
+															params={{ id: group.id }}
+														>
 															View details
 														</Link>
 													</DropdownMenuItem>
 													<DropdownMenuItem asChild>
-														<Link to={`/dashboard/groups/${group.id}/edit`}>
+														<Link
+															to={`/dashboard/groups/$id/edit`}
+															params={{ id: group.id }}
+														>
 															<Pencil className="mr-2 h-4 w-4" />
 															Edit
 														</Link>
 													</DropdownMenuItem>
 													<DropdownMenuItem asChild>
 														<Link
-															to={`/dashboard/groups/new?parentId=${group.id}`}
+															to="/dashboard/groups/new"
+															search={{ parentId: group.id }}
 														>
 															<Plus className="mr-2 h-4 w-4" />
 															Add Subgroup
@@ -577,23 +646,29 @@ export function GroupsTable() {
 													<DropdownMenuSeparator />
 													<DropdownMenuItem
 														onClick={() => moveGroup(group, "up")}
-														disabled={!canMoveUp || searchTerm !== ""}
+														disabled={!canMoveUp || debouncedSearchTerm !== ""}
 													>
 														<ArrowUp className="mr-2 h-4 w-4" />
 														Move Up
 													</DropdownMenuItem>
 													<DropdownMenuItem
 														onClick={() => moveGroup(group, "down")}
-														disabled={!canMoveDown || searchTerm !== ""}
+														disabled={
+															!canMoveDown || debouncedSearchTerm !== ""
+														}
 													>
 														<ArrowDown className="mr-2 h-4 w-4" />
 														Move Down
 													</DropdownMenuItem>
 													<DropdownMenuSeparator />
-													<DropdownMenuItem className="text-destructive">
-														<Trash2 className="mr-2 h-4 w-4" />
-														Delete
-													</DropdownMenuItem>
+											<DropdownMenuItem 
+												className="text-destructive"
+												onClick={() => handleDeleteGroup(group.id, group.name)}
+												disabled={deleteGroup.isPending}
+											>
+												<Trash2 className="mr-2 h-4 w-4" />
+												Delete
+											</DropdownMenuItem>
 												</DropdownMenuContent>
 											</DropdownMenu>
 										</TableCell>
@@ -604,6 +679,75 @@ export function GroupsTable() {
 					</TableBody>
 				</Table>
 			</div>
+
+			{apiGroups?.data && apiGroups.pagination.total > 0 && (
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						<span>Items per page:</span>
+						<Select value={itemsPerPage.toString()} onValueChange={(value) => {
+							setItemsPerPage(Number(value));
+							setCurrentPage(1); // Reset to first page when changing items per page
+						}}>
+							<SelectTrigger className="w-[70px] h-8">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="10">10</SelectItem>
+								<SelectItem value="25">25</SelectItem>
+								<SelectItem value="50">50</SelectItem>
+								<SelectItem value="100">100</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+					<Pagination>
+						<PaginationContent>
+							<PaginationItem>
+								<PaginationPrevious
+									size={"sm"}
+									onClick={() =>
+										setCurrentPage((prev) => Math.max(prev - 1, 1))
+									}
+									isActive={currentPage === 1}
+								/>
+							</PaginationItem>
+
+							{getPaginationPages().map((page) => (
+								<PaginationItem key={`page-${page}`}>
+									{page === "..." ? (
+										<PaginationEllipsis />
+									) : (
+										<PaginationLink
+											size={"sm"}
+											onClick={() => setCurrentPage(page as number)}
+											isActive={currentPage === page}
+										>
+											{page}
+										</PaginationLink>
+									)}
+								</PaginationItem>
+							))}
+
+							<PaginationItem>
+								<PaginationNext
+									size={"sm"}
+									onClick={() =>
+										setCurrentPage((prev) =>
+											Math.min(
+												prev + 1,
+												Math.ceil(apiGroups.pagination.total / itemsPerPage),
+											),
+										)
+									}
+									isActive={
+										currentPage >=
+										Math.ceil(apiGroups.pagination.total / itemsPerPage)
+									}
+								/>
+							</PaginationItem>
+						</PaginationContent>
+					</Pagination>
+				</div>
+			)}
 		</div>
 	);
 }
