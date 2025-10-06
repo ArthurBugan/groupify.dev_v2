@@ -1,5 +1,5 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
-import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/hooks/utils/queryKeys";
 
 // Types for groups
@@ -9,6 +9,10 @@ export interface Group {
 	description?: string;
 	icon?: string;
 	channels?: Channel[];
+	category?: string;
+	nestingLevel?: number;
+	displayOrder?: number;
+	parentId?: string | null;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -31,23 +35,28 @@ export interface GroupsResponse {
 	};
 }
 
+export interface CreateGroupRequest {
+	name: string;
+	description?: string;
+	icon?: string;
+	category?: string;
+	parentId?: string | null;
+}
+
 // Query function to fetch all groups
 const getGroups = async (params?: {
 	page?: number;
 	limit?: number;
 	search?: string;
 }): Promise<GroupsResponse> => {
-	const response = await apiClient.get<ApiResponse<GroupsResponse>>(
-		"api/v2/groups",
-		params
-	);
-	return response.data;
+	const response = await apiClient.get<GroupsResponse>("api/v2/groups", params);
+	return response;
 };
 
 // Query function to fetch a single group by ID
 const getGroup = async (id: string): Promise<Group> => {
 	const response = await apiClient.get<ApiResponse<Group>>(
-		`api/v2/groups/${id}`
+		`api/v2/groups/${id}`,
 	);
 	return response.data;
 };
@@ -73,6 +82,57 @@ export function useGroup(id: string) {
 		enabled: !!id,
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes
+	});
+}
+
+// Update display order for a group
+const updateGroupDisplayOrder = async (
+	groupId: string,
+	displayOrder: number,
+): Promise<void> => {
+	await apiClient.put(`api/v2/groups/${groupId}/display-order`, {
+		display_order: displayOrder,
+	});
+};
+
+// Create a new group
+const createGroup = async (data: CreateGroupRequest): Promise<Group> => {
+	const response = await apiClient.post<ApiResponse<Group>>(
+		"api/v2/groups",
+		data,
+	);
+	return response.data;
+};
+
+// React Query mutation hook for updating group display order
+export function useUpdateGroupDisplayOrder() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({
+			groupId,
+			displayOrder,
+		}: {
+			groupId: string;
+			displayOrder: number;
+		}) => updateGroupDisplayOrder(groupId, displayOrder),
+		onSuccess: () => {
+			// Invalidate and refetch the groups query to update the UI
+			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
+		},
+	});
+}
+
+// React Query mutation hook for creating a new group
+export function useCreateGroup() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (data: CreateGroupRequest) => createGroup(data),
+		onSuccess: () => {
+			// Invalidate and refetch the groups query to update the UI
+			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
+		},
 	});
 }
 

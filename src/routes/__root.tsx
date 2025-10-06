@@ -14,6 +14,7 @@ import { AppearanceProvider } from "@/components/appearance-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { NotFound } from "@/components/not-found";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { queryClient } from "@/hooks/utils/queryClient";
 import appCss from "../styles/app.css?url";
 
@@ -45,6 +46,7 @@ function RootComponent() {
 					<RootDocument>
 						<Outlet />
 						<ReactQueryDevtools initialIsOpen={true} />
+						<Toaster richColors />
 					</RootDocument>
 				</QueryClientProvider>
 			</AppearanceProvider>

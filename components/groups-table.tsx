@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { IconViewer } from "@/components/icon-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,10 +35,12 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
+import {
+	type Group as ApiGroup,
+	useGroups,
+	useUpdateGroupDisplayOrder,
+} from "@/hooks/useQuery/useGroups";
 import { cn } from "@/lib/utils";
-
-import { useGroups, type Group as ApiGroup } from "@/hooks/useQuery/useGroups";
 
 interface TableGroup {
 	id: string;
@@ -52,29 +56,28 @@ interface TableGroup {
 }
 
 export function GroupsTable() {
-	const { toast } = useToast();
 	const { data: apiGroups } = useGroups();
+	const updateDisplayOrder = useUpdateGroupDisplayOrder();
 
 	// Transform API groups to table format
 	const transformApiGroups = (apiGroups?: ApiGroup[]): TableGroup[] => {
-		console.log(apiGroups)
 		if (!apiGroups) return [];
-		
-		return apiGroups.map((group, index) => ({
+
+		return apiGroups?.map((group, index) => ({
 			id: group.id,
 			name: group.name,
 			channelCount: group.channels?.length || 0,
-			category: "General", // Default category, can be enhanced later
+			category: group.category || "General", // Default category, can be enhanced later
 			createdAt: new Date(group.createdAt).toLocaleDateString(),
 			icon: group.icon || "FolderKanban",
-			parentId: null, // Flat structure for now, can add hierarchical support later
-			expanded: true,
-			level: 0,
-			order: index,
+			parentId: group.parentId || null, // Flat structure for now, can add hierarchical support later
+			expanded: false,
+			level: group.nestingLevel || 0,
+			order: group.displayOrder || index,
 		}));
 	};
 
-	const initialGroups: TableGroup[] = transformApiGroups(apiGroups);
+	const initialGroups: TableGroup[] = transformApiGroups(apiGroups?.data);
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [groups, setGroups] = useState(initialGroups);
@@ -83,7 +86,7 @@ export function GroupsTable() {
 
 	// Update groups when API data changes
 	useEffect(() => {
-		setGroups(transformApiGroups(apiGroups));
+		setGroups(transformApiGroups(apiGroups?.data));
 	}, [apiGroups]);
 
 	// Save groups order to localStorage
@@ -132,24 +135,14 @@ export function GroupsTable() {
 		return parent?.expanded;
 	};
 
-	// Function to render the icon
-	const renderIcon = (iconName: string) => {
-		const IconComponent =
-			(LucideIcons as Record<string, React.FC<React.SVGProps<SVGSVGElement>>>)[
-				iconName
-			] || LucideIcons.FolderKanban;
-
-		return <IconComponent className="h-4 w-4 text-muted-foreground" />;
-	};
-
 	// Get sorted groups
 	const getSortedGroups = () => {
 		const topLevelGroups = filteredGroups
 			.filter((g) => g.parentId === null)
 			.sort((a, b) => a.order - b.order);
-		const result: Group[] = [];
+		const result: TableGroup[] = [];
 
-		const addGroupAndChildren = (group: Group) => {
+		const addGroupAndChildren = (group: TableGroup) => {
 			result.push(group);
 			if (group.expanded) {
 				const children = filteredGroups
@@ -193,9 +186,8 @@ export function GroupsTable() {
 
 		// Only allow reordering within the same parent level
 		if (draggedGroup.parentId !== targetGroup.parentId) {
-			toast({
-				title: "Cannot move group",
-				description: "Groups can only be reordered within the same level",
+			toast.error("Cannot move group", {
+				description: "Groups can only be reordered within the same level.",
 			});
 			return;
 		}
@@ -244,10 +236,23 @@ export function GroupsTable() {
 		});
 		localStorage.setItem("groupsOrder", JSON.stringify(orderData));
 
-		toast({
-			title: "Groups reordered",
-			description: "The group order has been updated",
-		});
+		// Update display order via API
+		updateDisplayOrder.mutate(
+			{ groupId: draggedGroup.id, displayOrder: targetSiblingIndex },
+			{
+				onSuccess: () => {
+					toast.success("Groups reordered", {
+						description: "The group order has been updated",
+					});
+				},
+				onError: (error) => {
+					toast.error("Failed to reorder groups", {
+						description: "Please try again later",
+					});
+					console.error("Error updating group display order:", error);
+				},
+			},
+		);
 	};
 
 	const handleDragEnd = () => {
@@ -255,7 +260,6 @@ export function GroupsTable() {
 		setDragOverGroup(null);
 	};
 
-	// Move group up/down
 	const moveGroup = (group: TableGroup, direction: "up" | "down") => {
 		const siblingGroups = groups
 			.filter((g) => g.parentId === group.parentId)
@@ -293,10 +297,23 @@ export function GroupsTable() {
 		});
 		localStorage.setItem("groupsOrder", JSON.stringify(orderData));
 
-		toast({
-			title: "Group moved",
-			description: `${group.name} moved ${direction}`,
-		});
+		// Update display order via API
+		updateDisplayOrder.mutate(
+			{ groupId: group.id, displayOrder: newGroups[groupIndex].order },
+			{
+				onSuccess: () => {
+					toast.success("Group moved", {
+						description: `${group.name} moved ${direction}`,
+					});
+				},
+				onError: (error) => {
+					toast.error("Failed to move group", {
+						description: "Please try again later",
+					});
+					console.error("Error updating group display order:", error);
+				},
+			},
+		);
 	};
 
 	const sortedGroups = getSortedGroups();
@@ -330,11 +347,17 @@ export function GroupsTable() {
 									<div className="flex flex-col items-center justify-center space-y-2">
 										{searchTerm ? (
 											<>
-												<p className="text-sm text-muted-foreground">No groups match "{searchTerm}"</p>
-												<p className="text-xs text-muted-foreground">Try adjusting your search terms</p>
+												<p className="text-sm text-muted-foreground">
+													No groups match "{searchTerm}"
+												</p>
+												<p className="text-xs text-muted-foreground">
+													Try adjusting your search terms
+												</p>
 											</>
 										) : (
-											<p className="text-sm text-muted-foreground">No groups found</p>
+											<p className="text-sm text-muted-foreground">
+												No groups found
+											</p>
 										)}
 									</div>
 								</TableCell>
@@ -377,7 +400,6 @@ export function GroupsTable() {
 												className="flex items-center gap-2"
 												style={{ paddingLeft: `${group.level * 1.5}rem` }}
 											>
-												{/* Expand/collapse button for parent groups */}
 												{groups.some((g) => g.parentId === group.id) ? (
 													<Button
 														variant="ghost"
@@ -395,9 +417,13 @@ export function GroupsTable() {
 													<div className="w-6"></div> // Spacer for alignment
 												)}
 
-												{renderIcon(group.icon)}
+												<IconViewer
+													icon={group.icon}
+													className="h-4 w-4 mr-4 text-muted-foreground"
+												/>
 												<Link
-													to={`/dashboard/groups/${group.id}`}
+													to={`/dashboard/groups/$id`}
+													params={{ id: group.id }}
 													className="font-medium hover:underline"
 												>
 													{group.name}
@@ -411,7 +437,8 @@ export function GroupsTable() {
 													asChild
 												>
 													<Link
-														to={`/dashboard/groups/new?parentId=${group.id}`}
+														to="/dashboard/groups/new"
+														search={{ parentId: group.id }}
 													>
 														<Plus className="h-3 w-3" />
 														<span className="sr-only">Add subgroup</span>
@@ -434,19 +461,26 @@ export function GroupsTable() {
 												</DropdownMenuTrigger>
 												<DropdownMenuContent align="end">
 													<DropdownMenuItem asChild>
-														<Link to={`/dashboard/groups/${group.id}`}>
+														<Link
+															to={`/dashboard/groups/$id`}
+															params={{ id: group.id }}
+														>
 															View details
 														</Link>
 													</DropdownMenuItem>
 													<DropdownMenuItem asChild>
-														<Link to={`/dashboard/groups/${group.id}/edit`}>
+														<Link
+															to={`/dashboard/groups/$id/edit`}
+															params={{ id: group.id }}
+														>
 															<Pencil className="mr-2 h-4 w-4" />
 															Edit
 														</Link>
 													</DropdownMenuItem>
 													<DropdownMenuItem asChild>
 														<Link
-															to={`/dashboard/groups/new?parentId=${group.id}`}
+															to="/dashboard/groups/new"
+															search={{ parentId: group.id }}
 														>
 															<Plus className="mr-2 h-4 w-4" />
 															Add Subgroup

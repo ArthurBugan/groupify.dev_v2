@@ -55,9 +55,9 @@ function RegisterPage() {
 				.string()
 				.min(1, { message: t("register.validation.password.required") })
 				.min(6, { message: t("register.validation.password.min") }),
-			encryptedPassword: z
-				.string()
-				.min(1, { message: t("register.validation.encryptedPassword.required") }),
+			encryptedPassword: z.string().min(1, {
+				message: t("register.validation.encryptedPassword.required"),
+			}),
 			agreeToTerms: z.boolean().refine((val) => val === true, {
 				message: "You must agree to the terms and conditions",
 			}),
@@ -100,7 +100,9 @@ function RegisterPage() {
 				setErrors(newErrors);
 			} else {
 				console.error("Registration error:", error);
-				setErrors({ message: error?.message ?? "Registration failed. Please try again." });
+				setErrors({
+					message: error?.message ?? "Registration failed. Please try again.",
+				});
 			}
 		}
 	};

@@ -2,19 +2,18 @@
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ChannelsTable } from "@/components/channels-table";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { GroupDetails } from "@/components/group-details";
 import { Button } from "@/components/ui/button";
-import { Toast, ToastProvider } from "@/components/ui/toast";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 	component: GroupDetailPage,
 });
 
 function GroupDetailPage({ params }: { params: { id: string } }) {
-	const [toasts, setToasts] = useState<any[]>([]);
 	const { id } = Route.useParams();
 
 	const groupName =
@@ -34,45 +33,17 @@ function GroupDetailPage({ params }: { params: { id: string } }) {
 		const settingsSaved = urlParams.get("settings-saved");
 
 		if (settingsSaved === "true") {
-			setToasts([
-				...toasts,
-				{
-					id: Date.now(),
-					title: "Settings Applied",
-					description: "Your group settings have been applied to this view.",
-				},
-			]);
-
+			toast.info("Settings Applied", {
+				description: "Your group settings have been applied to this view.",
+			});
 			// Remove the query parameter without refreshing the page
 			const newUrl = window.location.pathname;
 			window.history.replaceState({}, document.title, newUrl);
-
-			// Auto-dismiss toast after 3 seconds
-			setTimeout(() => {
-				setToasts((prevToasts) =>
-					prevToasts.filter((toast) => toast.id !== Date.now()),
-				);
-			}, 3000);
 		}
 	}, []);
 
 	return (
 		<div className="space-y-6">
-			<ToastProvider>
-				{toasts.map((toast) => (
-					<Toast
-						key={toast.id}
-						title={toast.title}
-						description={toast.description}
-						onClose={() =>
-							setToasts((prevToasts) =>
-								prevToasts.filter((t) => t.id !== toast.id),
-							)
-						}
-					/>
-				))}
-			</ToastProvider>
-
 			<div className="flex items-center justify-between">
 				<DashboardHeader
 					title={groupName}

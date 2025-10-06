@@ -1,18 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { GroupsTable } from "@/components/groups-table";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { useGroups } from "@/hooks/useQuery/useGroups";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/dashboard/groups/")({
 	component: GroupsPage,
 });
 
 function GroupsPage() {
-	const { data: groupsData, isLoading, error } = useGroups();
+	const { isLoading, error } = useGroups();
 
 	if (isLoading) {
 		return (
@@ -33,7 +38,9 @@ function GroupsPage() {
 					<CardContent className="flex items-center justify-center py-12">
 						<div className="flex items-center space-x-2">
 							<Loader2 className="h-6 w-6 animate-spin" />
-							<span className="text-sm text-muted-foreground">Loading groups...</span>
+							<span className="text-sm text-muted-foreground">
+								Loading groups...
+							</span>
 						</div>
 					</CardContent>
 				</Card>

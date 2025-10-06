@@ -67,7 +67,10 @@ class ApiClient {
 	}
 
 	// GET request
-	async get<T>(endpoint: string, params?: Record<string, string | number | boolean | undefined>): Promise<T> {
+	async get<T>(
+		endpoint: string,
+		params?: Record<string, string | number | boolean | undefined>,
+	): Promise<T> {
 		const url = new URL(endpoint, this.baseURL);
 		if (params) {
 			Object.entries(params).forEach(([key, value]) => {

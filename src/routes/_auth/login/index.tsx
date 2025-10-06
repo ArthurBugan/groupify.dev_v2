@@ -26,13 +26,13 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
 	type LoginCredentials,
 	useLoginMutation,
 } from "@/hooks/mutations/useAuthMutations";
-import { Icons } from "@/components/ui/icons";
 
 export const Route = createFileRoute("/_auth/login/")({
 	component: LoginPage,
@@ -73,10 +73,7 @@ function LoginPage() {
 			// Handle login error
 			form.setError("root", {
 				type: "manual",
-				message:
-					error
-						? error.message
-						: "Login failed. Please try again.",
+				message: error ? error.message : "Login failed. Please try again.",
 			});
 		}
 	};

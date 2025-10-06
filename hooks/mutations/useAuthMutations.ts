@@ -153,36 +153,35 @@ export const useForgotPasswordMutation = () => {
 };
 
 export type SubscriptionConfirmRequest = {
-  token: string;
+	token: string;
 };
 
 export type SubscriptionConfirmResponse = {
-  success: boolean;
-  message: string;
+	success: boolean;
+	message: string;
 };
 
 const confirmSubscription = async (
-  data: SubscriptionConfirmRequest
+	data: SubscriptionConfirmRequest,
 ): Promise<SubscriptionConfirmResponse> => {
-  const response = await apiClient.post<ApiResponse<SubscriptionConfirmResponse>>(
-    `/subscription/confirm/${data.token}`,
-    {}
-  );
-  
-  return response.data;
+	const response = await apiClient.post<
+		ApiResponse<SubscriptionConfirmResponse>
+	>(`/subscription/confirm/${data.token}`, {});
+
+	return response.data;
 };
 
 export const useConfirmSubscriptionMutation = () => {
-  return useMutation({
-    mutationFn: (data: SubscriptionConfirmRequest) => confirmSubscription(data),
-    onSuccess: (data) => {
-      console.log("Subscription confirmed successfully:", data);
-    },
-    onError: (error) => {
-      console.error("Subscription confirmation failed:", error);
-      throw error; // Re-throw to let component handle the error
-    }
-  });
+	return useMutation({
+		mutationFn: (data: SubscriptionConfirmRequest) => confirmSubscription(data),
+		onSuccess: (data) => {
+			console.log("Subscription confirmed successfully:", data);
+		},
+		onError: (error) => {
+			console.error("Subscription confirmation failed:", error);
+			throw error; // Re-throw to let component handle the error
+		},
+	});
 };
 
 // Export API functions for direct use if needed

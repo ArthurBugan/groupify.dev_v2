@@ -5,7 +5,12 @@ import * as LucideIcons from "lucide-react";
 import { ArrowLeft, Save } from "lucide-react";
 import React, { use, useEffect, useId, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { IconPicker, IconPickerContent, IconPickerTrigger, IconViewer } from "@/components/icon-picker";
+import {
+	IconPicker,
+	IconPickerContent,
+	IconPickerTrigger,
+	IconViewer,
+} from "@/components/icon-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useEffect, useState, useRef } from "react";
-import { useConfirmSubscriptionMutation } from "@/hooks/mutations/useAuthMutations";
-import { Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
+import { CheckCircle2, Loader2, Mail, XCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useConfirmSubscriptionMutation } from "@/hooks/mutations/useAuthMutations";
 
 export const Route = createFileRoute("/_auth/subscriptions/confirm/$code")({
 	component: RouteComponent,

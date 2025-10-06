@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
-import { queryKeys } from "@/hooks/utils/queryKeys";
 import { toast } from "@/hooks/use-toast";
+import { queryKeys } from "@/hooks/utils/queryKeys";
 
 // Types for group mutations
 export interface CreateGroupRequest {
@@ -48,11 +48,11 @@ export interface DeleteGroupResponse {
 
 // API functions
 const createGroup = async (
-	data: CreateGroupRequest
+	data: CreateGroupRequest,
 ): Promise<CreateGroupResponse> => {
 	const response = await apiClient.post<ApiResponse<CreateGroupResponse>>(
 		"/groups",
-		data
+		data,
 	);
 	return response.data;
 };
@@ -66,14 +66,14 @@ const updateGroup = async ({
 }): Promise<UpdateGroupResponse> => {
 	const response = await apiClient.put<ApiResponse<UpdateGroupResponse>>(
 		`/groups/${id}`,
-		data
+		data,
 	);
 	return response.data;
 };
 
 const deleteGroup = async (id: string): Promise<DeleteGroupResponse> => {
 	const response = await apiClient.delete<ApiResponse<DeleteGroupResponse>>(
-		`/groups/${id}`
+		`/groups/${id}`,
 	);
 	return response.data;
 };
@@ -151,8 +151,4 @@ export function useDeleteGroupMutation() {
 	});
 }
 
-export {
-	createGroup,
-	updateGroup,
-	deleteGroup,
-};
+export { createGroup, updateGroup, deleteGroup };

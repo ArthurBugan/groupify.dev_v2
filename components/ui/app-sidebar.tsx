@@ -77,10 +77,7 @@ export function AppSidebar() {
 									<ChevronUp className="ml-auto" />
 								</SidebarMenuButton>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent
-								side="top"
-								className="w-[--radix-popper-anchor-width]"
-							>
+							<DropdownMenuContent side="top" className="w-60">
 								<DropdownMenuItem>
 									<span>Account</span>
 								</DropdownMenuItem>
