@@ -4,6 +4,7 @@ export const queryKeys = {
 	posts: () => ["posts"],
 	post: (id) => ["post", id],
 	auth: () => ["auth"],
-	groups: () => ["groups"],
+	groups: (params?: { page?: number; limit?: number; search?: string }) =>
+		params ? ["groups", params] : ["groups"],
 	group: (id) => ["group", id],
 };

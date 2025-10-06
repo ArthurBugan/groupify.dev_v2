@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_app/share/$type/$id/")({
 });
 
 function ShareLinkPage({ params }: ShareLinkPageProps) {
-	const { id } = Route.useParams();
+	const { id, type } = Route.useParams();
 	const router = useNavigate();
 	const { permission } = Route.useSearch();
 
@@ -223,7 +223,7 @@ function ShareLinkPage({ params }: ShareLinkPageProps) {
 						</div>
 						<CardTitle className="text-center">Success!</CardTitle>
 						<CardDescription className="text-center">
-							{params.type === "collaborate"
+							{type === "collaborate"
 								? `You have successfully joined "${group.name}" as a collaborator.`
 								: `You have successfully copied "${group.name}" to your account.`}
 						</CardDescription>
@@ -243,12 +243,12 @@ function ShareLinkPage({ params }: ShareLinkPageProps) {
 			<Card className="w-full max-w-md">
 				<CardHeader>
 					<CardTitle>
-						{params.type === "collaborate"
+						{type === "collaborate"
 							? "Join Collaboration"
 							: "Copy Group"}
 					</CardTitle>
 					<CardDescription>
-						{params.type === "collaborate"
+						{type === "collaborate"
 							? `You've been invited to collaborate on "${group.name}"`
 							: `Copy all channels from "${group.name}" to your account`}
 					</CardDescription>
@@ -284,7 +284,7 @@ function ShareLinkPage({ params }: ShareLinkPageProps) {
 						</div>
 					</div>
 
-					{params.type === "collaborate" ? (
+					{type === "collaborate" ? (
 						<Alert>
 							<Users className="h-4 w-4" />
 							<AlertDescription>
@@ -355,22 +355,22 @@ function ShareLinkPage({ params }: ShareLinkPageProps) {
 					</Button>
 					<Button
 						onClick={
-							params.type === "collaborate"
+							type === "collaborate"
 								? handleJoinCollaboration
 								: handleCopyGroup
 						}
 						disabled={
 							isProcessing ||
-							(params.type === "copy" &&
+							(type === "copy" &&
 								selectedGroup === "new" &&
 								!newGroupName)
 						}
 					>
 						{isProcessing
-							? params.type === "collaborate"
+							? type === "collaborate"
 								? "Joining..."
 								: "Copying..."
-							: params.type === "collaborate"
+							: type === "collaborate"
 								? "Join Group"
 								: "Copy Channels"}
 					</Button>

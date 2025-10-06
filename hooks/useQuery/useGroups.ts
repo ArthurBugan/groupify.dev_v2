@@ -43,6 +43,14 @@ export interface CreateGroupRequest {
 	parentId?: string | null;
 }
 
+export interface UpdateGroupRequest {
+	name?: string;
+	description?: string;
+	icon?: string;
+	category?: string;
+	parentId?: string | null;
+}
+
 // Query function to fetch all groups
 const getGroups = async (params?: {
 	page?: number;
@@ -68,7 +76,7 @@ export function useGroups(params?: {
 	search?: string;
 }) {
 	return useQuery({
-		queryKey: queryKeys.groups(),
+		queryKey: queryKeys.groups(params),
 		queryFn: () => getGroups(params),
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes
@@ -104,7 +112,23 @@ const createGroup = async (data: CreateGroupRequest): Promise<Group> => {
 	return response.data;
 };
 
-// React Query mutation hook for updating group display order
+// Update an existing group
+const updateGroup = async (
+	id: string,
+	data: UpdateGroupRequest,
+): Promise<Group> => {
+	const response = await apiClient.put<ApiResponse<Group>>(
+		`api/v2/groups/${id}`,
+		data,
+	);
+	return response.data;
+};
+
+// Delete a group
+const deleteGroup = async (id: string): Promise<void> => {
+	await apiClient.delete(`api/v2/groups/${id}`);
+};
+
 export function useUpdateGroupDisplayOrder() {
 	const queryClient = useQueryClient();
 
@@ -136,4 +160,35 @@ export function useCreateGroup() {
 	});
 }
 
-export { getGroups, getGroup };
+// React Query mutation hook for updating an existing group
+export function useUpdateGroup() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ id, data }: { id: string; data: UpdateGroupRequest }) =>
+			updateGroup(id, data),
+		onSuccess: (updatedGroup) => {
+			// Invalidate and refetch the groups query to update the UI
+			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
+			// Invalidate the specific group query
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.group(updatedGroup.id),
+			});
+		},
+	});
+}
+
+// React Query mutation hook for deleting a group
+export function useDeleteGroup() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (id: string) => deleteGroup(id),
+		onSuccess: () => {
+			// Invalidate and refetch the groups query to update the UI
+			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
+		},
+	});
+}
+
+export { getGroups, getGroup, updateGroup, deleteGroup };

@@ -18,9 +18,11 @@ import {
 	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
+	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarRail,
 } from "@/components/ui/sidebar";
 
 const items = [
@@ -49,22 +51,21 @@ const items = [
 export function AppSidebar() {
 	return (
 		<Sidebar variant="sidebar">
+			<SidebarHeader>Groupify</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{items.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<a href={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
-										</a>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
-						</SidebarMenu>
-					</SidebarGroupContent>
+					<SidebarMenu>
+						{items.map((item) => (
+							<SidebarMenuItem key={item.title}>
+								<SidebarMenuButton asChild>
+									<a href={item.url}>
+										<item.icon />
+										<span>{item.title}</span>
+									</a>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						))}
+					</SidebarMenu>
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
@@ -92,6 +93,7 @@ export function AppSidebar() {
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarFooter>
+			<SidebarRail />
 		</Sidebar>
 	);
 }

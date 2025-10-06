@@ -2,32 +2,22 @@
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { ChannelsTable } from "@/components/channels-table";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { GroupDetails } from "@/components/group-details";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { useGroup } from "@/hooks/useQuery/useGroups";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 	component: GroupDetailPage,
 });
 
-function GroupDetailPage({ params }: { params: { id: string } }) {
+function GroupDetailPage() {
 	const { id } = Route.useParams();
+	const { data: group } = useGroup(id);
 
-	const groupName =
-		id === "1"
-			? "Gaming Channels"
-			: id === "2"
-				? "Tech Reviews"
-				: id === "3"
-					? "Cooking Tutorials"
-					: id === "4"
-						? "Fitness & Health"
-						: "Group Details";
-
-	// Check for settings saved notification
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const settingsSaved = urlParams.get("settings-saved");
@@ -42,11 +32,15 @@ function GroupDetailPage({ params }: { params: { id: string } }) {
 		}
 	}, []);
 
+	if (!group) {
+		return null;
+	}
+
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
 				<DashboardHeader
-					title={groupName}
+					title={group.name}
 					description="Manage channels in this group"
 				/>
 				<Button variant="outline" type="button" asChild>
