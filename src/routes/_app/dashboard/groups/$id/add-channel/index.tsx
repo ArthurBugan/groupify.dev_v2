@@ -1,19 +1,30 @@
 "use client";
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Plus, Search, Youtube } from "lucide-react";
+import {
+	ArrowLeft,
+	Delete,
+	DeleteIcon,
+	Search,
+	Trash2,
+	Youtube,
+} from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+	type Channel,
+	getChannels,
+	useChannels,
+	useUpdateChannelsBatch,
+} from "@/hooks/useQuery/useChannels";
+import { useGroup } from "@/hooks/useQuery/useGroups";
 
 interface AddChannelPageProps {
 	params: {
@@ -29,112 +40,75 @@ export const Route = createFileRoute("/_app/dashboard/groups/$id/add-channel/")(
 
 function AddChannelPage({ params }: AddChannelPageProps) {
 	const router = useNavigate();
+	const { id } = Route.useParams();
+	const { data: groupData, isLoading } = useGroup(id);
+	const { data: channelsData } = useChannels({ groupId: id });
+	const channels = channelsData?.data || [];
+
 	const [activeTab, setActiveTab] = useState("search");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isSearching, setIsSearching] = useState(false);
 	const [searchResults, setSearchResults] = useState<any[]>([]);
-	const [selectedChannels, setSelectedChannels] = useState<any[]>([]);
-	const [manualChannel, setManualChannel] = useState({
-		name: "",
-		url: "",
-	});
-	const [isAdding, setIsAdding] = useState(false);
-	const { id } = Route.useParams();
 
-	// Mock group data - in a real app, this would come from your API
-	const groupName =
-		id === "1"
-			? "Gaming Channels"
-			: id === "2"
-				? "Tech Reviews"
-				: id === "3"
-					? "Cooking Tutorials"
-					: id === "4"
-						? "Fitness & Health"
-						: "Channel Group";
+	const [selectedChannels, setSelectedChannels] = useState<Channel[]>([]);
+	const { mutateAsync: updateChannelsBatchMutation, isPending: isUpdating } =
+		useUpdateChannelsBatch();
+	const groupName = groupData?.name || "Channel Group";
 
-	const handleSearch = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!searchQuery.trim()) return;
+	useEffect(() => {
+		if (!isLoading && groupData?.channels) {
+			setSelectedChannels(
+				groupData.channels.map((c) => ({
+					id: c.id,
+					name: c.name,
+					channelId: c.channelId,
+					thumbnail: c.thumbnail,
+					url: `https://youtube.com/channel/${c.channelId}`,
+					groupId: id,
+				})),
+			);
+		}
+	}, [groupData, isLoading, id]);
 
+	const handleSearch = async (e?: React.FormEvent) => {
+		e?.preventDefault();
 		setIsSearching(true);
-		// Simulate API call to YouTube API
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// Mock search results
-		const mockResults = [
-			{
-				id: "channel1",
-				name: "TechReviewPro",
-				url: "https://youtube.com/techreviewpro",
-				subscribers: "1.2M",
-				videos: 245,
-				description: "Latest tech reviews and unboxing videos",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-			{
-				id: "channel2",
-				name: "GadgetGuru",
-				url: "https://youtube.com/gadgetguru",
-				subscribers: "450K",
-				videos: 178,
-				description: "Honest reviews of the latest gadgets and tech",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-			{
-				id: "channel3",
-				name: "TechInsider",
-				url: "https://youtube.com/techinsider",
-				subscribers: "320K",
-				videos: 132,
-				description: "Deep dives into technology and its impact",
-				avatar: "/placeholder.svg?height=40&width=40",
-			},
-		];
-
-		setSearchResults(mockResults);
-		setIsSearching(false);
-	};
-
-	const handleAddChannel = (channel: any) => {
-		if (!selectedChannels.some((c) => c.id === channel.id)) {
-			setSelectedChannels([...selectedChannels, channel]);
+		try {
+			const params: { groupId: string; search?: string } = { groupId: id };
+			if (searchQuery.trim()) {
+				params.search = searchQuery;
+			}
+			const response = await getChannels(params);
+			setSearchResults(response.data);
+		} catch (error) {
+			console.error("Error searching channels:", error);
+		} finally {
+			setIsSearching(false);
 		}
 	};
 
-	const handleRemoveChannel = (channelId: string) => {
-		setSelectedChannels(
-			selectedChannels.filter((channel) => channel.id !== channelId),
-		);
+	const handleAddChannel = (channel: Channel) => {
+		console.log(channel, "handleAddChannel");
+		setSelectedChannels((prev) => [...prev, channel]);
 	};
 
-	const handleAddManualChannel = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!manualChannel.name || !manualChannel.url) return;
-
-		const newChannel = {
-			id: `manual-${Date.now()}`,
-			name: manualChannel.name,
-			url: manualChannel.url,
-			subscribers: "Unknown",
-			videos: 0,
-			description: "",
-			avatar: "/placeholder.svg?height=40&width=40",
-		};
-
-		setSelectedChannels([...selectedChannels, newChannel]);
-		setManualChannel({ name: "", url: "" });
+	const handleRemoveChannel = (channelId: string) => {
+		setSelectedChannels((prev) => prev.filter((c) => c.id !== channelId));
 	};
 
 	const handleSaveChannels = async () => {
 		if (selectedChannels.length === 0) return;
 
-		setIsAdding(true);
-		// Simulate API call to add channels to group
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		const channelsToUpdate = selectedChannels.map((channel) => ({
+			id: channel.id,
+			name: channel.name,
+			thumbnail: channel.thumbnail,
+			groupId: id,
+		}));
 
-		setIsAdding(false);
-		router({ to: "/dashboard/groups/$id", params: { id: "2" } });
+		await updateChannelsBatchMutation({ channels: channelsToUpdate });
+
+		router({ to: "/dashboard/groups/$id", params: { id: id } });
 	};
 
 	return (
@@ -159,9 +133,8 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 						onValueChange={setActiveTab}
 						className="space-y-4"
 					>
-						<TabsList className="grid w-full grid-cols-2">
+						<TabsList className="grid w-full grid-cols-1">
 							<TabsTrigger value="search">Search YouTube</TabsTrigger>
-							<TabsTrigger value="manual">Add Manually</TabsTrigger>
 						</TabsList>
 
 						<TabsContent value="search" className="space-y-4">
@@ -171,10 +144,17 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 										<Input
 											placeholder="Search for YouTube channels..."
 											value={searchQuery}
-											onChange={(e) => setSearchQuery(e.target.value)}
+											onChange={(e) => {
+												console.log(e.target.value);
+												setSearchQuery(e.target.value);
+											}}
 											className="flex-1"
 										/>
-										<Button type="submit" disabled={isSearching}>
+										<Button
+											type="submit"
+											variant="secondary"
+											disabled={isSearching || !searchQuery.trim()}
+										>
 											{isSearching ? (
 												"Searching..."
 											) : (
@@ -182,65 +162,63 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 											)}
 											{isSearching ? "" : "Search"}
 										</Button>
+										<Button
+											type="button"
+											variant="destructive"
+											onClick={() => {
+												setSearchQuery("");
+												handleSearch();
+											}}
+										>
+											<Trash2 className="h-4 w-2" />
+										</Button>
 									</form>
 								</CardContent>
 							</Card>
 
-							{searchResults.length > 0 && (
-								<Card>
-									<CardContent className="pt-6">
-										<div className="space-y-4">
-											{searchResults.map((channel) => (
-												<div
-													key={channel.id}
-													className="flex items-start justify-between border-b pb-4 last:border-0 last:pb-0"
-												>
-													<div className="flex items-start gap-3">
-														<Avatar className="h-10 w-10">
-															<AvatarImage
-																src={channel.avatar || "/placeholder.svg"}
-																alt={channel.name}
-															/>
-															<AvatarFallback>
-																<Youtube className="h-5 w-5" />
-															</AvatarFallback>
-														</Avatar>
-														<div>
-															<div className="flex items-center gap-2">
-																<h3 className="font-medium">{channel.name}</h3>
-																<Badge variant="outline">
-																	{channel.subscribers}
-																</Badge>
-															</div>
-															<p className="text-xs text-muted-foreground">
-																{channel.url}
-															</p>
-															<p className="text-sm mt-1">
-																{channel.description}
-															</p>
-														</div>
-													</div>
-													<Button
-														size="sm"
-														variant="outline"
-														onClick={() => handleAddChannel(channel)}
-														disabled={selectedChannels.some(
-															(c) => c.id === channel.id,
-														)}
-													>
-														{selectedChannels.some((c) => c.id === channel.id)
-															? "Added"
-															: "Add"}
-													</Button>
+							{(searchResults.length > 0 ? searchResults : channels)?.map(
+								(channel) => (
+									<div
+										key={channel.id}
+										className="flex items-start justify-between border-b pb-4 last:border-0 last:pb-0"
+									>
+										<div className="flex items-start gap-3">
+											<Avatar className="h-10 w-10">
+												<AvatarImage
+													src={channel.thumbnail || "/placeholder.svg"}
+													alt={channel.name}
+												/>
+												<AvatarFallback>
+													<Youtube className="h-5 w-5" />
+												</AvatarFallback>
+											</Avatar>
+											<div>
+												<div className="flex items-center gap-2">
+													<h3 className="font-medium">{channel.name}</h3>
 												</div>
-											))}
+												<p className="text-xs text-muted-foreground">
+													{`https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
+												</p>
+											</div>
 										</div>
-									</CardContent>
-								</Card>
+										<Button
+											size="sm"
+											variant="outline"
+											onClick={() => handleAddChannel(channel)}
+											disabled={selectedChannels?.some(
+												(c) => c.id === channel.id,
+											)}
+										>
+											{selectedChannels?.some((c) => c.id === channel.id)
+												? "Added"
+												: "Add"}
+										</Button>
+									</div>
+								),
 							)}
 						</TabsContent>
 
-						<TabsContent value="manual" className="space-y-4">
+						{/* <TabsContent value="manual" className="space-y-4">
 							<Card>
 								<CardContent className="pt-6">
 									<form onSubmit={handleAddManualChannel} className="space-y-4">
@@ -248,7 +226,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 											<div className="grid gap-2">
 												<Label htmlFor="channel-name">Channel Name</Label>
 												<Input
-													id="channel-name"
+													id={useId()}
 													value={manualChannel.name}
 													onChange={(e) =>
 														setManualChannel({
@@ -262,7 +240,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 											<div className="grid gap-2">
 												<Label htmlFor="channel-url">Channel URL</Label>
 												<Input
-													id="channel-url"
+													id={useId()}
 													type="url"
 													placeholder="https://youtube.com/channel/..."
 													value={manualChannel.url}
@@ -291,7 +269,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 									statistics will be fetched when you save.
 								</AlertDescription>
 							</Alert>
-						</TabsContent>
+						</TabsContent> */}
 					</Tabs>
 				</div>
 
@@ -324,7 +302,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 												<div className="flex items-center gap-2 overflow-hidden">
 													<Avatar className="h-8 w-8 flex-shrink-0">
 														<AvatarImage
-															src={channel.avatar || "/placeholder.svg"}
+															src={channel.thumbnail || "/placeholder.svg"}
 															alt={channel.name}
 														/>
 														<AvatarFallback>
@@ -336,7 +314,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 															{channel.name}
 														</p>
 														<p className="text-xs text-muted-foreground truncate">
-															{channel.url}
+															{`https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
 														</p>
 													</div>
 												</div>
@@ -347,21 +325,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 													onClick={() => handleRemoveChannel(channel.id)}
 												>
 													<span className="sr-only">Remove</span>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														width="24"
-														height="24"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														strokeWidth="2"
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														className="h-4 w-4"
-													>
-														<path d="M18 6 6 18" />
-														<path d="m6 6 12 12" />
-													</svg>
+													<DeleteIcon className="h-4 w-4" />
 												</Button>
 											</div>
 										))}
@@ -371,10 +335,11 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 								<div className="pt-2">
 									<Button
 										className="w-full"
-										disabled={selectedChannels.length === 0 || isAdding}
+										variant="outline"
+										disabled={selectedChannels.length === 0 || isUpdating}
 										onClick={handleSaveChannels}
 									>
-										{isAdding ? (
+										{isUpdating ? (
 											"Adding Channels..."
 										) : (
 											<>

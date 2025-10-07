@@ -74,14 +74,17 @@ export function GroupDetails({ id }: GroupDetailsProps) {
 				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 					<div className="space-y-1">
 						<p className="text-sm font-medium text-muted-foreground">Created</p>
-						<p>{group.createdAt}</p>
+						<p>
+							{group.createdAt
+								? new Date(group.createdAt).toLocaleDateString()
+								: ""}
+						</p>
 					</div>
 					<div className="space-y-1">
 						<p className="text-sm font-medium text-muted-foreground">
 							Channels
 						</p>
-						<p>0</p>
-						{/* <p>{group.channelCount}</p> */}
+						{group.channelCount ? <p>{group.channelCount}</p> : 0}
 					</div>
 				</div>
 			</CardContent>

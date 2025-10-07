@@ -1,20 +1,25 @@
-import { createFileRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import { Separator } from "@/components/ui/separator";
+import {
+	createFileRoute,
+	Link,
+	Outlet,
+	useRouterState,
+} from "@tanstack/react-router";
 import React from "react";
+import { AppSidebar } from "@/components/ui/app-sidebar";
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {
-	Breadcrumb,
-	BreadcrumbList,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 export const Route = createFileRoute("/_app/dashboard")({
 	component: DashboardLayout,
@@ -23,18 +28,18 @@ export const Route = createFileRoute("/_app/dashboard")({
 function DashboardBreadcrumb() {
 	const router = useRouterState();
 	const pathname = router.location.pathname;
-	
+
 	// Generate breadcrumb items from current path
-	const pathSegments = pathname.split('/').filter(Boolean);
+	const pathSegments = pathname.split("/").filter(Boolean);
 	const breadcrumbItems = pathSegments.map((segment, index) => {
-		const path = '/' + pathSegments.slice(0, index + 1).join('/');
+		const path = "/" + pathSegments.slice(0, index + 1).join("/");
 		const isLast = index === pathSegments.length - 1;
-		
+
 		// Format segment name (capitalize and replace hyphens with spaces)
 		const formattedName = segment
-			.replace(/-/g, ' ')
-			.replace(/\b\w/g, l => l.toUpperCase());
-		
+			.replace(/-/g, " ")
+			.replace(/\b\w/g, (l) => l.toUpperCase());
+
 		return {
 			name: formattedName,
 			path: path,
@@ -43,10 +48,10 @@ function DashboardBreadcrumb() {
 	});
 
 	// Add dashboard as root if not already there
-	if (breadcrumbItems.length === 0 || breadcrumbItems[0].name !== 'Dashboard') {
+	if (breadcrumbItems.length === 0 || breadcrumbItems[0].name !== "Dashboard") {
 		breadcrumbItems.unshift({
-			name: 'Dashboard',
-			path: '/dashboard',
+			name: "Dashboard",
+			path: "/dashboard",
 			isLast: breadcrumbItems.length === 0,
 		});
 	}

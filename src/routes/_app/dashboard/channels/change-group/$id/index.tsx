@@ -3,8 +3,8 @@
 import {
 	createFileRoute,
 	Link,
-	useLocation,
 	useNavigate,
+	useParams,
 	useRouter,
 } from "@tanstack/react-router";
 import { ArrowLeft, FolderKanban, Save, Youtube } from "lucide-react";
@@ -30,12 +30,13 @@ export const Route = createFileRoute(
 });
 
 function ChangeGroupPage({ params }: ChangeGroupPageProps) {
+	const { id } = Route.useParams();
 	const navigate = useNavigate();
 	const router = useRouter();
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [channel, setChannel] = useState({
-		id: params.id,
+		id: id,
 		name: "",
 		url: "",
 		avatar: "/placeholder.svg?height=100&width=100",
@@ -103,7 +104,7 @@ function ChangeGroupPage({ params }: ChangeGroupPageProps) {
 				},
 			};
 
-			const channelData = mockChannels[params.id];
+			const channelData = mockChannels[id];
 			if (channelData) {
 				setChannel(channelData);
 				setSelectedGroup(channelData.currentGroup);
@@ -111,7 +112,7 @@ function ChangeGroupPage({ params }: ChangeGroupPageProps) {
 		};
 
 		fetchChannel();
-	}, [params.id]);
+	}, [id]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();

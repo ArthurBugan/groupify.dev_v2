@@ -1,7 +1,7 @@
 "use client";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import { GroupForm, type GroupFormData } from "@/components/group-form";
 import {
 	useGroup,
@@ -42,19 +42,15 @@ function GroupEditPage() {
 		}
 	};
 
-	return (
+	return groupData ? (
 		<GroupForm
-			initialData={
-				groupData
-					? {
-							name: groupData.name,
-							description: groupData.description,
-							category: groupData.category,
-							icon: groupData.icon,
-							parentId: groupData.parentId || undefined,
-						}
-					: undefined
-			}
+			initialData={{
+				name: groupData.name,
+				description: groupData.description,
+				category: groupData.category,
+				icon: groupData.icon,
+				parentId: groupData.parentId || undefined,
+			}}
 			groups={availableParentGroups}
 			isLoading={isUpdating}
 			onSubmit={handleSubmit}
@@ -63,5 +59,7 @@ function GroupEditPage() {
 			submitLabel="Save Changes"
 			cancelPath=".."
 		/>
+	) : (
+		<Loader2 className="animate-spin" />
 	);
 }

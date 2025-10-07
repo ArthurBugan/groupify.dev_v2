@@ -9,9 +9,10 @@ import {
 	Trash2,
 	Youtube,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { GenericCombobox } from "@/components/ui/combobox";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -20,6 +21,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
 	Table,
 	TableBody,
 	TableCell,
@@ -27,103 +44,91 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useChannels, useUpdateChannel } from "@/hooks/useQuery/useChannels";
+import { useGroups } from "@/hooks/useQuery/useGroups";
+import { IconViewer } from "./icon-picker";
 
 export function AllChannelsTable() {
-	// Mock data - in a real app, this would come from your database
-	const initialChannels = [
-		{
-			id: "1",
-			name: "TechReviewPro",
-			url: "https://youtube.com/techreviewpro",
-			subscribers: "1.2M",
-			videos: 245,
-			group: "Tech Reviews",
-			groupId: "2",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-		{
-			id: "2",
-			name: "GadgetGuru",
-			url: "https://youtube.com/gadgetguru",
-			subscribers: "450K",
-			videos: 178,
-			group: "Tech Reviews",
-			groupId: "2",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-		{
-			id: "3",
-			name: "GamersUnite",
-			url: "https://youtube.com/gamersunite",
-			subscribers: "780K",
-			videos: 312,
-			group: "Gaming Channels",
-			groupId: "1",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-		{
-			id: "4",
-			name: "ChefMaster",
-			url: "https://youtube.com/chefmaster",
-			subscribers: "320K",
-			videos: 156,
-			group: "Cooking Tutorials",
-			groupId: "3",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-		{
-			id: "5",
-			name: "FitLife",
-			url: "https://youtube.com/fitlife",
-			subscribers: "550K",
-			videos: 210,
-			group: "Fitness & Health",
-			groupId: "4",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-		{
-			id: "6",
-			name: "TravelWithMe",
-			url: "https://youtube.com/travelwithme",
-			subscribers: "420K",
-			videos: 185,
-			group: "Travel Vlogs",
-			groupId: "5",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-		{
-			id: "7",
-			name: "DIYCreator",
-			url: "https://youtube.com/diycreator",
-			subscribers: "290K",
-			videos: 134,
-			group: "DIY Projects",
-			groupId: "6",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-		{
-			id: "8",
-			name: "MusicReviewer",
-			url: "https://youtube.com/musicreviewer",
-			subscribers: "380K",
-			videos: 167,
-			group: "Music Reviews",
-			groupId: "7",
-			avatar: "/placeholder.svg?height=40&width=40",
-		},
-	];
-
+	const [currentPage, setCurrentPage] = useState(1);
+	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [channels, setChannels] = useState(initialChannels);
+	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-	const filteredChannels = channels.filter(
-		(channel) =>
-			channel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			channel.group.toLowerCase().includes(searchTerm.toLowerCase()),
-	);
+	// Fetch all groups
+	const { data: groupsData } = useGroups();
+	const { mutate: updateChannel } = useUpdateChannel();
+	// Fetch channels with pagination
+	const { data, isLoading, error } = useChannels({
+		page: currentPage,
+		limit: itemsPerPage,
+		search: debouncedSearchTerm || undefined,
+	});
 
+	// Handle delete channel
 	const handleDeleteChannel = (channelId: string) => {
-		setChannels(channels.filter((channel) => channel.id !== channelId));
+		// This will be implemented with the delete mutation
+		console.log("Delete channel:", channelId);
+	};
+
+	// Debounce search term
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedSearchTerm(searchTerm);
+		}, 300);
+
+		return () => clearTimeout(timer);
+	}, [searchTerm]);
+
+	const handleSearchChange = (newSearchTerm: string) => {
+		setSearchTerm(newSearchTerm);
+	};
+
+	const handleAssignGroup = (
+		channelId: string,
+		groupId: string,
+		name: string,
+		thumbnail: string | undefined,
+	) => {
+		updateChannel({ id: channelId, data: { groupId, name, thumbnail } });
+	};
+
+	const getPaginationPages = (): (number | string)[] => {
+		if (!data?.data) return [];
+
+		const totalPages = Math.ceil(data.pagination.total / itemsPerPage);
+		const pages: (number | string)[] = [];
+		const maxVisiblePages = 5;
+
+		if (totalPages <= maxVisiblePages) {
+			// Show all pages if there are few pages
+			for (let i = 1; i <= totalPages; i++) {
+				pages.push(i);
+			}
+		} else {
+			// Show first page
+			pages.push(1);
+
+			if (currentPage > 3) {
+				pages.push("...");
+			}
+
+			// Show pages around current page
+			const startPage = Math.max(2, currentPage - 1);
+			const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+			for (let i = startPage; i <= endPage; i++) {
+				pages.push(i);
+			}
+
+			if (currentPage < totalPages - 2) {
+				pages.push("...");
+			}
+
+			// Show last page
+			pages.push(totalPages);
+		}
+
+		return pages;
 	};
 
 	return (
@@ -132,36 +137,47 @@ export function AllChannelsTable() {
 				<Input
 					placeholder="Search channels or groups..."
 					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
+					onChange={(e) => handleSearchChange(e.target.value)}
 					className="max-w-sm"
 				/>
 			</div>
+
+			{error && (
+				<div className="text-red-500 text-sm">
+					Error loading channels: {error.message}
+				</div>
+			)}
+
 			<div className="rounded-md border">
 				<Table>
 					<TableHeader>
 						<TableRow>
 							<TableHead>Channel</TableHead>
 							<TableHead>Group</TableHead>
-							<TableHead>Subscribers</TableHead>
-							<TableHead>Videos</TableHead>
 							<TableHead className="text-right">Actions</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{filteredChannels.length === 0 ? (
+						{isLoading ? (
+							<TableRow>
+								<TableCell colSpan={5} className="h-24 text-center">
+									Loading channels...
+								</TableCell>
+							</TableRow>
+						) : !data?.data || data.data.length === 0 ? (
 							<TableRow>
 								<TableCell colSpan={5} className="h-24 text-center">
 									No channels found.
 								</TableCell>
 							</TableRow>
 						) : (
-							filteredChannels.map((channel) => (
+							data.data.map((channel) => (
 								<TableRow key={channel.id}>
 									<TableCell>
 										<div className="flex items-center gap-3">
-											<Avatar className="h-8 w-8">
+											<Avatar className="h-4 w-4">
 												<AvatarImage
-													src={channel.avatar || "/placeholder.svg"}
+													src={channel.thumbnail || "/placeholder.svg"}
 													alt={channel.name}
 												/>
 												<AvatarFallback>
@@ -177,18 +193,57 @@ export function AllChannelsTable() {
 										</div>
 									</TableCell>
 									<TableCell>
-										<div className="flex items-center gap-2">
-											<FolderKanban className="h-4 w-4 text-muted-foreground" />
-											<Link
-												to={`/dashboard/groups/${channel.groupId}`}
-												className="hover:underline"
-											>
-												{channel.group}
-											</Link>
-										</div>
+										{channel.groupId ? (
+											<div className="flex items-center gap-2">
+												<Avatar className="h-6 w-6">
+													<IconViewer
+														icon={channel.groupIcon || "/placeholder.svg"}
+													/>
+													<AvatarFallback>
+														<FolderKanban className="h-3 w-3" />
+													</AvatarFallback>
+												</Avatar>
+												<Link
+													to={`/dashboard/groups/$id`}
+													params={{ id: channel.groupId }}
+													className="hover:underline"
+												>
+													{channel.groupName}
+												</Link>
+											</div>
+										) : (
+											<GenericCombobox
+												data={
+													groupsData?.data.map((group) => ({
+														value: group.id,
+														label: group.name,
+														icon: group.icon,
+													})) || []
+												}
+												value={channel.groupId || ""}
+												onValueChange={(value) =>
+													handleAssignGroup(
+														channel.url,
+														value,
+														channel.name,
+														channel.thumbnail,
+													)
+												}
+												placeholder="Assign Group"
+												renderItem={(item) => (
+													<div className="flex items-center gap-8">
+														{item.icon && (
+															<IconViewer
+																icon={item.icon}
+																className="h-6 w-6"
+															/>
+														)}
+														<span>{item.label}</span>
+													</div>
+												)}
+											/>
+										)}
 									</TableCell>
-									<TableCell>{channel.subscribers}</TableCell>
-									<TableCell>{channel.videos}</TableCell>
 									<TableCell className="text-right">
 										<DropdownMenu>
 											<DropdownMenuTrigger asChild>
@@ -209,14 +264,18 @@ export function AllChannelsTable() {
 													</Link>
 												</DropdownMenuItem>
 												<DropdownMenuItem asChild>
-													<Link to={`/dashboard/channels/edit/${channel.id}`}>
+													<Link
+														to={`/dashboard/channels/edit/$id`}
+														params={{ id: channel.id }}
+													>
 														<Pencil className="mr-2 h-4 w-4" />
 														Edit details
 													</Link>
 												</DropdownMenuItem>
 												<DropdownMenuItem asChild>
 													<Link
-														to={`/dashboard/channels/change-group/${channel.id}`}
+														to={`/dashboard/channels/change-group/$id`}
+														params={{ id: channel.id }}
 													>
 														<FolderKanban className="mr-2 h-4 w-4" />
 														Change group
@@ -238,6 +297,75 @@ export function AllChannelsTable() {
 					</TableBody>
 				</Table>
 			</div>
+
+			{data?.data && data.data.length > 0 && (
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						<span className="whitespace-nowrap">Items per page:</span>
+						<GenericCombobox
+							data={[
+								{ value: "10", label: "10" },
+								{ value: "25", label: "25" },
+								{ value: "50", label: "50" },
+								{ value: "100", label: "100" },
+							]}
+							value={itemsPerPage.toString()}
+							onValueChange={(value) => {
+								setItemsPerPage(Number(value));
+								setCurrentPage(1); // Reset to first page when changing items per page
+							}}
+							placeholder="Items per page"
+						/>
+					</div>
+					<Pagination>
+						<PaginationContent>
+							<PaginationItem>
+								<PaginationPrevious
+									size={"sm"}
+									onClick={() =>
+										setCurrentPage((prev) => Math.max(prev - 1, 1))
+									}
+									isActive={currentPage === 1}
+								/>
+							</PaginationItem>
+
+							{getPaginationPages().map((page) => (
+								<PaginationItem key={`page-${page}`}>
+									{page === "..." ? (
+										<PaginationEllipsis />
+									) : (
+										<PaginationLink
+											size={"sm"}
+											onClick={() => setCurrentPage(page as number)}
+											isActive={currentPage === page}
+										>
+											{page}
+										</PaginationLink>
+									)}
+								</PaginationItem>
+							))}
+
+							<PaginationItem>
+								<PaginationNext
+									size={"sm"}
+									onClick={() =>
+										setCurrentPage((prev) =>
+											Math.min(
+												prev + 1,
+												Math.ceil(data.pagination.total / itemsPerPage),
+											),
+										)
+									}
+									isActive={
+										currentPage >=
+										Math.ceil(data.pagination.total / itemsPerPage)
+									}
+								/>
+							</PaginationItem>
+						</PaginationContent>
+					</Pagination>
+				</div>
+			)}
 		</div>
 	);
 }
