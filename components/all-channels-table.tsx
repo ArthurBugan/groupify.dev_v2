@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import {
 	ExternalLink,
 	FolderKanban,
+	Loader2,
 	MoreHorizontal,
 	Pencil,
 	Trash2,
@@ -30,13 +31,6 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
 	Table,
 	TableBody,
 	TableCell,
@@ -44,7 +38,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useChannels, useUpdateChannel } from "@/hooks/useQuery/useChannels";
+import {
+	useAllChannels,
+	useDeleteChannelMutation,
+	useUpdateChannel,
+} from "@/hooks/useQuery/useChannels";
 import { useGroups } from "@/hooks/useQuery/useGroups";
 import { IconViewer } from "./icon-picker";
 
@@ -53,12 +51,13 @@ export function AllChannelsTable() {
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
 	// Fetch all groups
 	const { data: groupsData } = useGroups();
 	const { mutate: updateChannel } = useUpdateChannel();
+	const { mutate: deleteChannel, isPending: isDeletingChannel } =
+		useDeleteChannelMutation();
 	// Fetch channels with pagination
-	const { data, isLoading, error } = useChannels({
+	const { data, isLoading, error } = useAllChannels({
 		page: currentPage,
 		limit: itemsPerPage,
 		search: debouncedSearchTerm || undefined,
@@ -66,8 +65,7 @@ export function AllChannelsTable() {
 
 	// Handle delete channel
 	const handleDeleteChannel = (channelId: string) => {
-		// This will be implemented with the delete mutation
-		console.log("Delete channel:", channelId);
+		deleteChannel({ channelId });
 	};
 
 	// Debounce search term
@@ -88,8 +86,12 @@ export function AllChannelsTable() {
 		groupId: string,
 		name: string,
 		thumbnail: string | undefined,
+		url: string | undefined,
 	) => {
-		updateChannel({ id: channelId, data: { groupId, name, thumbnail } });
+		updateChannel({
+			id: channelId,
+			data: { id: channelId, groupId, name, thumbnail, url },
+		});
 	};
 
 	const getPaginationPages = (): (number | string)[] => {
@@ -187,7 +189,7 @@ export function AllChannelsTable() {
 											<div>
 												<p className="font-medium">{channel.name}</p>
 												<p className="text-xs text-muted-foreground truncate max-w-[200px]">
-													{channel.url}
+													{`https://youtube.com/channel/${channel.url}`}
 												</p>
 											</div>
 										</div>
@@ -223,10 +225,11 @@ export function AllChannelsTable() {
 												value={channel.groupId || ""}
 												onValueChange={(value) =>
 													handleAssignGroup(
-														channel.url,
+														channel.id,
 														value,
 														channel.name,
 														channel.thumbnail,
+														channel.url,
 													)
 												}
 												placeholder="Assign Group"
@@ -254,16 +257,16 @@ export function AllChannelsTable() {
 											</DropdownMenuTrigger>
 											<DropdownMenuContent align="end">
 												<DropdownMenuItem asChild>
-													<Link
-														to={channel.url}
+													<a
+														href={`https://youtube.com/channel/${channel.url?.trim().replace("@", "")}`}
 														target="_blank"
 														rel="noopener noreferrer"
 													>
 														<ExternalLink className="mr-2 h-4 w-4" />
 														Visit channel
-													</Link>
+													</a>
 												</DropdownMenuItem>
-												<DropdownMenuItem asChild>
+												{/* <DropdownMenuItem asChild>
 													<Link
 														to={`/dashboard/channels/edit/$id`}
 														params={{ id: channel.id }}
@@ -271,7 +274,7 @@ export function AllChannelsTable() {
 														<Pencil className="mr-2 h-4 w-4" />
 														Edit details
 													</Link>
-												</DropdownMenuItem>
+												</DropdownMenuItem> */}
 												<DropdownMenuItem asChild>
 													<Link
 														to={`/dashboard/channels/change-group/$id`}
@@ -284,8 +287,13 @@ export function AllChannelsTable() {
 												<DropdownMenuItem
 													onClick={() => handleDeleteChannel(channel.id)}
 													className="text-destructive"
+													disabled={isDeletingChannel}
 												>
-													<Trash2 className="mr-2 h-4 w-4" />
+													{isDeletingChannel ? (
+														<Loader2 className="animate-spin mr-2 h-4 w-4" />
+													) : (
+														<Trash2 className="mr-2 h-4 w-4" />
+													)}
 													Delete channel
 												</DropdownMenuItem>
 											</DropdownMenuContent>

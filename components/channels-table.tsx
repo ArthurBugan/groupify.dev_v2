@@ -5,6 +5,7 @@ import {
 	ExternalLink,
 	LayoutGrid,
 	List,
+	Loader2,
 	MoreHorizontal,
 	Trash2,
 	Youtube,
@@ -36,6 +37,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useDeleteChannelMutation } from "@/hooks/useQuery/useChannels";
 import { type Channel, useGroup } from "@/hooks/useQuery/useGroups";
 
 interface ChannelsTableProps {
@@ -44,13 +46,15 @@ interface ChannelsTableProps {
 
 export function ChannelsTable({ groupId }: ChannelsTableProps) {
 	const { data: groupData } = useGroup(groupId);
-
 	const [searchTerm, setSearchTerm] = useState("");
 	const [channels, setChannels] = useState<Channel[]>(
 		groupData?.channels || [],
 	);
 	const [viewMode, setViewMode] = useState("grid"); // grid, list, compact
 	const [sortOrder, setSortOrder] = useState("name-asc"); // Default sort by name ascending
+
+	const { mutate: deleteChannel, isPending: isDeletingChannel } =
+		useDeleteChannelMutation();
 
 	useEffect(() => {
 		if (groupData?.channels) {
@@ -73,7 +77,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 	}, []);
 
 	const handleRemoveChannel = (channelId: string) => {
-		setChannels(channels.filter((channel) => channel.id !== channelId));
+		deleteChannel({ channelId });
 	};
 
 	const renderTableView = () => (
@@ -125,7 +129,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem asChild>
 												<a
-													href={`https://www.youtube.com/channel/${channel.channelId.split("/")[1]}`}
+													href={`https://www.youtube.com/channel/${channel.url}`}
 													target="_blank"
 													rel="noopener noreferrer"
 												>
@@ -136,8 +140,13 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 											<DropdownMenuItem
 												className="text-destructive"
 												onClick={() => handleRemoveChannel(channel.id)}
+												disabled={isDeletingChannel}
 											>
-												<Trash2 className="mr-2 h-4 w-4" />
+												{isDeletingChannel ? (
+													<Loader2 className="animate-spin h-4 w-4" />
+												) : (
+													<Trash2 className="mr-2 h-4 w-4" />
+												)}
 												Remove from group
 											</DropdownMenuItem>
 										</DropdownMenuContent>
@@ -180,7 +189,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										className="flex-1"
 									>
 										<a
-											href={channel.url}
+											href={`https://www.youtube.com/channel/${channel.url}`}
 											target="_blank"
 											rel="noopener noreferrer"
 										>
@@ -193,8 +202,13 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										variant="outline"
 										className="flex-1 text-destructive"
 										onClick={() => handleRemoveChannel(channel.id)}
+										disabled={isDeletingChannel}
 									>
-										<Trash2 className="mr-2 h-4 w-4" />
+										{isDeletingChannel ? (
+											<Loader2 className="animate-spin h-4 w-4" />
+										) : (
+											<Trash2 className="mr-2 h-4 w-4" />
+										)}
 										Remove
 									</Button>
 								</div>
@@ -225,7 +239,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 									alt={channel.name}
 								/>
 								<AvatarFallback>
-									<Youtube className="h-3 w-3" />
+									<Youtube className="h-4 w-4" />
 								</AvatarFallback>
 							</Avatar>
 							<div className="overflow-hidden">
@@ -234,8 +248,12 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 						</div>
 						<div className="flex items-center gap-2">
 							<Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-								<a href={channel.url} target="_blank" rel="noopener noreferrer">
-									<ExternalLink className="h-3 w-3" />
+								<a
+									href={`https://www.youtube.com/channel/${channel.url}`}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									<ExternalLink className="h-4 w-4" />
 								</a>
 							</Button>
 							<Button
@@ -243,8 +261,13 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 								size="icon"
 								className="h-7 w-7 text-destructive"
 								onClick={() => handleRemoveChannel(channel.id)}
+								disabled={isDeletingChannel}
 							>
-								<Trash2 className="h-3 w-3" />
+								{isDeletingChannel ? (
+									<Loader2 className="animate-spin h-4 w-4" />
+								) : (
+									<Trash2 className="h-4 w-4" />
+								)}
 							</Button>
 						</div>
 					</div>

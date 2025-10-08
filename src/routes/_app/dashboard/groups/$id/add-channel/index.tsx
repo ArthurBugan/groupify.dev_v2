@@ -3,14 +3,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
 	ArrowLeft,
-	Delete,
 	DeleteIcon,
+	Loader2,
 	Search,
 	Trash2,
 	Youtube,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,29 +26,35 @@ import {
 } from "@/hooks/useQuery/useChannels";
 import { useGroup } from "@/hooks/useQuery/useGroups";
 
-interface AddChannelPageProps {
-	params: {
-		id: string;
-	};
-}
-
 export const Route = createFileRoute("/_app/dashboard/groups/$id/add-channel/")(
 	{
 		component: AddChannelPage,
 	},
 );
 
-function AddChannelPage({ params }: AddChannelPageProps) {
+function AddChannelPage() {
 	const router = useNavigate();
 	const { id } = Route.useParams();
-	const { data: groupData, isLoading } = useGroup(id);
-	const { data: channelsData } = useChannels({ groupId: id });
-	const channels = channelsData?.data || [];
+	const { data: groupData } = useGroup(id);
+	const {
+		data: channelsData,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading,
+	} = useChannels({ groupId: id });
+
+	const channels = useMemo(
+		() => channelsData?.pages.flatMap((page) => page.data) || [],
+		[channelsData],
+	);
 
 	const [activeTab, setActiveTab] = useState("search");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isSearching, setIsSearching] = useState(false);
 	const [searchResults, setSearchResults] = useState<any[]>([]);
+
+	const items = searchResults.length > 0 ? searchResults : channels;
 
 	const [selectedChannels, setSelectedChannels] = useState<Channel[]>([]);
 	const { mutateAsync: updateChannelsBatchMutation, isPending: isUpdating } =
@@ -59,12 +65,13 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 		if (!isLoading && groupData?.channels) {
 			setSelectedChannels(
 				groupData.channels.map((c) => ({
-					id: c.id,
+					id: (c.url?.trim() || "").replace("@", "") || "",
 					name: c.name,
 					channelId: c.channelId,
 					thumbnail: c.thumbnail,
-					url: `https://youtube.com/channel/${c.channelId}`,
+					url: `https://youtube.com/channel/${c.url}`,
 					groupId: id,
+					newContent: false,
 				})),
 			);
 		}
@@ -100,10 +107,12 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 		if (selectedChannels.length === 0) return;
 
 		const channelsToUpdate = selectedChannels.map((channel) => ({
-			id: channel.id,
+			id: (channel.url?.trim() || "").replace("@", "") || "",
 			name: channel.name,
 			thumbnail: channel.thumbnail,
 			groupId: id,
+			url: channel.url || "",
+			newContent: false,
 		}));
 
 		await updateChannelsBatchMutation({ channels: channelsToUpdate });
@@ -112,7 +121,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 flex flex-col h-full">
 			<div className="flex items-center justify-between">
 				<DashboardHeader
 					title={`Add Channels to ${groupName}`}
@@ -126,7 +135,7 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 				</Button>
 			</div>
 
-			<div className="grid gap-6 md:grid-cols-3">
+			<div className="grid gap-6 md:grid-cols-3 flex-1 relative">
 				<div className="md:col-span-2">
 					<Tabs
 						value={activeTab}
@@ -176,105 +185,63 @@ function AddChannelPage({ params }: AddChannelPageProps) {
 								</CardContent>
 							</Card>
 
-							{(searchResults.length > 0 ? searchResults : channels)?.map(
-								(channel) => (
-									<div
-										key={channel.id}
-										className="flex items-start justify-between border-b pb-4 last:border-0 last:pb-0"
-									>
-										<div className="flex items-start gap-3">
-											<Avatar className="h-10 w-10">
-												<AvatarImage
-													src={channel.thumbnail || "/placeholder.svg"}
-													alt={channel.name}
-												/>
-												<AvatarFallback>
-													<Youtube className="h-5 w-5" />
-												</AvatarFallback>
-											</Avatar>
-											<div>
-												<div className="flex items-center gap-2">
-													<h3 className="font-medium">{channel.name}</h3>
-												</div>
-												<p className="text-xs text-muted-foreground">
-													{`https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
-												</p>
+							{items?.map((channel) => (
+								<div
+									key={channel.name + channel.id}
+									className="flex items-start justify-between border-b pb-4 last:border-0 last:pb-0"
+								>
+									<div className="flex items-start gap-3">
+										<Avatar className="h-10 w-10">
+											<AvatarImage
+												src={channel.thumbnail || "/placeholder.svg"}
+												alt={channel.name}
+											/>
+											<AvatarFallback>
+												<Youtube className="h-5 w-5" />
+											</AvatarFallback>
+										</Avatar>
+										<div>
+											<div className="flex items-center gap-2">
+												<h3 className="font-medium">{channel.name}</h3>
 											</div>
+											<p className="text-xs text-muted-foreground">
+												{`https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
+											</p>
 										</div>
-										<Button
-											size="sm"
-											variant="outline"
-											onClick={() => handleAddChannel(channel)}
-											disabled={selectedChannels?.some(
-												(c) => c.id === channel.id,
-											)}
-										>
-											{selectedChannels?.some((c) => c.id === channel.id)
-												? "Added"
-												: "Add"}
-										</Button>
 									</div>
-								),
-							)}
+									<Button
+										size="sm"
+										variant="outline"
+										onClick={() => handleAddChannel(channel)}
+										disabled={selectedChannels?.some(
+											(c) => c.id === channel.id,
+										)}
+									>
+										{selectedChannels?.some((c) => c.id === channel.id)
+											? "Added"
+											: "Add"}
+									</Button>
+								</div>
+							))}
+
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={() => fetchNextPage()}
+								disabled={!hasNextPage}
+							>
+								{isFetchingNextPage ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : (
+									"Load more channels"
+								)}
+							</Button>
 						</TabsContent>
-
-						{/* <TabsContent value="manual" className="space-y-4">
-							<Card>
-								<CardContent className="pt-6">
-									<form onSubmit={handleAddManualChannel} className="space-y-4">
-										<div className="grid gap-4">
-											<div className="grid gap-2">
-												<Label htmlFor="channel-name">Channel Name</Label>
-												<Input
-													id={useId()}
-													value={manualChannel.name}
-													onChange={(e) =>
-														setManualChannel({
-															...manualChannel,
-															name: e.target.value,
-														})
-													}
-													required
-												/>
-											</div>
-											<div className="grid gap-2">
-												<Label htmlFor="channel-url">Channel URL</Label>
-												<Input
-													id={useId()}
-													type="url"
-													placeholder="https://youtube.com/channel/..."
-													value={manualChannel.url}
-													onChange={(e) =>
-														setManualChannel({
-															...manualChannel,
-															url: e.target.value,
-														})
-													}
-													required
-												/>
-											</div>
-										</div>
-										<Button type="submit">
-											<Plus className="mr-2 h-4 w-4" />
-											Add to Selection
-										</Button>
-									</form>
-								</CardContent>
-							</Card>
-
-							<Alert>
-								<Youtube className="h-4 w-4" />
-								<AlertDescription>
-									For manually added channels, subscriber counts and video
-									statistics will be fetched when you save.
-								</AlertDescription>
-							</Alert>
-						</TabsContent> */}
 					</Tabs>
 				</div>
 
 				<div>
-					<Card className="sticky top-6">
+					<Card className="sticky top-0 z-10">
 						<CardContent className="pt-6">
 							<div className="space-y-4">
 								<div>

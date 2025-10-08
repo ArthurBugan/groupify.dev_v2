@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
 import type { Pagination } from "./types";
@@ -93,6 +98,27 @@ export function useChannels(params?: {
 	search?: string;
 	groupId?: string;
 }) {
+	return useInfiniteQuery({
+		queryKey: queryKeys.channels(params),
+		queryFn: ({ pageParam }) => getChannels({ ...params, page: pageParam }),
+		initialPageParam: 1,
+		getNextPageParam: (lastPage) => {
+			const { pagination } = lastPage;
+			return pagination.page < pagination.totalPages
+				? pagination.page + 1
+				: undefined;
+		},
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes
+	});
+}
+
+export function useAllChannels(params?: {
+	page?: number;
+	limit?: number;
+	search?: string;
+	groupId?: string;
+}) {
 	return useQuery({
 		queryKey: queryKeys.channels(params),
 		queryFn: () => getChannels(params),
@@ -163,8 +189,12 @@ const updateChannelsBatch = async (
 };
 
 // Delete a channel
-const deleteChannel = async (id: string): Promise<void> => {
-	await apiClient.delete(`api/v2/channels/${id}`);
+const deleteChannel = async ({
+	channelId,
+}: {
+	channelId: string;
+}): Promise<void> => {
+	await apiClient.delete(`api/v2/channels/${channelId}`);
 };
 
 // React Query mutation hooks
@@ -197,14 +227,15 @@ export function useUpdateChannel() {
 	});
 }
 
-export function useDeleteChannel() {
+export function useDeleteChannelMutation() {
 	const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: (id: string) => deleteChannel(id),
+	return useMutation<void, Error, { channelId: string }>({
+		mutationFn: ({ channelId }) => deleteChannel({ channelId }),
 		onSuccess: () => {
-			// Invalidate and refetch the channels query to update the UI
 			queryClient.invalidateQueries({ queryKey: queryKeys.channels() });
+			queryClient.invalidateQueries({ queryKey: ["groups"] });
+			queryClient.invalidateQueries({ queryKey: ["group"] });
 		},
 	});
 }
