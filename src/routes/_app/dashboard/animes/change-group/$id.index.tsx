@@ -4,10 +4,9 @@ import {
 	createFileRoute,
 	Link,
 	useNavigate,
-	useParams,
 	useRouter,
 } from "@tanstack/react-router";
-import { ArrowLeft, FolderKanban, Save, Youtube } from "lucide-react";
+import { ArrowLeft, Save, Youtube } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
@@ -17,11 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useChannel, useUpdateChannel } from "@/hooks/useQuery/useChannels";
 import { useGroups } from "@/hooks/useQuery/useGroups";
 
 export const Route = createFileRoute(
-	"/_app/dashboard/channels/change-group/$id/",
+	"/_app/dashboard/animes/change-group/$id/",
 )({
 	component: ChangeGroupPage,
 });
@@ -34,14 +32,14 @@ function ChangeGroupPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedGroup, setSelectedGroup] = useState("");
 
-	const { data: channel, isLoading: isChannelLoading } = useChannel(id);
-	const patchChannel = useUpdateChannel();
+	const { data: anime, isLoading: isAnimeLoading } = useAnime(id);
+	const patchAnime = useUpdateAnime();
 
 	useEffect(() => {
-		if (channel) {
-			setSelectedGroup(channel.groupId || "");
+		if (anime) {
+			setSelectedGroup(anime.groupId || "");
 		}
-	}, [channel]);
+	}, [anime]);
 
 	const { data: groups, isLoading: isGroupsLoading } = useGroups();
 
@@ -53,14 +51,14 @@ function ChangeGroupPage() {
 			await patchChannel.mutateAsync({
 				id: channel.id,
 				data: { id: channel.id, groupId: selectedGroup },
-			});
+			})
 		}
 
 		setIsLoading(false);
 		navigate({
 			to: "/dashboard/channels",
-		});
-	};
+		})
+	}
 
 	if (isChannelLoading || isGroupsLoading) {
 		return <div>Loading channel details...</div>;
@@ -120,10 +118,10 @@ function ChangeGroupPage() {
 										>
 											<RadioGroupItem
 												value={group.id}
-												id={`group-${group.id}`}
+												id={"group-${group.id}"}
 											/>
 											<Label
-												htmlFor={`group-${group.id}`}
+												htmlFor={"group-${group.id}"}
 												className="flex items-center gap-3 cursor-pointer"
 											>
 												<IconViewer icon={group.icon ?? ""} />
@@ -167,5 +165,5 @@ function ChangeGroupPage() {
 				</CardContent>
 			</Card>
 		</div>
-	);
+	)
 }

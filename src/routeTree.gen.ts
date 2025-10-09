@@ -21,6 +21,7 @@ import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/i
 import { Route as AppDashboardSettingsRouteRouteImport } from './routes/_app/dashboard/settings/route'
 import { Route as AppDashboardGroupsIndexRouteImport } from './routes/_app/dashboard/groups/index'
 import { Route as AppDashboardChannelsIndexRouteImport } from './routes/_app/dashboard/channels/index'
+import { Route as AppDashboardAnimesIndexRouteImport } from './routes/_app/dashboard/animes/index'
 import { Route as AuthSubscriptionsConfirmCodeRouteImport } from './routes/_auth/subscriptions/confirm.$code'
 import { Route as AuthForgotPasswordSuccessEmailIndexRouteImport } from './routes/_auth/forgot-password/success/$email/index'
 import { Route as AppShareTypeIdIndexRouteImport } from './routes/_app/share/$type/$id/index'
@@ -38,6 +39,8 @@ import { Route as AppDashboardGroupsIdEditIndexRouteImport } from './routes/_app
 import { Route as AppDashboardGroupsIdAddChannelIndexRouteImport } from './routes/_app/dashboard/groups/$id/add-channel/index'
 import { Route as AppDashboardChannelsEditIdIndexRouteImport } from './routes/_app/dashboard/channels/edit/$id/index'
 import { Route as AppDashboardChannelsChangeGroupIdIndexRouteImport } from './routes/_app/dashboard/channels/change-group/$id/index'
+import { Route as AppDashboardAnimesEditIdIndexRouteImport } from './routes/_app/dashboard/animes/edit/$id.index'
+import { Route as AppDashboardAnimesChangeGroupIdIndexRouteImport } from './routes/_app/dashboard/animes/change-group/$id.index'
 
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/_app/',
@@ -101,6 +104,11 @@ const AppDashboardChannelsIndexRoute =
     path: '/channels/',
     getParentRoute: () => AppDashboardRouteRoute,
   } as any)
+const AppDashboardAnimesIndexRoute = AppDashboardAnimesIndexRouteImport.update({
+  id: '/animes/',
+  path: '/animes/',
+  getParentRoute: () => AppDashboardRouteRoute,
+} as any)
 const AuthSubscriptionsConfirmCodeRoute =
   AuthSubscriptionsConfirmCodeRouteImport.update({
     id: '/_auth/subscriptions/confirm/$code',
@@ -202,6 +210,18 @@ const AppDashboardChannelsChangeGroupIdIndexRoute =
     path: '/channels/change-group/$id/',
     getParentRoute: () => AppDashboardRouteRoute,
   } as any)
+const AppDashboardAnimesEditIdIndexRoute =
+  AppDashboardAnimesEditIdIndexRouteImport.update({
+    id: '/animes/edit/$id/',
+    path: '/animes/edit/$id/',
+    getParentRoute: () => AppDashboardRouteRoute,
+  } as any)
+const AppDashboardAnimesChangeGroupIdIndexRoute =
+  AppDashboardAnimesChangeGroupIdIndexRouteImport.update({
+    id: '/animes/change-group/$id/',
+    path: '/animes/change-group/$id/',
+    getParentRoute: () => AppDashboardRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRouteRouteWithChildren
@@ -215,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/subscriptions/confirm/$code': typeof AuthSubscriptionsConfirmCodeRoute
+  '/dashboard/animes': typeof AppDashboardAnimesIndexRoute
   '/dashboard/channels': typeof AppDashboardChannelsIndexRoute
   '/dashboard/groups': typeof AppDashboardGroupsIndexRoute
   '/dashboard/groups/$id': typeof AppDashboardGroupsIdIndexRoute
@@ -228,6 +249,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
   '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
+  '/dashboard/animes/change-group/$id': typeof AppDashboardAnimesChangeGroupIdIndexRoute
+  '/dashboard/animes/edit/$id': typeof AppDashboardAnimesEditIdIndexRoute
   '/dashboard/channels/change-group/$id': typeof AppDashboardChannelsChangeGroupIdIndexRoute
   '/dashboard/channels/edit/$id': typeof AppDashboardChannelsEditIdIndexRoute
   '/dashboard/groups/$id/add-channel': typeof AppDashboardGroupsIdAddChannelIndexRoute
@@ -245,6 +268,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/subscriptions/confirm/$code': typeof AuthSubscriptionsConfirmCodeRoute
+  '/dashboard/animes': typeof AppDashboardAnimesIndexRoute
   '/dashboard/channels': typeof AppDashboardChannelsIndexRoute
   '/dashboard/groups': typeof AppDashboardGroupsIndexRoute
   '/dashboard/groups/$id': typeof AppDashboardGroupsIdIndexRoute
@@ -258,6 +282,8 @@ export interface FileRoutesByTo {
   '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
   '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
+  '/dashboard/animes/change-group/$id': typeof AppDashboardAnimesChangeGroupIdIndexRoute
+  '/dashboard/animes/edit/$id': typeof AppDashboardAnimesEditIdIndexRoute
   '/dashboard/channels/change-group/$id': typeof AppDashboardChannelsChangeGroupIdIndexRoute
   '/dashboard/channels/edit/$id': typeof AppDashboardChannelsEditIdIndexRoute
   '/dashboard/groups/$id/add-channel': typeof AppDashboardGroupsIdAddChannelIndexRoute
@@ -277,6 +303,7 @@ export interface FileRoutesById {
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_auth/subscriptions/confirm/$code': typeof AuthSubscriptionsConfirmCodeRoute
+  '/_app/dashboard/animes/': typeof AppDashboardAnimesIndexRoute
   '/_app/dashboard/channels/': typeof AppDashboardChannelsIndexRoute
   '/_app/dashboard/groups/': typeof AppDashboardGroupsIndexRoute
   '/_app/dashboard/groups/$id/': typeof AppDashboardGroupsIdIndexRoute
@@ -290,6 +317,8 @@ export interface FileRoutesById {
   '/_app/dashboard/settings/privacy/': typeof AppDashboardSettingsPrivacyIndexRoute
   '/_app/share/$type/$id/': typeof AppShareTypeIdIndexRoute
   '/_auth/forgot-password/success/$email/': typeof AuthForgotPasswordSuccessEmailIndexRoute
+  '/_app/dashboard/animes/change-group/$id/': typeof AppDashboardAnimesChangeGroupIdIndexRoute
+  '/_app/dashboard/animes/edit/$id/': typeof AppDashboardAnimesEditIdIndexRoute
   '/_app/dashboard/channels/change-group/$id/': typeof AppDashboardChannelsChangeGroupIdIndexRoute
   '/_app/dashboard/channels/edit/$id/': typeof AppDashboardChannelsEditIdIndexRoute
   '/_app/dashboard/groups/$id/add-channel/': typeof AppDashboardGroupsIdAddChannelIndexRoute
@@ -310,6 +339,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/subscriptions/confirm/$code'
+    | '/dashboard/animes'
     | '/dashboard/channels'
     | '/dashboard/groups'
     | '/dashboard/groups/$id'
@@ -323,6 +353,8 @@ export interface FileRouteTypes {
     | '/dashboard/settings/privacy'
     | '/share/$type/$id'
     | '/forgot-password/success/$email'
+    | '/dashboard/animes/change-group/$id'
+    | '/dashboard/animes/edit/$id'
     | '/dashboard/channels/change-group/$id'
     | '/dashboard/channels/edit/$id'
     | '/dashboard/groups/$id/add-channel'
@@ -340,6 +372,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/subscriptions/confirm/$code'
+    | '/dashboard/animes'
     | '/dashboard/channels'
     | '/dashboard/groups'
     | '/dashboard/groups/$id'
@@ -353,6 +386,8 @@ export interface FileRouteTypes {
     | '/dashboard/settings/privacy'
     | '/share/$type/$id'
     | '/forgot-password/success/$email'
+    | '/dashboard/animes/change-group/$id'
+    | '/dashboard/animes/edit/$id'
     | '/dashboard/channels/change-group/$id'
     | '/dashboard/channels/edit/$id'
     | '/dashboard/groups/$id/add-channel'
@@ -371,6 +406,7 @@ export interface FileRouteTypes {
     | '/_auth/login/'
     | '/_auth/register/'
     | '/_auth/subscriptions/confirm/$code'
+    | '/_app/dashboard/animes/'
     | '/_app/dashboard/channels/'
     | '/_app/dashboard/groups/'
     | '/_app/dashboard/groups/$id/'
@@ -384,6 +420,8 @@ export interface FileRouteTypes {
     | '/_app/dashboard/settings/privacy/'
     | '/_app/share/$type/$id/'
     | '/_auth/forgot-password/success/$email/'
+    | '/_app/dashboard/animes/change-group/$id/'
+    | '/_app/dashboard/animes/edit/$id/'
     | '/_app/dashboard/channels/change-group/$id/'
     | '/_app/dashboard/channels/edit/$id/'
     | '/_app/dashboard/groups/$id/add-channel/'
@@ -489,6 +527,13 @@ declare module '@tanstack/react-router' {
       path: '/channels'
       fullPath: '/dashboard/channels'
       preLoaderRoute: typeof AppDashboardChannelsIndexRouteImport
+      parentRoute: typeof AppDashboardRouteRoute
+    }
+    '/_app/dashboard/animes/': {
+      id: '/_app/dashboard/animes/'
+      path: '/animes'
+      fullPath: '/dashboard/animes'
+      preLoaderRoute: typeof AppDashboardAnimesIndexRouteImport
       parentRoute: typeof AppDashboardRouteRoute
     }
     '/_auth/subscriptions/confirm/$code': {
@@ -610,6 +655,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardChannelsChangeGroupIdIndexRouteImport
       parentRoute: typeof AppDashboardRouteRoute
     }
+    '/_app/dashboard/animes/edit/$id/': {
+      id: '/_app/dashboard/animes/edit/$id/'
+      path: '/animes/edit/$id'
+      fullPath: '/dashboard/animes/edit/$id'
+      preLoaderRoute: typeof AppDashboardAnimesEditIdIndexRouteImport
+      parentRoute: typeof AppDashboardRouteRoute
+    }
+    '/_app/dashboard/animes/change-group/$id/': {
+      id: '/_app/dashboard/animes/change-group/$id/'
+      path: '/animes/change-group/$id'
+      fullPath: '/dashboard/animes/change-group/$id'
+      preLoaderRoute: typeof AppDashboardAnimesChangeGroupIdIndexRouteImport
+      parentRoute: typeof AppDashboardRouteRoute
+    }
   }
 }
 
@@ -648,10 +707,13 @@ const AppDashboardSettingsRouteRouteWithChildren =
 interface AppDashboardRouteRouteChildren {
   AppDashboardSettingsRouteRoute: typeof AppDashboardSettingsRouteRouteWithChildren
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppDashboardAnimesIndexRoute: typeof AppDashboardAnimesIndexRoute
   AppDashboardChannelsIndexRoute: typeof AppDashboardChannelsIndexRoute
   AppDashboardGroupsIndexRoute: typeof AppDashboardGroupsIndexRoute
   AppDashboardGroupsIdIndexRoute: typeof AppDashboardGroupsIdIndexRoute
   AppDashboardGroupsNewIndexRoute: typeof AppDashboardGroupsNewIndexRoute
+  AppDashboardAnimesChangeGroupIdIndexRoute: typeof AppDashboardAnimesChangeGroupIdIndexRoute
+  AppDashboardAnimesEditIdIndexRoute: typeof AppDashboardAnimesEditIdIndexRoute
   AppDashboardChannelsChangeGroupIdIndexRoute: typeof AppDashboardChannelsChangeGroupIdIndexRoute
   AppDashboardChannelsEditIdIndexRoute: typeof AppDashboardChannelsEditIdIndexRoute
   AppDashboardGroupsIdAddChannelIndexRoute: typeof AppDashboardGroupsIdAddChannelIndexRoute
@@ -662,10 +724,14 @@ interface AppDashboardRouteRouteChildren {
 const AppDashboardRouteRouteChildren: AppDashboardRouteRouteChildren = {
   AppDashboardSettingsRouteRoute: AppDashboardSettingsRouteRouteWithChildren,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppDashboardAnimesIndexRoute: AppDashboardAnimesIndexRoute,
   AppDashboardChannelsIndexRoute: AppDashboardChannelsIndexRoute,
   AppDashboardGroupsIndexRoute: AppDashboardGroupsIndexRoute,
   AppDashboardGroupsIdIndexRoute: AppDashboardGroupsIdIndexRoute,
   AppDashboardGroupsNewIndexRoute: AppDashboardGroupsNewIndexRoute,
+  AppDashboardAnimesChangeGroupIdIndexRoute:
+    AppDashboardAnimesChangeGroupIdIndexRoute,
+  AppDashboardAnimesEditIdIndexRoute: AppDashboardAnimesEditIdIndexRoute,
   AppDashboardChannelsChangeGroupIdIndexRoute:
     AppDashboardChannelsChangeGroupIdIndexRoute,
   AppDashboardChannelsEditIdIndexRoute: AppDashboardChannelsEditIdIndexRoute,

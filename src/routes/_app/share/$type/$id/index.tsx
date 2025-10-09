@@ -243,9 +243,7 @@ function ShareLinkPage({ params }: ShareLinkPageProps) {
 			<Card className="w-full max-w-md">
 				<CardHeader>
 					<CardTitle>
-						{type === "collaborate"
-							? "Join Collaboration"
-							: "Copy Group"}
+						{type === "collaborate" ? "Join Collaboration" : "Copy Group"}
 					</CardTitle>
 					<CardDescription>
 						{type === "collaborate"
@@ -355,15 +353,11 @@ function ShareLinkPage({ params }: ShareLinkPageProps) {
 					</Button>
 					<Button
 						onClick={
-							type === "collaborate"
-								? handleJoinCollaboration
-								: handleCopyGroup
+							type === "collaborate" ? handleJoinCollaboration : handleCopyGroup
 						}
 						disabled={
 							isProcessing ||
-							(type === "copy" &&
-								selectedGroup === "new" &&
-								!newGroupName)
+							(type === "copy" && selectedGroup === "new" && !newGroupName)
 						}
 					>
 						{isProcessing

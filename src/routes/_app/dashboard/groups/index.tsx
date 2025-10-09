@@ -17,7 +17,10 @@ export const Route = createFileRoute("/_app/dashboard/groups/")({
 });
 
 function GroupsPage() {
-	const { isLoading, error } = useGroups();
+	const { isLoading, error } = useGroups({
+		page: 1,
+		limit: 25,
+	});
 
 	if (isLoading) {
 		return (

@@ -52,9 +52,9 @@ import {
 } from "@/components/ui/table";
 import {
 	type Group as ApiGroup,
+	useDeleteGroup,
 	useGroups,
 	useUpdateGroupDisplayOrder,
-	useDeleteGroup,
 } from "@/hooks/useQuery/useGroups";
 import { cn } from "@/lib/utils";
 
@@ -93,7 +93,7 @@ export function GroupsTable() {
 		return apiGroups?.map((group, index) => ({
 			id: group.id,
 			name: group.name,
-			channelCount: group.channels?.length || 0,
+			channelCount: group.channelCount || 0,
 			category: group.category || "General", // Default category, can be enhanced later
 			createdAt: new Date(group.createdAt).toLocaleDateString(),
 			icon: group.icon || "FolderKanban",
@@ -109,8 +109,6 @@ export function GroupsTable() {
 	const [groups, setGroups] = useState(initialGroups);
 	const [draggedGroup, setDraggedGroup] = useState<TableGroup | null>(null);
 	const [dragOverGroup, setDragOverGroup] = useState<string | null>(null);
-
-	// Debounce search term
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setDebouncedSearchTerm(searchTerm);
@@ -125,7 +123,7 @@ export function GroupsTable() {
 
 	// Update groups when API data changes
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <cant apply the rule as the transformApiGroups changes on every render>
-		useEffect(() => {
+	useEffect(() => {
 		if (apiGroups?.data) {
 			console.log("apiGroups?.data", apiGroups?.data);
 			const newGroups = transformApiGroups(apiGroups.data);
@@ -186,7 +184,7 @@ export function GroupsTable() {
 		// If parent doesn't exist in current dataset, show the group as a root-level item
 		const parent = groups.find((g) => g.id === group.parentId);
 		if (!parent) return true; // Parent not in current dataset, show as root
-		
+
 		return parent?.expanded;
 	};
 
@@ -198,20 +196,21 @@ export function GroupsTable() {
 
 		// First, add all groups that don't have parents in the current dataset
 		// This includes actual root groups and orphaned child groups whose parents are on other pages
-		const groupsWithoutParentsInDataset = groups.filter(group => {
+		const groupsWithoutParentsInDataset = groups.filter((group) => {
 			if (group.parentId === null) return true;
 			// Check if parent exists in current dataset
-			const parentExists = groups.some(g => g.id === group.parentId);
+			const parentExists = groups.some((g) => g.id === group.parentId);
 			return !parentExists;
 		});
 
 		// Sort groups without parents by order
-		const sortedRootGroups = groupsWithoutParentsInDataset
-			.sort((a, b) => a.order - b.order);
+		const sortedRootGroups = groupsWithoutParentsInDataset.sort(
+			(a, b) => a.order - b.order,
+		);
 
 		const addGroupAndChildren = (group: TableGroup) => {
 			if (processedGroups.has(group.id)) return;
-			
+
 			result.push(group);
 			processedGroups.add(group.id);
 
@@ -265,13 +264,19 @@ export function GroupsTable() {
 		}
 
 		// Additional safety check: ensure both groups have valid parent relationships in current dataset
-		if (draggedGroup.parentId && !groups.some(g => g.id === draggedGroup.parentId)) {
+		if (
+			draggedGroup.parentId &&
+			!groups.some((g) => g.id === draggedGroup.parentId)
+		) {
 			toast.error("Cannot move group", {
 				description: "Parent group not available in current view.",
 			});
 			return;
 		}
-		if (targetGroup.parentId && !groups.some(g => g.id === targetGroup.parentId)) {
+		if (
+			targetGroup.parentId &&
+			!groups.some((g) => g.id === targetGroup.parentId)
+		) {
 			toast.error("Cannot move group", {
 				description: "Target parent group not available in current view.",
 			});
@@ -346,7 +351,11 @@ export function GroupsTable() {
 	};
 
 	const handleDeleteGroup = (groupId: string, groupName: string) => {
-		if (confirm(`Are you sure you want to delete "${groupName}"? This action cannot be undone.`)) {
+		if (
+			confirm(
+				`Are you sure you want to delete "${groupName}"? This action cannot be undone.`,
+			)
+		) {
 			deleteGroup.mutate(groupId, {
 				onSuccess: () => {
 					toast.success("Group deleted successfully", {
@@ -515,7 +524,7 @@ export function GroupsTable() {
 								</TableCell>
 							</TableRow>
 						) : (
-								sortedGroups.filter(isVisible).map((group) => {
+							sortedGroups.filter(isVisible).map((group) => {
 								const siblingGroups = groups
 									.filter((g) => g.parentId === group.parentId)
 									.sort((a, b) => a.order - b.order);
@@ -549,9 +558,11 @@ export function GroupsTable() {
 										</TableCell>
 										<TableCell>
 											<div
-											className="flex items-center gap-2"
-											style={{ paddingLeft: `${group.parentId && !groups.some(g => g.id === group.parentId) ? 0 : group.level * 1.5}rem` }}
-										>
+												className="flex items-center gap-2"
+												style={{
+													paddingLeft: `${group.parentId && !groups.some((g) => g.id === group.parentId) ? 0 : group.level * 1.5}rem`,
+												}}
+											>
 												{groups.some((g) => g.parentId === group.id) ? (
 													<Button
 														variant="ghost"
@@ -570,21 +581,22 @@ export function GroupsTable() {
 												)}
 
 												<IconViewer
-												icon={group.icon}
-												className="h-4 w-4 mr-4 text-muted-foreground"
-											/>
-											<Link
-												to={`/dashboard/groups/$id`}
-												params={{ id: group.id }}
-												className="font-medium hover:underline"
-											>
-												{group.name}
-												{group.parentId && !groups.some(g => g.id === group.parentId) && (
-													<span className="ml-2 text-xs text-muted-foreground">
-														(subgroup)
-													</span>
-												)}
-											</Link>
+													icon={group.icon}
+													className="h-4 w-4 mr-4 text-muted-foreground"
+												/>
+												<Link
+													to={`/dashboard/groups/$id`}
+													params={{ id: group.id }}
+													className="font-medium hover:underline"
+												>
+													{group.name}
+													{group.parentId &&
+														!groups.some((g) => g.id === group.parentId) && (
+															<span className="ml-2 text-xs text-muted-foreground">
+																(subgroup)
+															</span>
+														)}
+												</Link>
 
 												{/* Add subgroup button */}
 												<Button
@@ -661,14 +673,16 @@ export function GroupsTable() {
 														Move Down
 													</DropdownMenuItem>
 													<DropdownMenuSeparator />
-											<DropdownMenuItem 
-												className="text-destructive"
-												onClick={() => handleDeleteGroup(group.id, group.name)}
-												disabled={deleteGroup.isPending}
-											>
-												<Trash2 className="mr-2 h-4 w-4" />
-												Delete
-											</DropdownMenuItem>
+													<DropdownMenuItem
+														className="text-destructive"
+														onClick={() =>
+															handleDeleteGroup(group.id, group.name)
+														}
+														disabled={deleteGroup.isPending}
+													>
+														<Trash2 className="mr-2 h-4 w-4" />
+														Delete
+													</DropdownMenuItem>
 												</DropdownMenuContent>
 											</DropdownMenu>
 										</TableCell>
@@ -684,10 +698,13 @@ export function GroupsTable() {
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2 text-sm text-muted-foreground">
 						<span>Items per page:</span>
-						<Select value={itemsPerPage.toString()} onValueChange={(value) => {
-							setItemsPerPage(Number(value));
-							setCurrentPage(1); // Reset to first page when changing items per page
-						}}>
+						<Select
+							value={itemsPerPage.toString()}
+							onValueChange={(value) => {
+								setItemsPerPage(Number(value));
+								setCurrentPage(1); // Reset to first page when changing items per page
+							}}
+						>
 							<SelectTrigger className="w-[70px] h-8">
 								<SelectValue />
 							</SelectTrigger>

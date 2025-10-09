@@ -85,7 +85,10 @@ export function IconPicker({ value, onChange, children }: IconPickerProps) {
 	}, []);
 
 	const handleIconSelect = (iconName: string) => {
-		onChange(iconName);
+		const formattedIconName = iconName.includes(":")
+			? iconName
+			: `twemoji:${iconName}`;
+		onChange(formattedIconName);
 		setOpen(false);
 		setSearchTerm("");
 	};
@@ -101,12 +104,19 @@ export function IconPicker({ value, onChange, children }: IconPickerProps) {
 		setSearchTerm(value);
 		clearTimeout(timer);
 
-		timer = setTimeout(() => {
-			setFilteredIcons(
-				iconSet.filter((name) =>
-					name.toLowerCase().includes(value.toLowerCase()),
-				),
-			);
+		timer = setTimeout(async () => {
+			if (value.trim() === "") {
+				setFilteredIcons([]);
+				return;
+			}
+
+			const resp = await (
+				await fetch(
+					`https://api.iconify.design/search?query=${value}&limit=200`,
+				)
+			).json();
+
+			setFilteredIcons(resp?.icons || []);
 		}, 500);
 	};
 
@@ -308,7 +318,7 @@ function IconButton({ iconName, isSelected, onSelect }: IconButtonProps) {
 			<Icon
 				height={28}
 				width={28}
-				icon={"twemoji:" + iconName}
+				icon={iconName.includes(":") ? iconName : `twemoji:${iconName}`}
 				className="h-8 w-8"
 			/>
 			{isSelected && (

@@ -1,9 +1,11 @@
+import Cookies from "js-cookie";
 import {
 	ChevronUp,
 	FolderKanban,
 	LayoutDashboard,
 	Settings,
 	User2,
+	Video,
 	Youtube,
 } from "lucide-react";
 import {
@@ -24,6 +26,7 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
+import { useNavigate } from "@tanstack/react-router";
 
 const items = [
 	{
@@ -42,6 +45,11 @@ const items = [
 		icon: Youtube,
 	},
 	{
+		title: "Animes",
+		url: "/dashboard/animes",
+		icon: Video,
+	},
+	{
 		title: "Settings",
 		url: "/dashboard/settings/account",
 		icon: Settings,
@@ -49,6 +57,13 @@ const items = [
 ];
 
 export function AppSidebar() {
+	const navigate = useNavigate();
+
+	const signOut =()  => {
+		Cookies.remove("auth-token");
+		navigate({ to: "/" });
+	}
+
 	return (
 		<Sidebar variant="sidebar">
 			<SidebarHeader>Groupify</SidebarHeader>
@@ -85,7 +100,7 @@ export function AppSidebar() {
 								<DropdownMenuItem>
 									<span>Billing</span>
 								</DropdownMenuItem>
-								<DropdownMenuItem>
+								<DropdownMenuItem onClick={() => signOut()}>
 									<span>Sign out</span>
 								</DropdownMenuItem>
 							</DropdownMenuContent>

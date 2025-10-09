@@ -80,7 +80,6 @@ export function GroupForm({
 }: GroupFormProps) {
 	const navigate = useNavigate();
 
-	// Initialize React Hook Form with Zod validation
 	const form = useForm<GroupFormData>({
 		resolver: zodResolver(groupFormSchema),
 		defaultValues: {
@@ -201,9 +200,7 @@ export function GroupForm({
 												<FormControl>
 													<IconPicker
 														value={field.value}
-														onChange={(value) =>
-															field.onChange(`twemoji:${value}`)
-														}
+														onChange={(value) => field.onChange(`${value}`)}
 													>
 														<IconPickerTrigger />
 														<IconPickerContent />

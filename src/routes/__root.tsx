@@ -7,6 +7,7 @@ import {
 	createRootRoute,
 	HeadContent,
 	Outlet,
+	retainSearchParams,
 	Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
@@ -35,6 +36,9 @@ export const Route = createRootRoute({
 		],
 		links: [{ rel: "stylesheet", href: appCss }],
 	}),
+	search: {
+		middlewares: [retainSearchParams(["rootValue"])],
+	},
 	component: RootComponent,
 });
 

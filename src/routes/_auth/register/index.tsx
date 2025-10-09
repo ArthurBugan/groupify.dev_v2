@@ -1,7 +1,9 @@
 "use client";
 
+// import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@base-ui-components/react/checkbox";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, EyeOff } from "lucide-react";
+import { CheckIcon, Eye, EyeOff } from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
 import { useLanguage } from "@/components/language-provider";
@@ -14,7 +16,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -253,14 +254,30 @@ function RegisterPage() {
 							</div>
 
 							<div className="flex items-center space-x-2">
-								<Checkbox
-									id={"terms"}
-									checked={formData.agreeToTerms}
-									onCheckedChange={(checked) =>
-										handleInputChange("agreeToTerms", checked as boolean)
-									}
-								/>
-								<Label htmlFor="terms" className="text-sm">
+								<Label
+									htmlFor="terms"
+									className="flex items-center gap-2 text-base"
+								>
+									<Checkbox.Root
+										id={"terms"}
+										checked={formData.agreeToTerms}
+										onCheckedChange={(checked) =>
+											handleInputChange("agreeToTerms", checked as boolean)
+										}
+										className="flex size-5 items-center justify-center rounded-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-800 data-[checked]:bg-gray-900 data-[unchecked]:border data-[unchecked]:border-gray-300"
+									>
+										<Checkbox.Indicator className="flex text-gray-50 data-[unchecked]:hidden">
+											<svg
+												fill="currentcolor"
+												width="10"
+												height="10"
+												viewBox="0 0 10 10"
+												aria-hidden="true"
+											>
+												<path d="M9.1603 1.12218C9.50684 1.34873 9.60427 1.81354 9.37792 2.16038L5.13603 8.66012C5.01614 8.8438 4.82192 8.96576 4.60451 8.99384C4.3871 9.02194 4.1683 8.95335 4.00574 8.80615L1.24664 6.30769C0.939709 6.02975 0.916013 5.55541 1.19372 5.24822C1.47142 4.94102 1.94536 4.91731 2.2523 5.19524L4.36085 7.10461L8.12299 1.33999C8.34934 0.993152 8.81376 0.895638 9.1603 1.12218Z" />
+											</svg>
+										</Checkbox.Indicator>
+									</Checkbox.Root>
 									{t("register.terms")}{" "}
 									<Link to="/terms" className="text-primary hover:underline">
 										{t("register.terms.link")}

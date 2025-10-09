@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
+import type { Pagination } from "./types";
 
 // Types for groups
 export interface Group {
@@ -14,6 +15,7 @@ export interface Group {
 	displayOrder?: number;
 	parentId?: string | null;
 	createdAt: string;
+	channelCount: number;
 	updatedAt: string;
 }
 
@@ -23,16 +25,15 @@ export interface Channel {
 	channelId: string;
 	thumbnail?: string;
 	subscriberCount?: number;
+	groupIcon?: string;
+	groupName?: string;
 	category?: string;
+	url?: string;
 }
 
 export interface GroupsResponse {
 	data: Group[];
-	pagination: {
-		total: number;
-		page: number;
-		limit: number;
-	};
+	pagination: Pagination;
 }
 
 export interface CreateGroupRequest {
@@ -76,7 +77,7 @@ export function useGroups(params?: {
 	search?: string;
 }) {
 	return useQuery({
-		queryKey: queryKeys.groups(params),
+		queryKey: ["groups"],
 		queryFn: () => getGroups(params),
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes
