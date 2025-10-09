@@ -14,4 +14,10 @@ export const queryKeys = {
 		groupId?: string;
 	}) => (params ? ["channels", params] : ["channels"]),
 	channel: (id) => ["channel", id],
+	animes: (params?: {
+		page?: number;
+		limit?: number;
+		search?: string;
+	}) => (params ? ["animes", params] : ["animes"]),
+	anime: (id) => ["anime", id],
 };

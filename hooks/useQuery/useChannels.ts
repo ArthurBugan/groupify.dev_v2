@@ -41,6 +41,7 @@ export interface CreateChannelRequest {
 
 export interface UpdateChannelRequest {
 	id: string;
+	contentType?: string;
 	name?: string;
 	channelId?: string;
 	url?: string;
@@ -219,9 +220,14 @@ export function useUpdateChannel() {
 		onSuccess: (updatedChannel) => {
 			// Invalidate and refetch the channels query to update the UI
 			queryClient.invalidateQueries({ queryKey: queryKeys.channels() });
+			queryClient.invalidateQueries({ queryKey: queryKeys.animes() });
+
 			// Invalidate the specific channel query
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.channel(updatedChannel.id),
+			});
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.anime(updatedChannel.id),
 			});
 		},
 	});

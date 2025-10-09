@@ -90,7 +90,7 @@ export function AllChannelsTable() {
 	) => {
 		updateChannel({
 			id: channelId,
-			data: { id: channelId, groupId, name, thumbnail, url },
+			data: { id: channelId, groupId, name, thumbnail, url, contentType: 'youtube' },
 		});
 	};
 

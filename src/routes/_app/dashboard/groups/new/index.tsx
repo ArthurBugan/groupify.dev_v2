@@ -19,7 +19,9 @@ export const Route = createFileRoute("/_app/dashboard/groups/new/")({
 function NewGroupPage() {
 	const navigate = useNavigate();
 	const search = useSearch({ from: "/_app/dashboard/groups/new/" });
-	const { data: groupsData, isLoading: isGroupsLoading } = useGroups();
+	const { data: groupsData, isLoading: isGroupsLoading } = useGroups({
+		limit: 100,
+	});
 	const createGroupMutation = useCreateGroup();
 
 	const handleSubmit = async (data: GroupFormData) => {
