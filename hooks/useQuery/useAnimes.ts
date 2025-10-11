@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
 import type { Pagination } from "./types";
@@ -10,12 +10,13 @@ export interface Anime {
   contentType?: string | null;
   name: string;
   channelId: string;
-  thumbnail?: string | null;
-  createdAt?: string | null; // ISO date string
-  updatedAt?: string | null;
-  groupName?: string | null;
-  groupIcon?: string | null;
-  url?: string | null;
+  thumbnail?: string;
+  createdAt?: string;
+  contentType?: string;
+  updatedAt?: string;
+  groupName?: string;
+  groupIcon?: string;
+  url?: string;
 }
 
 export interface PaginatedAnimesResponse {
@@ -30,7 +31,7 @@ interface UseAnimesParams {
 }
 
 // Query function to fetch all animes with pagination
-const getAnimes = async (params?: {
+export const getAnimes = async (params?: {
   page?: number;
   limit?: number;
   search?: string;
@@ -49,4 +50,25 @@ export function useAllAnimes(params?: UseAnimesParams) {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
+}
+
+export function useInfiniteAnimes(params?: {
+	page?: number;
+	limit?: number;
+	search?: string;
+	groupId?: string;
+}) {
+	return useInfiniteQuery({
+		queryKey: queryKeys.animes(params),
+		queryFn: ({ pageParam }) => getAnimes({ ...params, page: pageParam }),
+		initialPageParam: 1,
+		getNextPageParam: (lastPage) => {
+			const { pagination } = lastPage;
+			return pagination.page < pagination.totalPages
+				? pagination.page + 1
+				: undefined;
+		},
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes
+	});
 }

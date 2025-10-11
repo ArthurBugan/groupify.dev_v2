@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/form";
 import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
 	type LoginCredentials,
 	useLoginMutation,
@@ -78,16 +77,15 @@ function LoginPage() {
 		}
 	};
 
-	// Handle Discord authentication
 	const handleDiscordAuth = (e) => {
 		e.preventDefault();
 		window.location.href = `${VITE_BASE_URL}/auth/discord`;
 	};
 
-	function handleGoogleAuth(e) {
+	const handleGoogleAuth = (e) => {
 		e.preventDefault();
 		window.location.href = `${VITE_BASE_URL}/auth/google`;
-	}
+	};
 
 	return (
 		<div className="min-h-screen bg-background flex flex-col">

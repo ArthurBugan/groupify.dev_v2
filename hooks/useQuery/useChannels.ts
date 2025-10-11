@@ -15,6 +15,7 @@ export interface Channel {
 	channelId: string;
 	url: string;
 	thumbnail?: string;
+	contentType?: string;
 	subscriberCount?: number;
 	videoCount?: number;
 	groupId: string;
