@@ -29,6 +29,9 @@ export interface Channel {
 	groupName?: string;
 	category?: string;
 	url?: string;
+	contentType?: string;
+	createdAt: string | number | Date;
+	updatedAt: string | number | Date;
 }
 
 export interface GroupsResponse {

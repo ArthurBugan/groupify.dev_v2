@@ -15,6 +15,7 @@ export function DashboardStats() {
 	const channels = data?.channels ?? 0;
 	const youtubeChannels = data?.youtubeChannels ?? 0;
 	const sharedGroups = data?.sharedGroups ?? 0;
+	const animeChannels = data?.animeChannels ?? 0;
 
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -90,6 +91,28 @@ export function DashboardStats() {
 						<Loader2 className="text-2xl mb-2 animate-spin text-muted-foreground" />
 					) : (
 						<div className="text-2xl font-bold">{youtubeChannels}</div>
+					)}
+					<div className="flex items-center text-xs text-muted-foreground">
+						<span className="text-green-500 flex items-center mr-1">
+							<TrendingUp className="mr-1 h-3 w-3" />
+							+8
+						</span>
+						posted this week
+					</div>
+				</CardContent>
+			</Card>
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+					<CardTitle className="text-sm font-medium">
+						Total Anime Channels
+					</CardTitle>
+					<Activity className="h-4 w-4 text-muted-foreground" />
+				</CardHeader>
+				<CardContent>
+					{isLoading ? (
+						<Loader2 className="text-2xl mb-2 animate-spin text-muted-foreground" />
+					) : (
+						<div className="text-2xl font-bold">{animeChannels}</div>
 					)}
 					<div className="flex items-center text-xs text-muted-foreground">
 						<span className="text-green-500 flex items-center mr-1">

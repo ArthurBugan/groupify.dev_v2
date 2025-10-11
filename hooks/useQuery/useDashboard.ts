@@ -6,6 +6,7 @@ export type DashboardTotalResponse = {
 	channels: number;
 	youtubeChannels: number;
 	sharedGroups: number;
+	animeChannels: number;
 };
 
 const getTotals = async (): Promise<DashboardTotalResponse> => {

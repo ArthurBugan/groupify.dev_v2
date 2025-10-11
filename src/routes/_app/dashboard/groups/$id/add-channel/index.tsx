@@ -25,6 +25,7 @@ import {
 	useUpdateChannelsBatch,
 } from "@/hooks/useQuery/useChannels";
 import { useGroup } from "@/hooks/useQuery/useGroups";
+import { type Anime, useAllAnimes, useInfiniteAnimes, getAnimes } from "@/hooks/useQuery/useAnimes";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/add-channel/")(
 	{
@@ -44,19 +45,39 @@ function AddChannelPage() {
 		isLoading,
 	} = useChannels({ groupId: id });
 
+	const {
+		data: animesData,
+		isLoading: isLoadingAnimes,
+		fetchNextPage: fetchNextPageAnimes,
+		hasNextPage: hasNextPageAnimes,
+		isFetchingNextPage: isFetchingNextPageAnimes,
+	} = useInfiniteAnimes({ groupId: id });
+
+	const { data: allAnimesData } = useAllAnimes({
+		page: 1,
+		limit: 25,
+	});
+
 	const channels = useMemo(
 		() => channelsData?.pages.flatMap((page) => page.data) || [],
 		[channelsData],
+	);
+
+	const animes = useMemo(
+		() => animesData?.pages.flatMap((page) => page.data) || [],
+		[animesData],
 	);
 
 	const [activeTab, setActiveTab] = useState("search");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isSearching, setIsSearching] = useState(false);
 	const [searchResults, setSearchResults] = useState<any[]>([]);
+	const [animeResults, setAnimeResults] = useState<any[]>([]);
 
 	const items = searchResults.length > 0 ? searchResults : channels;
+	const animeItems = animeResults.length > 0 ? animeResults : allAnimesData?.data || [];
 
-	const [selectedChannels, setSelectedChannels] = useState<Channel[]>([]);
+	const [selectedChannels, setSelectedChannels] = useState<(Channel | Anime)[]>([]);
 	const { mutateAsync: updateChannelsBatchMutation, isPending: isUpdating } =
 		useUpdateChannelsBatch();
 	const groupName = groupData?.name || "Channel Group";
@@ -71,6 +92,7 @@ function AddChannelPage() {
 					thumbnail: c.thumbnail,
 					url: `https://youtube.com/channel/${c.url}`,
 					groupId: id,
+					contentType: c.contentType,
 					newContent: false,
 				})),
 			);
@@ -80,22 +102,41 @@ function AddChannelPage() {
 	const handleSearch = async (e?: React.FormEvent) => {
 		e?.preventDefault();
 		setIsSearching(true);
-		try {
-			const params: { groupId: string; search?: string } = { groupId: id };
-			if (searchQuery.trim()) {
-				params.search = searchQuery;
+
+		if (activeTab === "anime") {
+			try {
+				const params: { groupId: string; search?: string } = { groupId: id };
+				if (searchQuery.trim()) {
+					params.search = searchQuery;
+				}
+				const response = await getAnimes(params);
+				setAnimeResults(response.data || []);
+			} catch (error) {
+				console.error("Error searching animes:", error);
+			} finally {
+				setIsSearching(false);
 			}
-			const response = await getChannels(params);
-			setSearchResults(response.data);
-		} catch (error) {
-			console.error("Error searching channels:", error);
-		} finally {
-			setIsSearching(false);
+			return;
+		} else {
+			try {
+				const params: { groupId: string; search?: string } = { groupId: id };
+				if (searchQuery.trim()) {
+					params.search = searchQuery;
+				}
+				const response = await getChannels(params);
+				setSearchResults(response.data);
+			} catch (error) {
+				console.error("Error searching channels:", error);
+			} finally {
+				setIsSearching(false);
+			}
 		}
+
+
 	};
 
-	const handleAddChannel = (channel: Channel) => {
-		console.log(channel, "handleAddChannel");
+	const handleAddChannel = (channel: Channel | Anime) => {
+		console.log(channel);
 		setSelectedChannels((prev) => [...prev, channel]);
 	};
 
@@ -111,6 +152,7 @@ function AddChannelPage() {
 			name: channel.name,
 			thumbnail: channel.thumbnail,
 			groupId: id,
+			contentType: channel.contentType ?? 'youtube',
 			url: channel.url || "",
 			newContent: false,
 		}));
@@ -119,6 +161,8 @@ function AddChannelPage() {
 
 		router({ to: "/dashboard/groups/$id", params: { id: id } });
 	};
+
+	console.log(selectedChannels);
 
 	return (
 		<div className="space-y-6 flex flex-col h-full">
@@ -142,8 +186,9 @@ function AddChannelPage() {
 						onValueChange={setActiveTab}
 						className="space-y-4"
 					>
-						<TabsList className="grid w-full grid-cols-1">
+						<TabsList className="grid w-full grid-cols-2">
 							<TabsTrigger value="search">Search YouTube</TabsTrigger>
+							<TabsTrigger value="anime">Search Anime</TabsTrigger>
 						</TabsList>
 
 						<TabsContent value="search" className="space-y-4">
@@ -154,7 +199,6 @@ function AddChannelPage() {
 											placeholder="Search for YouTube channels..."
 											value={searchQuery}
 											onChange={(e) => {
-												console.log(e.target.value);
 												setSearchQuery(e.target.value);
 											}}
 											className="flex-1"
@@ -237,6 +281,96 @@ function AddChannelPage() {
 								)}
 							</Button>
 						</TabsContent>
+						<TabsContent value="anime" className="space-y-4">
+							<Card>
+								<CardContent className="pt-6">
+									<form onSubmit={handleSearch} className="flex gap-2">
+										<Input
+											placeholder="Search for Animes..."
+											value={searchQuery}
+											onChange={(e) => {
+												setSearchQuery(e.target.value);
+											}}
+											className="flex-1"
+										/>
+										<Button
+											type="submit"
+											variant="secondary"
+											disabled={isSearching || !searchQuery.trim()}
+										>
+											{isSearching ? (
+												"Searching..."
+											) : (
+												<Search className="mr-2 h-4 w-4" />
+											)}
+											{isSearching ? "" : "Search"}
+										</Button>
+										<Button
+											type="button"
+											variant="destructive"
+											onClick={() => {
+												setSearchQuery("");
+												handleSearch();
+											}}
+										>
+											<Trash2 className="h-4 w-2" />
+										</Button>
+									</form>
+								</CardContent>
+							</Card>
+
+							{animeItems?.map((channel) => (
+								<div
+									key={channel.name + channel.id}
+									className="flex items-start justify-between border-b pb-4 last:border-0 last:pb-0"
+								>
+									<div className="flex items-start gap-3">
+										<Avatar className="h-10 w-10">
+											<AvatarImage
+												src={channel.thumbnail || "/placeholder.svg"}
+												alt={channel.name}
+											/>
+											<AvatarFallback>
+												<Youtube className="h-5 w-5" />
+											</AvatarFallback>
+										</Avatar>
+										<div>
+											<div className="flex items-center gap-2">
+												<h3 className="font-medium">{channel.name}</h3>
+											</div>
+											<p className="text-xs text-muted-foreground">
+												{`https://crunchyroll.com/series/${channel.url}`}
+											</p>
+										</div>
+									</div>
+									<Button
+										size="sm"
+										variant="outline"
+										onClick={() => handleAddChannel(channel)}
+										disabled={selectedChannels?.some(
+											(c) => c.id === channel.id,
+										)}
+									>
+										{selectedChannels?.some((c) => c.id === channel.id)
+											? "Added"
+											: "Add"}
+									</Button>
+								</div>
+							))}
+
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={() => fetchNextPageAnimes()}
+								disabled={!hasNextPageAnimes}
+							>
+								{isFetchingNextPageAnimes ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : (
+									"Load more animes"
+								)}
+							</Button>
+						</TabsContent>
 					</Tabs>
 				</div>
 
@@ -281,7 +415,10 @@ function AddChannelPage() {
 															{channel.name}
 														</p>
 														<p className="text-xs text-muted-foreground truncate">
-															{`https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
+															{channel.contentType === "anime"
+																? `https://crunchyroll.com/series/${channel.url}`
+																: `https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
+															
 														</p>
 													</div>
 												</div>

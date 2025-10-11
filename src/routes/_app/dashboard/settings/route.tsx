@@ -1,11 +1,11 @@
 import {
 	createFileRoute,
-	Navigate,
 	Outlet,
+	useLocation,
 	useNavigate,
 } from "@tanstack/react-router";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/_app/dashboard/settings")({
@@ -15,6 +15,16 @@ export const Route = createFileRoute("/_app/dashboard/settings")({
 function SettingsPage() {
 	const [activeTab, setActiveTab] = useState("account");
 	const router = useNavigate();
+	const location = useLocation();
+
+	useEffect(() => {
+		if (location.pathname === "/dashboard/settings") {
+			setActiveTab("account");
+			router({ to: "/dashboard/settings/account" });
+		}
+	}, [location.pathname, router]);
+
+	
 
 	return (
 		<div className="space-y-6">
@@ -29,7 +39,7 @@ function SettingsPage() {
 				className="space-y-4"
 			>
 				<div className="overflow-x-auto">
-					<TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground min-w-full lg:grid lg:grid-cols-6">
+					<TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground min-w-full lg:grid lg:grid-cols-5">
 						<TabsTrigger
 							onClick={() => router({ to: "/dashboard/settings/account" })}
 							value="account"
@@ -43,13 +53,6 @@ function SettingsPage() {
 							className="whitespace-nowrap"
 						>
 							Appearance
-						</TabsTrigger>
-						<TabsTrigger
-							onClick={() => router({ to: "/dashboard/settings/integrations" })}
-							value="integrations"
-							className="whitespace-nowrap"
-						>
-							Integrations
 						</TabsTrigger>
 						<TabsTrigger
 							onClick={() =>

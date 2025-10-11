@@ -51,16 +51,36 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 		groupData?.channels || [],
 	);
 	const [viewMode, setViewMode] = useState("grid"); // grid, list, compact
-	const [sortOrder, setSortOrder] = useState("name-asc"); // Default sort by name ascending
+	const [sortOrder, setSortOrder] = useState("recent"); // Default sort by name ascending
 
-	const { mutate: deleteChannel, isPending: isDeletingChannel } =
-		useDeleteChannelMutation();
+	const { mutate: deleteChannel, isPending: isDeletingChannel } = useDeleteChannelMutation();
 
 	useEffect(() => {
 		if (groupData?.channels) {
 			setChannels(groupData.channels);
 		}
 	}, [groupData?.channels]);
+
+	const filteredAndSortedChannels = useMemo(() => {
+		const filtered = channels.filter((channel) =>
+			channel.name.toLowerCase().includes(searchTerm.toLowerCase()),
+		);
+
+		switch (sortOrder) {
+			case "name-asc":
+				filtered.sort((a, b) => a.name.localeCompare(b.name));
+				break;
+			case "name-desc":
+				filtered.sort((a, b) => b.name.localeCompare(a.name));
+				break;
+			case "recent":
+				filtered.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+				break;
+			default:
+				break;
+		}
+		return filtered;
+	}, [channels, searchTerm, sortOrder]);
 
 	// Load settings from localStorage on component mount
 	useEffect(() => {
@@ -90,14 +110,14 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{channels.length === 0 ? (
+					{filteredAndSortedChannels.length === 0 ? (
 						<TableRow>
 							<TableCell colSpan={4} className="h-24 text-center">
 								No channels found.
 							</TableCell>
 						</TableRow>
 					) : (
-						channels.map((channel) => (
+						filteredAndSortedChannels.map((channel) => (
 							<TableRow key={channel.id}>
 								<TableCell>
 									<div className="flex items-center gap-3">
@@ -129,7 +149,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem asChild>
 												<a
-													href={`https://www.youtube.com/channel/${channel.url}`}
+													href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/c/'}${channel.url}`}
 													target="_blank"
 													rel="noopener noreferrer"
 												>
@@ -162,25 +182,26 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 
 	const renderGridView = () => (
 		<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			{channels.length === 0 ? (
+			{filteredAndSortedChannels.length === 0 ? (
 				<div className="col-span-full h-24 flex items-center justify-center text-center border rounded-md">
 					No channels found.
 				</div>
 			) : (
-				channels.map((channel) => (
+				filteredAndSortedChannels.map((channel) => (
 					<Card key={channel.id}>
 						<CardContent className="p-4">
 							<div className="flex flex-col items-center text-center">
-								<Avatar className="h-16 w-16 mb-2">
+								<Avatar className="h-24 w-24 mb-2">
 									<AvatarImage
+										className="object-cover h-full w-full transition-transform duration-300 hover:scale-105"
 										src={channel.thumbnail || "/placeholder.svg"}
 										alt={channel.name}
 									/>
 									<AvatarFallback>
-										<Youtube className="h-8 w-8" />
+										<Youtube className="h-24 w-24" />
 									</AvatarFallback>
 								</Avatar>
-								<h3 className="font-medium">{channel.name}</h3>
+								<h3 className="font-medium mb-2">{channel.name}</h3>
 								<div className="flex gap-2 mt-auto">
 									<Button
 										size="sm"
@@ -189,7 +210,8 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										className="flex-1"
 									>
 										<a
-											href={`https://www.youtube.com/channel/${channel.url}`}
+											href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/c/'}${channel.url}`}
+
 											target="_blank"
 											rel="noopener noreferrer"
 										>
@@ -222,12 +244,12 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 
 	const renderCompactView = () => (
 		<div className="space-y-2">
-			{channels.length === 0 ? (
+			{filteredAndSortedChannels.length === 0 ? (
 				<div className="h-24 flex items-center justify-center text-center border rounded-md">
 					No channels found.
 				</div>
 			) : (
-				channels.map((channel) => (
+				filteredAndSortedChannels.map((channel) => (
 					<div
 						key={channel.id}
 						className="flex items-center justify-between p-2 border rounded-md hover:bg-accent/50 transition-colors"
@@ -249,7 +271,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 						<div className="flex items-center gap-2">
 							<Button variant="ghost" size="icon" className="h-7 w-7" asChild>
 								<a
-									href={`https://www.youtube.com/channel/${channel.url}`}
+									href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/c/'}${channel.url}`}
 									target="_blank"
 									rel="noopener noreferrer"
 								>
@@ -291,15 +313,9 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="subscribers-desc">
-								Subscribers (High to Low)
-							</SelectItem>
-							<SelectItem value="subscribers-asc">
-								Subscribers (Low to High)
-							</SelectItem>
+							<SelectItem value="recent">Recently Added</SelectItem>
 							<SelectItem value="name-asc">Name (A to Z)</SelectItem>
 							<SelectItem value="name-desc">Name (Z to A)</SelectItem>
-							<SelectItem value="recent">Recently Added</SelectItem>
 						</SelectContent>
 					</Select>
 					<div className="flex border rounded-md overflow-hidden">

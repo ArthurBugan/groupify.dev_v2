@@ -27,7 +27,6 @@ import { Route as AuthForgotPasswordSuccessEmailIndexRouteImport } from './route
 import { Route as AppShareTypeIdIndexRouteImport } from './routes/_app/share/$type/$id/index'
 import { Route as AppDashboardSettingsPrivacyIndexRouteImport } from './routes/_app/dashboard/settings/privacy/index'
 import { Route as AppDashboardSettingsNotificationsIndexRouteImport } from './routes/_app/dashboard/settings/notifications/index'
-import { Route as AppDashboardSettingsIntegrationsIndexRouteImport } from './routes/_app/dashboard/settings/integrations/index'
 import { Route as AppDashboardSettingsGroupsIndexRouteImport } from './routes/_app/dashboard/settings/groups/index'
 import { Route as AppDashboardSettingsBillingIndexRouteImport } from './routes/_app/dashboard/settings/billing/index'
 import { Route as AppDashboardSettingsAppearanceIndexRouteImport } from './routes/_app/dashboard/settings/appearance/index'
@@ -138,12 +137,6 @@ const AppDashboardSettingsNotificationsIndexRoute =
     path: '/notifications/',
     getParentRoute: () => AppDashboardSettingsRouteRoute,
   } as any)
-const AppDashboardSettingsIntegrationsIndexRoute =
-  AppDashboardSettingsIntegrationsIndexRouteImport.update({
-    id: '/integrations/',
-    path: '/integrations/',
-    getParentRoute: () => AppDashboardSettingsRouteRoute,
-  } as any)
 const AppDashboardSettingsGroupsIndexRoute =
   AppDashboardSettingsGroupsIndexRouteImport.update({
     id: '/groups/',
@@ -244,7 +237,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings/appearance': typeof AppDashboardSettingsAppearanceIndexRoute
   '/dashboard/settings/billing': typeof AppDashboardSettingsBillingIndexRoute
   '/dashboard/settings/groups': typeof AppDashboardSettingsGroupsIndexRoute
-  '/dashboard/settings/integrations': typeof AppDashboardSettingsIntegrationsIndexRoute
   '/dashboard/settings/notifications': typeof AppDashboardSettingsNotificationsIndexRoute
   '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
@@ -277,7 +269,6 @@ export interface FileRoutesByTo {
   '/dashboard/settings/appearance': typeof AppDashboardSettingsAppearanceIndexRoute
   '/dashboard/settings/billing': typeof AppDashboardSettingsBillingIndexRoute
   '/dashboard/settings/groups': typeof AppDashboardSettingsGroupsIndexRoute
-  '/dashboard/settings/integrations': typeof AppDashboardSettingsIntegrationsIndexRoute
   '/dashboard/settings/notifications': typeof AppDashboardSettingsNotificationsIndexRoute
   '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
@@ -312,7 +303,6 @@ export interface FileRoutesById {
   '/_app/dashboard/settings/appearance/': typeof AppDashboardSettingsAppearanceIndexRoute
   '/_app/dashboard/settings/billing/': typeof AppDashboardSettingsBillingIndexRoute
   '/_app/dashboard/settings/groups/': typeof AppDashboardSettingsGroupsIndexRoute
-  '/_app/dashboard/settings/integrations/': typeof AppDashboardSettingsIntegrationsIndexRoute
   '/_app/dashboard/settings/notifications/': typeof AppDashboardSettingsNotificationsIndexRoute
   '/_app/dashboard/settings/privacy/': typeof AppDashboardSettingsPrivacyIndexRoute
   '/_app/share/$type/$id/': typeof AppShareTypeIdIndexRoute
@@ -348,7 +338,6 @@ export interface FileRouteTypes {
     | '/dashboard/settings/appearance'
     | '/dashboard/settings/billing'
     | '/dashboard/settings/groups'
-    | '/dashboard/settings/integrations'
     | '/dashboard/settings/notifications'
     | '/dashboard/settings/privacy'
     | '/share/$type/$id'
@@ -381,7 +370,6 @@ export interface FileRouteTypes {
     | '/dashboard/settings/appearance'
     | '/dashboard/settings/billing'
     | '/dashboard/settings/groups'
-    | '/dashboard/settings/integrations'
     | '/dashboard/settings/notifications'
     | '/dashboard/settings/privacy'
     | '/share/$type/$id'
@@ -415,7 +403,6 @@ export interface FileRouteTypes {
     | '/_app/dashboard/settings/appearance/'
     | '/_app/dashboard/settings/billing/'
     | '/_app/dashboard/settings/groups/'
-    | '/_app/dashboard/settings/integrations/'
     | '/_app/dashboard/settings/notifications/'
     | '/_app/dashboard/settings/privacy/'
     | '/_app/share/$type/$id/'
@@ -571,13 +558,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardSettingsNotificationsIndexRouteImport
       parentRoute: typeof AppDashboardSettingsRouteRoute
     }
-    '/_app/dashboard/settings/integrations/': {
-      id: '/_app/dashboard/settings/integrations/'
-      path: '/integrations'
-      fullPath: '/dashboard/settings/integrations'
-      preLoaderRoute: typeof AppDashboardSettingsIntegrationsIndexRouteImport
-      parentRoute: typeof AppDashboardSettingsRouteRoute
-    }
     '/_app/dashboard/settings/groups/': {
       id: '/_app/dashboard/settings/groups/'
       path: '/groups'
@@ -677,7 +657,6 @@ interface AppDashboardSettingsRouteRouteChildren {
   AppDashboardSettingsAppearanceIndexRoute: typeof AppDashboardSettingsAppearanceIndexRoute
   AppDashboardSettingsBillingIndexRoute: typeof AppDashboardSettingsBillingIndexRoute
   AppDashboardSettingsGroupsIndexRoute: typeof AppDashboardSettingsGroupsIndexRoute
-  AppDashboardSettingsIntegrationsIndexRoute: typeof AppDashboardSettingsIntegrationsIndexRoute
   AppDashboardSettingsNotificationsIndexRoute: typeof AppDashboardSettingsNotificationsIndexRoute
   AppDashboardSettingsPrivacyIndexRoute: typeof AppDashboardSettingsPrivacyIndexRoute
 }
@@ -691,8 +670,6 @@ const AppDashboardSettingsRouteRouteChildren: AppDashboardSettingsRouteRouteChil
     AppDashboardSettingsBillingIndexRoute:
       AppDashboardSettingsBillingIndexRoute,
     AppDashboardSettingsGroupsIndexRoute: AppDashboardSettingsGroupsIndexRoute,
-    AppDashboardSettingsIntegrationsIndexRoute:
-      AppDashboardSettingsIntegrationsIndexRoute,
     AppDashboardSettingsNotificationsIndexRoute:
       AppDashboardSettingsNotificationsIndexRoute,
     AppDashboardSettingsPrivacyIndexRoute:
