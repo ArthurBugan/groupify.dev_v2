@@ -27,6 +27,7 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import { useNavigate } from "@tanstack/react-router";
+import { useLogoutMutation } from "@/hooks/mutations/useUserMutations";
 
 const items = [
 	{
@@ -57,11 +58,10 @@ const items = [
 ];
 
 export function AppSidebar() {
-	const navigate = useNavigate();
+	const logoutMutation = useLogoutMutation();
 
 	const signOut =()  => {
-		Cookies.remove("auth-token");
-		navigate({ to: "/" });
+		logoutMutation.mutateAsync();
 	}
 
 	return (

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
 	ArrowRight,
 	BarChart3,
+	BookAIcon,
 	CheckCircle,
 	ChevronRight,
 	Code2,
@@ -24,12 +25,14 @@ import {
 	Card,
 	CardContent,
 	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "./language-provider";
 import { MainNavbar } from "./main-navbar";
+import { IconViewer } from "./icon-picker";
 
 // Tech-inspired animated background component
 function TechBackground() {
@@ -91,14 +94,6 @@ export function LandingPage() {
 				"bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20",
 		},
 		{
-			icon: BarChart3,
-			title: t("features.analytics.title"),
-			description: t("features.analytics.desc"),
-			color: "from-purple-500 to-violet-500",
-			bgColor:
-				"bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20",
-		},
-		{
 			icon: Server,
 			title: t("features.youtube.title"),
 			description: t("features.youtube.desc"),
@@ -122,13 +117,21 @@ export function LandingPage() {
 			bgColor:
 				"bg-gradient-to-br from-indigo-50 to-blue-500 dark:from-indigo-950/20 dark:to-blue-950/20",
 		},
+		{
+			icon: Monitor,
+			title: t("features.integrated.title"),
+			description: t("features.integrated.desc"),
+			color: "from-indigo-500 to-blue-500",
+			bgColor:
+				"bg-gradient-to-br from-indigo-50 to-blue-500 dark:from-indigo-950/20 dark:to-blue-950/20",
+		},
 	];
 
 	const integrations = [
 		{
 			name: "Crunchyroll",
 			description: t("integrations.crunchyroll.desc"),
-			icon: "🍥",
+			icon: "streamline-logos:crunchyroll-logo-block",
 			badge: "New",
 			color: "from-orange-500 to-red-500",
 		},
@@ -140,10 +143,10 @@ export function LandingPage() {
 			color: "from-red-500 to-red-600",
 		},
 		{
-			name: "Export Tools",
+			name: "Groupshelf",
 			description: t("integrations.export.desc"),
-			icon: "📊",
-			badge: "Pro",
+			icon: BookAIcon,
+			badge: "Coming soon",
 			color: "from-blue-500 to-indigo-500",
 		},
 	];
@@ -184,8 +187,7 @@ export function LandingPage() {
 			features: [
 				"Up to 3 groups",
 				"Up to 20 channels",
-				"Basic analytics",
-				"1,000 API calls/month",
+				"Create anime groups",
 				"Community support",
 			],
 			cta: t("pricing.getstarted"),
@@ -194,38 +196,34 @@ export function LandingPage() {
 		},
 		{
 			name: t("pricing.pro.name"),
-			price: "$9",
+			price: "$3",
 			period: "month",
 			description: t("pricing.pro.desc"),
 			features: [
 				"Up to 50 groups",
 				"Up to 500 channels",
-				"Advanced analytics",
-				"100,000 API calls/month",
-				"Priority support",
-				"Export data",
-				"Team collaboration",
+				"Create anime groups",
+				"Create new categories",
+				"Share groups with others",
 			],
-			cta: t("pricing.starttrial"),
+			cta: t("pricing.getstarted"),
 			popular: true,
 			color: "border-primary shadow-lg shadow-primary/25",
 		},
 		{
 			name: t("pricing.business.name"),
-			price: "$29",
+			price: "$9.99",
 			period: "month",
 			description: t("pricing.business.desc"),
 			features: [
+				"Everything from free",
+				"Everything from pro",
 				"Unlimited groups",
 				"Unlimited channels",
-				"Advanced analytics",
-				"1,000,000 API calls/month",
 				"Priority support",
-				"API access",
-				"Custom integrations",
-				"White-label options",
+				"Access to Groupshelf",
 			],
-			cta: t("pricing.contactsales"),
+			cta: t("pricing.getstarted"),
 			popular: false,
 			color: "border-border",
 		},
@@ -287,25 +285,26 @@ export function LandingPage() {
 							<div className="flex flex-col sm:flex-row gap-4">
 								<Button
 									size="lg"
+									variant="ghost"
 									asChild
-									className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg shadow-blue-500/25 text-lg px-8 py-6 font-mono"
+									className="h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg shadow-blue-500/25 text-lg px-8 py-6 font-mono"
 								>
 									<Link to="/register">
 										{t("hero.starttrial")}
-										<ArrowRight className="ml-2 h-5 w-5" />
+										<ArrowRight className="ml-2 h-4 w-4" />
 									</Link>
 								</Button>
 								<Button
 									size="lg"
-									variant="outline"
+									variant="secondary"
 									asChild
-									className="border-2 text-lg px-8 py-6 hover:bg-accent font-mono"
+									className="h-10 text-lg px-8 py-6 hover:bg-accent font-mono"
 								>
 									<Link
 										to="/"
 										href="https://www.youtube.com/watch?v=A2UDaMMP0Uk"
 									>
-										<Play className="mr-2 h-5 w-5" />
+										<Play className="mr-2 h-4 w-4" />
 										{t("hero.watchdemo")}
 									</Link>
 								</Button>
@@ -402,64 +401,83 @@ export function LandingPage() {
 			</section>
 
 			{/* Integrations Section */}
-			<section id={integrationsId} className="py-20 lg:py-32 bg-muted/50">
-				<div className="container mx-auto px-4">
-					<div className="text-center space-y-4 mb-16">
-						<Badge variant="outline" className="mb-4 font-mono">
+			<section id={integrationsId} className="relative py-20 lg:py-32 bg-background overflow-hidden">
+				{/* Optional grid background effect */}
+				<div className="absolute inset-0 pointer-events-none bg-grid-small bg-muted/5"></div>
+
+				<div className="relative container mx-auto px-4">
+					{/* Header */}
+					<div className="text-center space-y-4 mb-20">
+						<Badge variant="secondary" className="mb-4 font-mono uppercase tracking-wide text-xs">
 							{t("integrations.badge")}
 						</Badge>
-						<h2 className="text-3xl lg:text-5xl font-bold font-mono">
+						<h2 className="text-4xl lg:text-5xl font-bold font-mono text-white">
 							{t("integrations.title")}
 						</h2>
-						<p className="text-xl text-muted-foreground max-w-[600px] mx-auto">
+						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
 							{t("integrations.subtitle")}
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-3 gap-8">
+					{/* Cards Grid */}
+					<div className="grid md:grid-cols-3 gap-10">
 						{integrations.map((integration, index) => {
 							const key = `integration-${integration.name}-${index}`;
 							return (
 								<Card
 									key={key}
-									className="text-center group hover:shadow-2xl transition-all duration-300 hover:scale-105 border-0 shadow-lg overflow-hidden"
+									className={cn(
+										"group relative border border-white/10 bg-white/5 backdrop-blur-lg rounded-xl p-6 text-center transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl"
+									)}
 								>
+									{/* Gradient top border */}
 									<div
-										className={`h-2 bg-gradient-to-r ${integration.color}`}
-									></div>
-									<CardHeader className="pb-4">
-										<div className="mx-auto w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-											{typeof integration.icon === "string" ? (
-												<span className="text-3xl">{integration.icon}</span>
-											) : (
-												<integration.icon className="h-8 w-8" />
-											)}
-										</div>
-										<div className="flex items-center justify-center gap-2">
-											<CardTitle className="group-hover:text-primary transition-colors font-mono">
-												{integration.name}
-											</CardTitle>
-											<Badge
-												variant={
-													integration.badge === "New" ? "default" : "secondary"
-												}
-												className="shadow-sm font-mono"
-											>
-												{integration.badge}
-											</Badge>
-										</div>
-									</CardHeader>
-									<CardContent>
-										<CardDescription className="text-base">
-											{integration.description}
-										</CardDescription>
-									</CardContent>
+										className={cn(
+											"h-1 rounded-full mb-6",
+											"bg-gradient-to-r",
+											integration.color
+										)}
+									/>
+
+									{/* Icon */}
+									<div className="mx-auto w-16 h-16 rounded-xl bg-muted/20 backdrop-blur-sm flex items-center justify-center mb-5 border border-white/10 group-hover:scale-110 transition-transform duration-300 shadow-sm">
+										{typeof integration.icon === "string" ? (
+											<IconViewer className="text-3xl" icon={integration.icon} />
+										) : (
+											<integration.icon className="h-8 w-8 text-white" />
+										)}
+									</div>
+
+									{/* Title and Badge */}
+									<div className="flex items-center justify-center gap-2 mb-2">
+										<CardTitle className="text-lg font-mono text-white group-hover:text-primary transition-colors">
+											{integration.name}
+										</CardTitle>
+										<Badge
+											variant={
+												integration.badge === "New"
+													? "default"
+													: integration.badge === "Coming soon"
+														? "outline"
+														: "secondary"
+											}
+											className="text-xs font-mono px-2 py-0.5"
+										>
+											{integration.badge}
+										</Badge>
+									</div>
+
+									{/* Description */}
+									<CardDescription className="text-sm text-muted-foreground">
+										{integration.description}
+									</CardDescription>
 								</Card>
 							);
 						})}
 					</div>
 				</div>
 			</section>
+
 
 			{/* Testimonials Section */}
 			<section id={testimonialsId} className="py-20 lg:py-32">
@@ -541,25 +559,28 @@ export function LandingPage() {
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-						{pricingPlans.map((plan, index) => {
-							const key = `plan-${plan.name}-${index}`;
-							return (
-								<Card
-									key={key}
-									className={cn(
-										"relative group hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden",
-										plan.color,
-										plan.popular && "ring-2 ring-primary",
-									)}
-								>
-									{plan.popular && (
-										<div className="absolute -top-4 left-1/2 -translate-x-1/2">
-											<Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
-												{t("pricing.popular")}
-											</Badge>
-										</div>
-									)}
+					<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+						{pricingPlans.map((plan, index) => (
+							<Card
+								key={plan.name}
+								className={cn(
+									"relative group hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden",
+									"flex flex-col h-full",
+									plan.color,
+									plan.popular && "ring-2 ring-primary"
+								)}
+							>
+								{/* Popular Badge */}
+								{plan.popular && (
+									<div className="absolute left-1/2 -translate-x-1/2">
+										<Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+											{t("pricing.popular")}
+										</Badge>
+									</div>
+								)}
+
+								{/* Content */}
+								<div className="flex-1 flex flex-col">
 									<CardHeader className="text-center pb-4">
 										<CardTitle className="text-2xl group-hover:text-primary transition-colors">
 											{plan.name}
@@ -576,11 +597,12 @@ export function LandingPage() {
 											</CardDescription>
 										</div>
 									</CardHeader>
-									<CardContent className="space-y-6">
+
+									<CardContent className="flex-1 space-y-6">
 										<ul className="space-y-3">
-											{plan.features.map((feature) => (
+											{plan.features.map((feature, i) => (
 												<li
-													key={`${key}-feature-${feature}`}
+													key={`feature-${index}-${i}`}
 													className="flex items-center gap-3"
 												>
 													<CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
@@ -588,25 +610,29 @@ export function LandingPage() {
 												</li>
 											))}
 										</ul>
-										<Button
-											className={cn(
-												"w-full text-base py-6",
-												plan.popular
-													? "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/25"
-													: "",
-											)}
-											variant={plan.popular ? "default" : "outline"}
-											asChild
-										>
-											<Link to="/register">
-												{plan.cta}
-												<ChevronRight className="ml-2 h-4 w-4" />
-											</Link>
-										</Button>
 									</CardContent>
-								</Card>
-							);
-						})}
+								</div>
+
+								{/* Footer */}
+								<CardFooter>
+									<Button
+										className={cn(
+											"w-full text-base py-6",
+											plan.popular
+												? "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/25"
+												: ""
+										)}
+										variant={plan.popular ? "default" : "outline"}
+										asChild
+									>
+										<Link to="/register">
+											{plan.cta}
+											<ChevronRight className="ml-2 h-4 w-4" />
+										</Link>
+									</Button>
+								</CardFooter>
+							</Card>
+						))}
 					</div>
 				</div>
 			</section>

@@ -45,15 +45,15 @@ export const Route = createRootRoute({
 function RootComponent() {
 	return (
 		<LanguageProvider>
-			<AppearanceProvider>
-				<QueryClientProvider client={queryClient}>
-					<RootDocument>
-						<Outlet />
-						<ReactQueryDevtools initialIsOpen={true} />
-						<Toaster richColors />
-					</RootDocument>
-				</QueryClientProvider>
-			</AppearanceProvider>
+				<AppearanceProvider>
+					<QueryClientProvider client={queryClient}>
+						<RootDocument>
+							<Outlet />
+							<ReactQueryDevtools initialIsOpen={true} />
+							<Toaster richColors />
+						</RootDocument>
+					</QueryClientProvider>
+				</AppearanceProvider>
 		</LanguageProvider>
 	);
 }

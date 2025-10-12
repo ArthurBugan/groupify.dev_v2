@@ -116,6 +116,8 @@ const translations = {
 		"features.responsive.title": "Responsive Design",
 		"features.responsive.desc":
 			"Access your dashboard from any device with our fully responsive and mobile-optimized interface.",
+		"features.integrated.title": "Integrated UI",
+		"features.integrated.desc": "Access the groups directly from the Youtube and Crunchyroll website",
 
 		"register.welcome":
 			"Create your account and start organizing your YouTube channels.",
@@ -159,7 +161,7 @@ const translations = {
 			"Connect with your favorite platforms and tools to supercharge your workflow.",
 		"integrations.crunchyroll.desc": "Track anime content across platforms",
 		"integrations.youtube.desc": "Real-time channel data synchronization",
-		"integrations.export.desc": "Export data in JSON, CSV formats",
+		"integrations.export.desc": "Un lugar para reunir grupos de la comunidad.",
 
 		// Testimonials
 		"testimonials.badge": "Testimonials",
@@ -350,7 +352,7 @@ const translations = {
 			"Acompanhe conteúdo de anime em plataformas",
 		"integrations.youtube.desc":
 			"Sincronização de dados de canal em tempo real",
-		"integrations.export.desc": "Exporta dados em formatos JSON, CSV",
+		"integrations.export.desc": "Um lugar para encontrar grupos da comunidade",
 
 		// Testimonials
 		"testimonials.badge": "Depoimentos",
