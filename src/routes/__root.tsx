@@ -17,7 +17,7 @@ import { NotFound } from "@/components/not-found";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { queryClient } from "@/hooks/utils/queryClient";
-import appCss from "../styles/app.css?url";
+import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
 	notFoundComponent: () => <NotFound />,

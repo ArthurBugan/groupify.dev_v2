@@ -8,22 +8,26 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin'
 
 export default defineConfig({
-	// server: {
-	// 	host: '0.0.0.0',
-	// 	cors: true,
-	// 	proxy: {
-	// 		"/api": {
-	// 			target: "http://localhost:3001",
-	// 			changeOrigin: true,
-	// 			secure: false,
-	// 			rewrite: (path) => path.replace(/^\/api/, ""),
-	// 		},
-	// 	},
-	// 	allowedHosts: true,
-	// 	port: 3000,
-	// },
+	server: {
+		host: '0.0.0.0',
+		cors: true,
+		proxy: {
+			"/api": {
+				target: "http://localhost:3001",
+				changeOrigin: true,
+				secure: false,
+				rewrite: (path) => path.replace(/^\/api/, ""),
+			},
+		},
+		allowedHosts: true,
+		port: 3000,
+	},
+	build: {
+		cssCodeSplit: false
+	},
 	plugins: [
 		// Enables Vite to resolve imports using path aliases.
+		nitroV2Plugin({ preset: 'bun' }),
 		tsconfigPaths(),
 		viteTsConfigPaths({
 			projects: ["./tsconfig.json"],
@@ -38,7 +42,6 @@ export default defineConfig({
 				routesDirectory: "src/routes", // Defaults to "src/routes"
 			},
 		}),
-		nitroV2Plugin({ preset: 'bun' }),
 		tailwindcss(),
 		react(),
 	],
