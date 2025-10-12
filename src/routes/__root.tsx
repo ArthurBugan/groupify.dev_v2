@@ -18,6 +18,19 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { queryClient } from "@/hooks/utils/queryClient";
 import appCss from "@/styles/app.css?url";
+import posthog from "posthog-js";
+
+const PUBLIC_POST_HOG_ID = import.meta.env.VITE_POST_HOG_ID;
+const NODE_ENV = import.meta.env.MODE;
+
+if (
+	NODE_ENV === "production" &&
+	PUBLIC_POST_HOG_ID
+) {
+	posthog.init(PUBLIC_POST_HOG_ID, {
+		api_host: "https://app.posthog.com",
+	});
+}
 
 export const Route = createRootRoute({
 	notFoundComponent: () => <NotFound />,
@@ -45,15 +58,15 @@ export const Route = createRootRoute({
 function RootComponent() {
 	return (
 		<LanguageProvider>
-				<AppearanceProvider>
-					<QueryClientProvider client={queryClient}>
-						<RootDocument>
-							<Outlet />
-							<ReactQueryDevtools initialIsOpen={true} />
-							<Toaster richColors />
-						</RootDocument>
-					</QueryClientProvider>
-				</AppearanceProvider>
+			<AppearanceProvider>
+				<QueryClientProvider client={queryClient}>
+					<RootDocument>
+						<Outlet />
+						<ReactQueryDevtools initialIsOpen={true} />
+						<Toaster richColors />
+					</RootDocument>
+				</QueryClientProvider>
+			</AppearanceProvider>
 		</LanguageProvider>
 	);
 }
@@ -63,9 +76,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<head>
 				<HeadContent />
 				<script
-				async
-				src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4077364511521347"
-				crossOrigin="anonymous"
+					async
+					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4077364511521347"
+					crossOrigin="anonymous"
 				></script>
 			</head>
 			<body>
@@ -78,7 +91,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 					{children}
 				</ThemeProvider>
 				<script id="gtm" strategy="afterInteractive">
-				{`
+					{`
 					(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 					j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
