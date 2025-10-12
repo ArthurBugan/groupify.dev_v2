@@ -8,15 +8,17 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
 	server: {
+		host: '0.0.0.0',
+		cors: true,
 		proxy: {
 			"/api": {
 				target: "http://localhost:3001",
-				changeOrigin: false,
+				changeOrigin: true,
 				secure: false,
 				rewrite: (path) => path.replace(/^\/api/, ""),
 			},
 		},
-		allowedHosts: ["groupify.localhost", "groupify.dev", "localhost"],
+		allowedHosts: true,
 		port: 3000,
 	},
 	plugins: [

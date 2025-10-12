@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
+import { useNavigate } from "@tanstack/react-router";
 
 // Types for future user mutations
 export type UpdateProfileRequest = {
@@ -60,6 +61,25 @@ export const useDeleteAccountMutation = () => {
 		},
 		onError: (error) => {
 			console.error("Account deletion failed:", error);
+			throw error;
+		},
+	});
+};
+
+const logout = async (): Promise<{ message: string }> => {
+	const response = await apiClient.post<ApiResponse<{ message: string }>>("/logout");
+	return response.data;
+};
+
+export const useLogoutMutation = () => {
+	const navigate = useNavigate();
+	return useMutation({
+		mutationFn: () => logout(),
+		onSuccess: () => {
+			navigate({ to: "/" });
+		},
+		onError: (error) => {
+			console.error("Logout failed:", error);
 			throw error;
 		},
 	});

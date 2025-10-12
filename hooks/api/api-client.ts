@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 type ApiResponse<T> = {
 	data: T;
 	message?: string;
@@ -36,41 +38,48 @@ class ApiClient {
 		};
 
 		try {
-			const response = await fetch(url, config);
+				const response = await fetch(url, config);
 
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({
-					message: "An error occurred",
-				}));
+				if (!response.ok) {
+					if (response.status === 401) {
+						toast.error("Session expired. Please log in again.");
+						setTimeout(() => {
+							window.location.href = "/login";
+							throw new Error("Unauthorized"); // Stop further processing
+						}, 3000)
+					}
+					const errorData = await response.json().catch(() => ({
+						message: "An error occurred",
+					}));
 
-				const apiError: ApiError = {
-					message: errorData.message || `HTTP ${response.status}`,
-					status: response.status,
-					errors: errorData.errors,
-				};
+					const apiError: ApiError = {
+						message: errorData.message || `HTTP ${response.status}`,
+						status: response.status,
+						errors: errorData.errors,
+					};
 
-				throw apiError;
+					throw apiError;
+				}
+
+				const data = await response.json();
+				return data;
+			} catch (error) {
+				if (error instanceof TypeError) {
+					// Network error
+					throw {
+						message: "Network error. Please check your connection.",
+						status: 0,
+					} as ApiError;
+				}
+				throw error;
 			}
-
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			if (error instanceof TypeError) {
-				// Network error
-				throw {
-					message: "Network error. Please check your connection.",
-					status: 0,
-				} as ApiError;
-			}
-			throw error;
 		}
-	}
 
-	// GET request
-	async get<T>(
-		endpoint: string,
-		params?: Record<string, string | number | boolean | undefined>,
-	): Promise<T> {
+		// GET request
+		async get<T>(
+			endpoint: string,
+			params?: Record<string, string | number | boolean | undefined>,
+		): Promise<T> {
 		const url = new URL(endpoint, this.baseURL);
 		if (params) {
 			Object.entries(params).forEach(([key, value]) => {

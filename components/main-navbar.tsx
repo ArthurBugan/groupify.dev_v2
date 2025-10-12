@@ -30,6 +30,13 @@ export function MainNavbar() {
 					{/* Desktop Navigation */}
 					<div className="hidden md:flex items-center gap-8">
 						<Link
+								to="/dashboard"
+								className="text-sm font-medium hover:text-primary transition-colors group"
+							>
+								Dashboard
+								<div className="h-0.5 w-0 bg-primary transition-all group-hover:w-full"></div>
+							</Link>
+						<Link
 							to="/#features"
 							className="text-sm font-medium hover:text-primary transition-colors group"
 						>
