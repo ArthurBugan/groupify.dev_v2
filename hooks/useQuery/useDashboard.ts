@@ -11,7 +11,7 @@ export type DashboardTotalResponse = {
 
 const getTotals = async (): Promise<DashboardTotalResponse> => {
 	const response = await apiClient.get<ApiResponse<DashboardTotalResponse>>(
-		"api/v2/dashboard/total",
+		"/api/v2/dashboard/total",
 	);
 	return response.data;
 };

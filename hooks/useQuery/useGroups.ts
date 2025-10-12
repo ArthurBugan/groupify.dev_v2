@@ -68,7 +68,7 @@ const getGroups = async (params?: {
 // Query function to fetch a single group by ID
 const getGroup = async (id: string): Promise<Group> => {
 	const response = await apiClient.get<ApiResponse<Group>>(
-		`api/v2/groups/${id}`,
+		`/api/v2/groups/${id}`,
 	);
 	return response.data;
 };
@@ -102,7 +102,7 @@ const updateGroupDisplayOrder = async (
 	groupId: string,
 	displayOrder: number,
 ): Promise<void> => {
-	await apiClient.put(`api/v2/groups/${groupId}/display-order`, {
+	await apiClient.put(`/api/v2/groups/${groupId}/display-order`, {
 		display_order: displayOrder,
 	});
 };
@@ -122,7 +122,7 @@ const updateGroup = async (
 	data: UpdateGroupRequest,
 ): Promise<Group> => {
 	const response = await apiClient.put<ApiResponse<Group>>(
-		`api/v2/groups/${id}`,
+		`/api/v2/groups/${id}`,
 		data,
 	);
 	return response.data;
@@ -130,7 +130,7 @@ const updateGroup = async (
 
 // Delete a group
 const deleteGroup = async (id: string): Promise<void> => {
-	await apiClient.delete(`api/v2/groups/${id}`);
+	await apiClient.delete(`/api/v2/groups/${id}`);
 };
 
 export function useUpdateGroupDisplayOrder() {

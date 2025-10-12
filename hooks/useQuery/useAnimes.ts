@@ -7,7 +7,6 @@ export interface Anime {
   id: string;
   userId?: string | null;
   groupId?: string | null;
-  contentType?: string | null;
   name: string;
   channelId: string;
   thumbnail?: string;
@@ -37,7 +36,7 @@ export const getAnimes = async (params?: {
   search?: string;
 }): Promise<PaginatedAnimesResponse> => {
   const response = await apiClient.get<PaginatedAnimesResponse>(
-    "api/v2/animes",
+    "/api/v2/animes",
     params,
   );
   return response;
