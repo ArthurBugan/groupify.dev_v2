@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin'
 
 export default defineConfig({
 	server: {
@@ -37,6 +38,7 @@ export default defineConfig({
 				routesDirectory: "src/routes", // Defaults to "src/routes"
 			},
 		}),
+		nitroV2Plugin({ preset: 'bun' }),
 		tailwindcss(),
 		react(),
 	],
