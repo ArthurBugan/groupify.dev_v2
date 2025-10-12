@@ -1,4 +1,4 @@
-import Cookies from "js-cookie";
+// biome-ignore assist/source/organizeImports: <explanation>
 import {
 	ChevronUp,
 	FolderKanban,
