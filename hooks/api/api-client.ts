@@ -18,7 +18,6 @@ class ApiClient {
 	constructor(baseURL: string = "/api") {
 		this.baseURL = baseURL;
 		this.defaultHeaders = {
-			Credentials: "include",
 			"Content-Type": "application/json",
 		};
 	}
@@ -31,6 +30,7 @@ class ApiClient {
 
 		const config: RequestInit = {
 			...options,
+			credentials: "include",
 			headers: {
 				...this.defaultHeaders,
 				...options.headers,

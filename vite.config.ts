@@ -9,16 +9,16 @@ import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin'
 
 export default defineConfig({
 	// server: {
-		// host: '0.0.0.0',
-		// cors: true,
-		// proxy: {
-		// 	"/api": {
-		// 		target: "http://localhost:3001",
-		// 		changeOrigin: true,
-		// 		secure: false,
-		// 		rewrite: (path) => path.replace(/^\/api/, ""),
-		// 	},
-		// },
+	// 	host: '0.0.0.0',
+	// 	cors: true,
+	// 	proxy: {
+	// 		"/api": {
+	// 			target: "http://localhost:3001",
+	// 			changeOrigin: true,
+	// 			secure: false,
+	// 			rewrite: (path) => path.replace(/^\/api/, ""),
+	// 		},
+	// 	},
 	// 	allowedHosts: true,
 	// 	port: 3000,
 	// },
