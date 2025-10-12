@@ -64,7 +64,7 @@ const getChannels = async (params?: {
 	groupId?: string;
 }): Promise<ChannelsResponse> => {
 	const response = await apiClient.get<ChannelsResponse>(
-		"api/v2/channels",
+		"/api/v2/channels",
 		params,
 	);
 	return response;
@@ -72,7 +72,7 @@ const getChannels = async (params?: {
 
 const getChannel = async (id: string): Promise<Channel> => {
 	const response = await apiClient.get<ApiResponse<Channel>>(
-		`api/v2/channels/${id}`,
+		`/api/v2/channels/${id}`,
 	);
 	return response.data;
 };
@@ -87,7 +87,7 @@ const getChannelsByGroup = async (
 	},
 ): Promise<ChannelsResponse> => {
 	const response = await apiClient.get<ChannelsResponse>(
-		`api/v2/channels/group/${groupId}`,
+		`/api/v2/channels/group/${groupId}`,
 		params,
 	);
 	return response;
@@ -159,7 +159,7 @@ export function useChannelsByGroup(
 // Create a new channel
 const createChannel = async (data: CreateChannelRequest): Promise<Channel> => {
 	const response = await apiClient.post<ApiResponse<Channel>>(
-		"api/v2/channels",
+		"/api/v2/channels",
 		data,
 	);
 	return response.data;
@@ -171,7 +171,7 @@ const updateChannel = async (
 	data: UpdateChannelRequest,
 ): Promise<Channel> => {
 	const response = await apiClient.patch<ApiResponse<Channel>>(
-		`api/v2/channels/${id}`,
+		`/api/v2/channels/${id}`,
 		data,
 	);
 	return response.data;
@@ -184,7 +184,7 @@ const updateChannelsBatch = async (
 	console.log("updateChannelsBatch", data);
 	const groupId = data.channels[0].groupId;
 	const response = await apiClient.patch<ApiResponse<Channel[]>>(
-		`api/v2/channels/${groupId}/batch`,
+		`/api/v2/channels/${groupId}/batch`,
 		data,
 	);
 	return response.data;
@@ -196,7 +196,7 @@ const deleteChannel = async ({
 }: {
 	channelId: string;
 }): Promise<void> => {
-	await apiClient.delete(`api/v2/channels/${channelId}`);
+	await apiClient.delete(`/api/v2/channels/${channelId}`);
 };
 
 // React Query mutation hooks
