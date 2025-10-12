@@ -23,7 +23,9 @@ export default defineConfig({
 		port: 3000,
 	},
 	build: {
-		cssCodeSplit: false
+		cssCodeSplit: false,
+		outDir: "./output",
+		assetsDir: "assets",
 	},
 	plugins: [
 		// Enables Vite to resolve imports using path aliases.
