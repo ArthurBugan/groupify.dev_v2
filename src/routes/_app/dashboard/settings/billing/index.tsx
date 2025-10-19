@@ -7,6 +7,7 @@ export const Route = createFileRoute("/_app/dashboard/settings/billing/")({
 });
 
 function RouteComponent() {
+	return null;
 	return (
 		<TabsContent value="billing" className="space-y-4">
 			<BillingSettings />
