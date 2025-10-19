@@ -90,7 +90,8 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				>
 					{children}
 				</ThemeProvider>
-				<script id="gtm" strategy="afterInteractive">
+				{/** biome-ignore lint/correctness/useUniqueElementIds: <explanation> */}
+				<script id="gtm">
 					{`
 					(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 					new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
