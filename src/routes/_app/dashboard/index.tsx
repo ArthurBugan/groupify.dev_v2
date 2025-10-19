@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams, useSearch } from "@tanstack/react-router";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { DashboardStats } from "@/components/dashboard-stats";
 import { GroupList } from "@/components/group-list";
@@ -6,12 +6,43 @@ import { RecentActivity } from "@/components/recent-activity";
 import { RecommendationCards } from "@/components/recommendation-cards";
 import { SharedGroupsOverview } from "@/components/shared-groups-overview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { z } from 'zod'
+import { fallback, zodValidator } from '@tanstack/zod-adapter'
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { sendToBackgroundViaRelay } from "@plasmohq/messaging";
+
+const dashboardParams = z.object({
+	origin: fallback(z.string(), '').default(""),
+})
 
 export const Route = createFileRoute("/_app/dashboard/")({
 	component: DashboardPage,
-});
+	validateSearch: zodValidator(dashboardParams),
+})
 
 function DashboardPage() {
+	const { origin } = Route.useSearch();
+
+	useEffect(() => {
+		if (origin) {
+			(async () => {
+				let decodedCookie = decodeURIComponent(document.cookie);
+				let ca = decodedCookie.split(";");
+
+				let token = ca.find((c) => c.includes("auth-token"))?.trim?.() || "";
+
+				await sendToBackgroundViaRelay({
+					extensionId: process.env.NEXT_PUBLIC_EXTENSION_ID,
+					name: "save-auth" as never,
+					body: {
+						token: token,
+					},
+				});
+			})();
+		}
+	}, [origin]);
+
 	return (
 		<div className="space-y-6">
 			<DashboardHeader
