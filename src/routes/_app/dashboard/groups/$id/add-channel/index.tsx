@@ -90,7 +90,7 @@ function AddChannelPage() {
 					name: c.name,
 					channelId: c.channelId,
 					thumbnail: c.thumbnail,
-					url: `https://youtube.com/channel/${c.url}`,
+					url: c.url,
 					groupId: id,
 					contentType: c.contentType,
 					newContent: false,
@@ -147,15 +147,19 @@ function AddChannelPage() {
 	const handleSaveChannels = async () => {
 		if (selectedChannels.length === 0) return;
 
-		const channelsToUpdate = selectedChannels.map((channel) => ({
-			id: (channel.url?.trim() || "").replace("@", "") || "",
-			name: channel.name,
-			thumbnail: channel.thumbnail,
-			groupId: id,
-			contentType: channel.contentType ?? 'youtube',
-			url: channel.url || "",
-			newContent: false,
-		}));
+		const channelsToUpdate = selectedChannels.map((channel) => {
+			let url = channel.url;
+
+			return {
+				id: (url?.trim() || "").replace("@", "") || "",
+				name: channel.name,
+				thumbnail: channel.thumbnail,
+				groupId: id,
+				contentType: channel.contentType ?? 'youtube',
+				url: url || "",
+				newContent: false,
+			}
+		});
 
 		await updateChannelsBatchMutation({ channels: channelsToUpdate });
 
@@ -418,7 +422,7 @@ function AddChannelPage() {
 															{channel.contentType === "anime"
 																? `https://crunchyroll.com/series/${channel.url}`
 																: `https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
-															
+
 														</p>
 													</div>
 												</div>

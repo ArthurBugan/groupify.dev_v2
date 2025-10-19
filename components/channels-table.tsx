@@ -149,7 +149,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem asChild>
 												<a
-													href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/c/'}${channel.url}`}
+													href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/channel/'}${channel.url}`}
 													target="_blank"
 													rel="noopener noreferrer"
 												>
@@ -210,7 +210,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										className="flex-1"
 									>
 										<a
-											href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/c/'}${channel.url}`}
+											href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/channel/'}${channel.url}`}
 
 											target="_blank"
 											rel="noopener noreferrer"
@@ -271,7 +271,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 						<div className="flex items-center gap-2">
 							<Button variant="ghost" size="icon" className="h-7 w-7" asChild>
 								<a
-									href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/c/'}${channel.url}`}
+									href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/channel/'}${channel.url}`}
 									target="_blank"
 									rel="noopener noreferrer"
 								>
