@@ -23,11 +23,9 @@ export const Route = createFileRoute("/_app/dashboard/")({
 
 function DashboardPage() {
 	const { origin } = Route.useSearch();
-	const [showPopup, setShowPopup] = useState(false);
 
 	useEffect(() => {
 		if (origin) {
-			setShowPopup(true);
 			(async () => {
 				let decodedCookie = decodeURIComponent(document.cookie);
 				let ca = decodedCookie.split(";");
@@ -45,36 +43,8 @@ function DashboardPage() {
 		}
 	}, [origin]);
 
-	const handleClosePopup = () => {
-		setShowPopup(false);
-	};
-
-	const handleOpenExtensionOptions = () => {
-		window.open("chrome-extension://jbifilepodgklfkblilibnbbbncjphde/options.html", "_blank");
-	};
-
 	return (
 		<div className="space-y-6">
-			{showPopup && (
-				<div className="fixed inset-0 bg-gray-900 bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center z-50">
-					<div className="bg-white bg-opacity-90 dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center dark:text-white">
-						<h2 className="text-2xl font-bold mb-4">Congratulations!</h2>
-						<p className="mb-4">Your account has been successfully linked.</p>
-						<Button
-							onClick={handleOpenExtensionOptions}
-							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-800"
-						>
-							Add user token to Groupify Extension
-						</Button>
-						<Button
-							onClick={handleClosePopup}
-							className="ml-4 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-						>
-							Close
-						</Button>
-					</div>
-				</div>
-			)}
 			<DashboardHeader
 				title="Dashboard"
 				description="Overview of your YouTube channel groups"
