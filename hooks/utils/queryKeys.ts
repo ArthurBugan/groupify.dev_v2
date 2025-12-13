@@ -14,6 +14,7 @@ export const queryKeys = {
 		groupId?: string;
 	}) => (params ? ["channels", params] : ["channels"]),
 	channel: (id) => ["channel", id],
+	shareLink: (id) => ["shareLink", id],
 	animes: (params?: {
 		page?: number;
 		limit?: number;

@@ -6,14 +6,12 @@ import {
 	Copy,
 	LinkIcon,
 	Share2,
-	UserPlus,
 	Users,
-	X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { useGenerateShareLink } from "@/hooks/useQuery/useShare";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,8 +25,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGroup } from "@/hooks/useQuery/useGroups";
+import { useLanguage } from "@/components/language-provider";
+import { toast } from "sonner";
 
 interface ShareGroupPageProps {
 	params: {
@@ -42,7 +42,9 @@ export const Route = createFileRoute("/_app/dashboard/groups/$id/share/")({
 
 function ShareGroupPage({ params }: ShareGroupPageProps) {
 	const router = useNavigate();
+	const { t } = useLanguage();
 	const { id } = Route.useParams();
+	const { data: groupData, isLoading } = useGroup(id);
 
 	const [activeTab, setActiveTab] = useState("collaborate");
 	const [group, setGroup] = useState({
@@ -52,87 +54,48 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 		category: "",
 		channelCount: 0,
 	});
-	const [collaborators, setCollaborators] = useState([
-		{
-			id: "1",
-			name: "Alex Johnson",
-			email: "alex@example.com",
-			avatar: "/placeholder.svg?height=40&width=40",
-			role: "editor",
-		},
-	]);
+	const [collaborators, setCollaborators] = useState<{
+		id: string;
+		name: string;
+		email: string;
+		avatar: string;
+		role: string;
+	}[]>([]);
 	const [newCollaborator, setNewCollaborator] = useState("");
 	const [shareLink, setShareLink] = useState("");
 	const [linkCopied, setLinkCopied] = useState(false);
 	const [sharePermission, setSharePermission] = useState("view");
-	const [allowComments, setAllowComments] = useState(true);
 	const [copyDestination, setCopyDestination] = useState("new");
-	const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+	const generateShareLinkMutation = useGenerateShareLink();
 
-	// Fetch group data - in a real app, this would come from your API
 	useEffect(() => {
-		// Simulate API call
-		const fetchGroup = async () => {
-			// This is mock data - in a real app, you would fetch from your API
-			const mockGroups = {
-				"1": {
-					id: "1",
-					name: "Gaming Channels",
-					description:
-						"A collection of gaming channels covering reviews, gameplay, and esports.",
-					category: "Gaming",
-					channelCount: 8,
-				},
-				"2": {
-					id: "2",
-					name: "Tech Reviews",
-					description:
-						"A collection of technology review channels covering gadgets, software, and tech news.",
-					category: "Technology",
-					channelCount: 12,
-				},
-				"3": {
-					id: "3",
-					name: "Cooking Tutorials",
-					description:
-						"Channels that focus on cooking recipes, techniques, and food reviews.",
-					category: "Food",
-					channelCount: 6,
-				},
-				"4": {
-					id: "4",
-					name: "Fitness & Health",
-					description:
-						"Workout tutorials, health tips, and fitness journey channels.",
-					category: "Fitness",
-					channelCount: 9,
-				},
-			};
-
-			const groupData = mockGroups[id];
-			if (groupData) {
-				setGroup(groupData);
-			}
-		};
-
-		fetchGroup();
-	}, [id]);
+		if (groupData) {
+			setGroup({
+				id: groupData.id ?? id,
+				name: groupData.name ?? "",
+				description: groupData.description ?? "",
+				category: groupData.category ?? "",
+				channelCount: groupData.channelCount ?? 0,
+			});
+		}
+	}, [groupData, id]);
 
 	const generateShareLink = async () => {
-		setIsGeneratingLink(true);
-		// Simulate API call to generate link
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// Generate a mock share link
-		const baseUrl = window.location.origin;
-		const linkType = activeTab === "collaborate" ? "collaborate" : "copy";
-		const permission = activeTab === "collaborate" ? sharePermission : "";
-		const timestamp = Date.now();
-		const mockShareLink = `${baseUrl}/share/${linkType}/${id}?permission=${permission}&t=${timestamp}`;
-
-		setShareLink(mockShareLink);
-		setIsGeneratingLink(false);
+		generateShareLinkMutation.mutate({
+			id: group.id,
+			linkType: activeTab === "collaborate" ? sharePermission : "copy",
+			permission: activeTab === "collaborate" ? sharePermission : "",
+		}, {
+			onSuccess: ({data}) => {
+				setShareLink(data?.shareLink || "");
+			},
+			onError: (error) => {
+				console.error("Error generating share link:", error);
+			},
+		});
 	};
+
+	const isGeneratingLink = generateShareLinkMutation.isPending;
 
 	const copyLinkToClipboard = () => {
 		navigator.clipboard.writeText(shareLink);
@@ -140,43 +103,17 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 		setTimeout(() => setLinkCopied(false), 2000);
 	};
 
-	const addCollaborator = () => {
-		if (!newCollaborator.trim()) return;
-
-		// In a real app, you would validate the email and send an invitation
-		const newUser = {
-			id: `user-${Date.now()}`,
-			name: "New User",
-			email: newCollaborator,
-			avatar: "/placeholder.svg?height=40&width=40",
-			role: "viewer",
-		};
-
-		setCollaborators([...collaborators, newUser]);
-		setNewCollaborator("");
-	};
-
-	const removeCollaborator = (id: string) => {
-		setCollaborators(collaborators.filter((user) => user.id !== id));
-	};
-
-	const changeCollaboratorRole = (id: string, role: string) => {
-		setCollaborators(
-			collaborators.map((user) => (user.id === id ? { ...user, role } : user)),
-		);
-	};
-
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
 				<DashboardHeader
-					title={`Share "${group.name}"`}
-					description="Share your group with others"
+					title={groupData ? `Share "${group.name}"` : t("share_group_title")}
+					description={t("share_group_description")}
 				/>
 				<Button variant="outline" size="sm" asChild>
 					<Link to="..">
 						<ArrowLeft className="mr-2 h-4 w-4" />
-						Back to Group
+						{t("back_to_group")}
 					</Link>
 				</Button>
 			</div>
@@ -185,142 +122,50 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 				<div className="md:col-span-2">
 					<Tabs
 						value={activeTab}
-						onValueChange={setActiveTab}
+						onValueChange={(value) => {
+							setActiveTab(value);
+							setShareLink("");
+						}}
 						className="space-y-4"
 					>
 						<TabsList className="grid w-full grid-cols-2">
 							<TabsTrigger value="collaborate">
 								<Users className="mr-2 h-4 w-4" />
-								Collaborate
+								{t("collaborate_tab_title")}
 							</TabsTrigger>
 							<TabsTrigger value="copy">
 								<Copy className="mr-2 h-4 w-4" />
-								Copy Group
+								{t("copy_group_tab_title")}
 							</TabsTrigger>
 						</TabsList>
 
 						<TabsContent value="collaborate" className="space-y-4">
 							<Card>
 								<CardHeader>
-									<CardTitle>Invite Collaborators</CardTitle>
-									<CardDescription>
-										Invite others to collaborate on this group. They will be
-										able to view or edit the group based on the permissions you
-										set.
-									</CardDescription>
+									<CardTitle>{t("collaborate_invite_title")}</CardTitle>
 								</CardHeader>
 								<CardContent className="space-y-4">
-									<div className="flex gap-2">
-										<Input
-											placeholder="Enter email address"
-											value={newCollaborator}
-											onChange={(e) => setNewCollaborator(e.target.value)}
-											className="flex-1"
-										/>
-										<Button onClick={addCollaborator}>
-											<UserPlus className="mr-2 h-4 w-4" />
-											Add
-										</Button>
-									</div>
-
-									<div className="space-y-2">
-										<Label>Collaborators</Label>
-										{collaborators.length === 0 ? (
-											<div className="text-center py-4 text-muted-foreground border rounded-md">
-												<p>No collaborators yet</p>
-											</div>
-										) : (
-											<div className="space-y-2">
-												{collaborators.map((user) => (
-													<div
-														key={user.id}
-														className="flex items-center justify-between p-2 border rounded-md"
-													>
-														<div className="flex items-center gap-2">
-															<Avatar className="h-8 w-8">
-																<AvatarImage
-																	src={user.avatar || "/placeholder.svg"}
-																	alt={user.name}
-																/>
-																<AvatarFallback>
-																	{user.name.charAt(0)}
-																</AvatarFallback>
-															</Avatar>
-															<div>
-																<p className="font-medium">{user.name}</p>
-																<p className="text-xs text-muted-foreground">
-																	{user.email}
-																</p>
-															</div>
-														</div>
-														<div className="flex items-center gap-2">
-															<select
-																className="text-xs border rounded px-2 py-1"
-																value={user.role}
-																onChange={(e) =>
-																	changeCollaboratorRole(
-																		user.id,
-																		e.target.value,
-																	)
-																}
-															>
-																<option value="viewer">Viewer</option>
-																<option value="editor">Editor</option>
-																<option value="admin">Admin</option>
-															</select>
-															<Button
-																variant="ghost"
-																size="icon"
-																onClick={() => removeCollaborator(user.id)}
-															>
-																<X className="h-4 w-4" />
-															</Button>
-														</div>
-													</div>
-												))}
-											</div>
-										)}
-									</div>
-
-									<Separator />
-
 									<div className="space-y-4">
 										<div>
-											<Label>Default Permission for New Collaborators</Label>
+											<Label>{t("default_permission_title")}</Label>
 											<RadioGroup
 												value={sharePermission}
 												onValueChange={setSharePermission}
 												className="mt-2"
 											>
 												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="view" id="view" />
-													<Label htmlFor="view">View only</Label>
+													<RadioGroupItem value="view" id={useId()} />
+													<Label htmlFor="view">{t("perm_view")}</Label>
 												</div>
 												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="edit" id="edit" />
-													<Label htmlFor="edit">Can edit</Label>
+													<RadioGroupItem value="edit" id={useId()} />
+													<Label htmlFor="edit">{t("perm_edit")}</Label>
 												</div>
 												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="admin" id="admin" />
-													<Label htmlFor="admin">
-														Admin (can edit and invite others)
-													</Label>
+													<RadioGroupItem value="admin" id={useId()} />
+													<Label htmlFor="admin">{t("perm_admin")}</Label>
 												</div>
 											</RadioGroup>
-										</div>
-
-										<div className="flex items-center justify-between">
-											<div className="space-y-0.5">
-												<Label htmlFor="comments">Allow Comments</Label>
-												<p className="text-sm text-muted-foreground">
-													Let collaborators add comments to channels
-												</p>
-											</div>
-											<Switch
-												id="comments"
-												checked={allowComments}
-												onCheckedChange={setAllowComments}
-											/>
 										</div>
 									</div>
 								</CardContent>
@@ -328,10 +173,9 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 
 							<Card>
 								<CardHeader>
-									<CardTitle>Create Shareable Link</CardTitle>
+									<CardTitle>{t("share_link_title")}</CardTitle>
 									<CardDescription>
-										Generate a link that you can share with others to invite
-										them to collaborate on this group.
+										{t("share_link_desc")}
 									</CardDescription>
 								</CardHeader>
 								<CardContent className="space-y-4">
@@ -344,17 +188,13 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 													size="sm"
 													onClick={copyLinkToClipboard}
 												>
-													{linkCopied ? "Copied!" : "Copy"}
+													{linkCopied ? t("copied") : t("copy")}
 												</Button>
 											</div>
 											<p className="text-sm text-muted-foreground">
-												Anyone with this link can join as a{" "}
-												{sharePermission === "view"
-													? "viewer"
-													: sharePermission === "edit"
-														? "editor"
-														: "admin"}
-												.
+												{t("join_as", {
+													role: sharePermission,
+												})}
 											</p>
 										</div>
 									) : (
@@ -364,7 +204,7 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 											disabled={isGeneratingLink}
 										>
 											<LinkIcon className="mr-2 h-4 w-4" />
-											{isGeneratingLink ? "Generating..." : "Generate Link"}
+											{isGeneratingLink ? t("generating") : t("generate_link")}
 										</Button>
 									)}
 								</CardContent>
@@ -374,43 +214,19 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 						<TabsContent value="copy" className="space-y-4">
 							<Card>
 								<CardHeader>
-									<CardTitle>Create Copy Link</CardTitle>
+									<CardTitle>{t("copy_link_title")}</CardTitle>
 									<CardDescription>
-										Generate a link that allows others to copy all channels from
-										this group to their own account.
+										{t("copy_link_desc")}
 									</CardDescription>
 								</CardHeader>
 								<CardContent className="space-y-4">
 									<div className="space-y-4">
-										<div>
-											<Label>Copy Destination</Label>
-											<RadioGroup
-												value={copyDestination}
-												onValueChange={setCopyDestination}
-												className="mt-2"
-											>
-												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="new" id="new-group" />
-													<Label htmlFor="new-group">Create a new group</Label>
-												</div>
-												<div className="flex items-center space-x-2">
-													<RadioGroupItem
-														value="existing"
-														id="existing-group"
-													/>
-													<Label htmlFor="existing-group">
-														Add to an existing group
-													</Label>
-												</div>
-											</RadioGroup>
-										</div>
-
 										<Alert>
 											<Share2 className="h-4 w-4" />
 											<AlertDescription>
-												When someone uses this link, they will be able to copy
-												all {group.channelCount} channels from this group to
-												their account.
+												{t("copy_alert_desc", {
+													count: String(group.channelCount),
+												})}
 											</AlertDescription>
 										</Alert>
 
@@ -426,23 +242,21 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 														variant="outline"
 														onClick={copyLinkToClipboard}
 													>
-														{linkCopied ? "Copied!" : "Copy"}
+														{linkCopied ? t("copied") : t("copy")}
 													</Button>
 												</div>
 												<p className="text-sm text-muted-foreground">
-													This link allows anyone to copy the channels in this
-													group.
+													{t("copy_alert_info")}
 												</p>
 											</div>
 										) : (
 											<Button
+												variant="outline"
 												onClick={generateShareLink}
 												disabled={isGeneratingLink}
 											>
 												<LinkIcon className="mr-2 h-4 w-4" />
-												{isGeneratingLink
-													? "Generating..."
-													: "Generate Copy Link"}
+												{isGeneratingLink ? t("generating") : t("generate_copy_link")}
 											</Button>
 										)}
 									</div>
@@ -455,17 +269,29 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 				<div>
 					<Card className="sticky top-6">
 						<CardHeader>
-							<CardTitle>Group Details</CardTitle>
+							<CardTitle>{t("group_details_title")}</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="space-y-2">
 								<div className="flex items-center justify-between">
-									<h3 className="font-medium">{group.name}</h3>
-									<Badge>{group.category}</Badge>
+									{isLoading ? (
+										<div className="h-5 w-40 rounded bg-muted animate-pulse" />
+									) : (
+										<h3 className="font-medium">{group.name}</h3>
+									)}
+									{isLoading ? (
+										<div className="h-5 w-20 rounded bg-muted animate-pulse" />
+									) : (
+										<Badge>{group.category}</Badge>
+									)}
 								</div>
-								<p className="text-sm text-muted-foreground">
-									{group.description}
-								</p>
+								{isLoading ? (
+									<div className="h-4 w-full rounded bg-muted animate-pulse" />
+								) : (
+									<p className="text-sm text-muted-foreground">
+										{group.description}
+									</p>
+								)}
 							</div>
 
 							<Separator />
@@ -473,13 +299,17 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 							<div className="space-y-2">
 								<div className="flex justify-between">
 									<span className="text-sm text-muted-foreground">
-										Channels
+										{t("channels")}
 									</span>
-									<span className="font-medium">{group.channelCount}</span>
+									{isLoading ? (
+										<div className="h-4 w-10 rounded bg-muted animate-pulse" />
+									) : (
+										<span className="font-medium">{group.channelCount}</span>
+									)}
 								</div>
 								<div className="flex justify-between">
 									<span className="text-sm text-muted-foreground">
-										Collaborators
+										{t("collaborators_label")}
 									</span>
 									<span className="font-medium">{collaborators.length}</span>
 								</div>
@@ -488,11 +318,17 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 							<Separator />
 
 							<div className="space-y-2">
-								<h4 className="text-sm font-medium">Share Settings</h4>
+								<h4 className="text-sm font-medium">{t("share_settings_title")}</h4>
 								<p className="text-xs text-muted-foreground">
 									{activeTab === "collaborate"
-										? `Collaborators will have ${sharePermission} access to this group.`
-										: `Recipients will be able to copy all channels to ${copyDestination === "new" ? "a new group" : "an existing group"}.`}
+										? t("share_settings_collab", {
+											permission:
+												sharePermission,
+										})
+										: t("share_settings_copy", {
+											destination:
+												copyDestination,
+										})}
 								</p>
 							</div>
 						</CardContent>
