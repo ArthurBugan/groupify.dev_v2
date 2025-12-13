@@ -8,7 +8,7 @@ type Language = "en" | "pt" | "es";
 interface LanguageContextType {
 	language: Language;
 	setLanguage: (lang: Language) => void;
-	t: (key: string) => string;
+	t: (key: string, params?: Record<string, string>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
@@ -39,7 +39,7 @@ const translations = {
 		"login.signin": "Sign In",
 		"login.signing": "Signing in...",
 		"login.or": "Or continue with",
-		"login.google": "Sing in with Google",
+		"login.google": "Sign in with Google",
 		"login.discord": "Sign In with Discord",
 		"login.github": "GitHub",
 		"login.noaccount": "Don't have an account?",
@@ -196,8 +196,53 @@ const translations = {
 		"cta.title": "Ready to Get Started?",
 		"cta.subtitle":
 			"Join thousands of content creators who are already using Groupify to organize and grow their YouTube presence.",
+		
+		"share_link_generated_success_description": "Share link generated successfully",
 
 		// Footer
+
+		// Collaborate Invite
+		"collaborate_invite_title": "Invite Collaborators",
+		"default_permission_title": "Default Permission",
+		"share_link_title": "Share Link",
+		"join_as": "Anyone with this link will join as a {role} permission.",
+		"copy_link_title": "Copy Group Link",
+		"copy_link_desc": "Share this link with others to allow them to copy this group's channels.",
+		"copy_destination_title": "Copy Destination",
+		"copy_destination_new": "A new group",
+		"copy_destination_existing": "An existing group",
+		"copy_alert_desc": "This will copy {count} channels to the selected destination.",
+		"copy_alert_info": "This link allows others to copy the channels to their own groups.",
+		"generate_copy_link": "Generate Copy Link",
+		"group_details_title": "Group Details",
+		"channels": "Channels",
+		"share_settings_title": "Share Settings",
+		"share_settings_collab": "Collaborators will have {permission} access to this group.",
+		"share_settings_copy": "Recipients will be able to copy all channels to {destination}.",
+		"destination_new": "a new group",
+		"destination_existing": "an existing group",
+		"share_group_title": "Share Group",
+		"share_group_description": "Share your group with others",
+		"back_to_group": "Back to Group",
+		"collaborate_tab_title": "Collaborate",
+		"copy_group_tab_title": "Copy Group",
+		"collaborate_invite_desc": "Invite collaborators to this group by entering their email address and assigning a role.",
+		"input_email_placeholder": "Enter collaborator's email",
+		"collaborators_label": "Collaborators",
+		"collaborators_empty": "No collaborators yet.",
+		"role_viewer": "Viewer",
+		"role_editor": "Editor",
+		"role_admin": "Admin",
+		"perm_view": "Can view group content",
+		"perm_edit": "Can edit group content",
+		"perm_admin": "Full administrative access",
+		"allow_comments_label": "Allow comments",
+		"share_link_desc": "Share this link with others to allow them to view or copy this group.",
+		"copied": "Copied!",
+		"copy": "Copy",
+		"generating": "Generating...",
+		"generate_link": "Generate Copy Link",
+		"add": "Add",
 		"footer.description":
 			"The ultimate tool for organizing and managing your YouTube channel portfolio with modern design and powerful features.",
 		"footer.product": "Product",
@@ -207,6 +252,47 @@ const translations = {
 			"All rights reserved. Built with ❤️ for content creators.",
 	},
 	pt: {
+		"collaborate_invite_title": "Convidar Colaboradores",
+		"collaborate_invite_desc": "Convide colaboradores para este grupo inserindo o endereço de e-mail e atribuindo uma função.",
+		"input_email_placeholder": "Digite o e-mail do colaborador",
+		"collaborators_label": "Colaboradores",
+		"collaborators_empty": "Nenhum colaborador ainda.",
+		"role_viewer": "Visualizador",
+		"role_editor": "Editor",
+		"role_admin": "Administrador",
+		"perm_view": "Pode visualizar o conteúdo do grupo",
+		"perm_edit": "Pode editar o conteúdo do grupo",
+		"perm_admin": "Acesso administrativo total",
+		"allow_comments_label": "Permitir comentários",
+		"share_link_desc": "Compartilhe este link com outras pessoas para permitir que visualizem ou copiem este grupo.",
+		"copied": "Copiado!",
+		"copy": "Copiar",
+		"generating": "Gerando...",
+		"generate_link": "Gerar Link de Cópia",
+		"add": "Adicionar",
+		"default_permission_title": "Permissão Padrão",
+		"share_link_title": "Link de Compartilhamento",
+		"join_as": "Qualquer pessoa com este link entrará permissão de {role}.",
+		"copy_link_title": "Link para Copiar Grupo",
+		"copy_link_desc": "Compartilhe este link com outras pessoas para permitir que copiem os canais deste grupo.",
+		"copy_destination_title": "Destino da Cópia",
+		"copy_destination_new": "Um novo grupo",
+		"copy_destination_existing": "Um grupo existente",
+		"copy_alert_desc": "Isso copiará {count} canais para o destino selecionado.",
+		"copy_alert_info": "Este link permite que outros copiem os canais para seus próprios grupos.",
+		"generate_copy_link": "Gerar Link para Copiar",
+		"group_details_title": "Detalhes do Grupo",
+		"channels": "Canais",
+		"share_settings_title": "Configurações de Compartilhamento",
+		"share_settings_collab": "Colaboradores terão acesso de {permission} a este grupo.",
+		"share_settings_copy": "Os destinatários poderão copiar todos os canais para {destination}.",
+		"destination_new": "um novo grupo",
+		"destination_existing": "um grupo existente",
+		"share_group_title": "Compartilhar Grupo",
+		"share_group_description": "Compartilhe seu grupo com outras pessoas",
+		"back_to_group": "Voltar para o Grupo",
+		"collaborate_tab_title": "Colaborar",
+		"copy_group_tab_title": "Copiar Grupo",
 		// Navigation
 		"nav.features": "Recursos",
 		"nav.integrations": "Integrações",
@@ -396,8 +482,51 @@ const translations = {
 		"footer.company": "Empresa",
 		"footer.copyright":
 			"Todos los derechos reservados. Hecho con ❤️ para creadores de contenido.",
+
+		"share_link_generated_success_description": "Share link generated successfully",
 	},
 	es: {
+		"collaborate_invite_title": "Invitar Colaboradores",
+		"collaborate_invite_desc": "Invita colaboradores a este grupo ingresando su dirección de correo electrónico y asignando un rol.",
+		"input_email_placeholder": "Ingresar correo electrónico del colaborador",
+		"collaborators_label": "Colaboradores",
+		"collaborators_empty": "Aún no hay colaboradores.",
+		"role_viewer": "Espectador",
+		"role_editor": "Editor",
+		"role_admin": "Administrador",
+		"perm_view": "Puede ver el contenido del grupo",
+		"perm_edit": "Puede editar el contenido del grupo",
+		"perm_admin": "Acceso administrativo total",
+		"allow_comments_label": "Permitir comentarios",
+		"share_link_desc": "Comparte este enlace con otros para permitirles ver o copiar este grupo.",
+		"copied": "¡Copiado!",
+		"copy": "Copiar",
+		"generating": "Generando...",
+		"generate_link": "Generar Enlace para Copiar",
+		"add": "Agregar",
+		"default_permission_title": "Permiso Predeterminado",
+		"share_link_title": "Enlace para Compartir",
+		"join_as": "Cualquiera con este enlace se unirá como {role}.",
+		"copy_link_title": "Enlace para Copiar Grupo",
+		"copy_link_desc": "Comparte este enlace con otros para permitirles copiar los canales de este grupo.",
+		"copy_destination_title": "Destino de Copia",
+		"copy_destination_new": "Un nuevo grupo",
+		"copy_destination_existing": "Un grupo existente",
+		"copy_alert_desc": "Esto copiará {count} canales al destino seleccionado.",
+		"copy_alert_info": "Este enlace permite a otros copiar los canales a sus propios grupos.",
+		"generate_copy_link": "Generar Enlace para Copiar",
+		"group_details_title": "Detalles del Grupo",
+		"channels": "Canales",
+		"share_settings_title": "Configuración de Compartir",
+		"share_settings_collab": "Los colaboradores tendrán acceso de {permission} a este grupo.",
+		"share_settings_copy": "Los destinatarios podrán copiar todos los canales a {destination}.",
+		"destination_new": "un nuevo grupo",
+		"destination_existing": "un grupo existente",
+		"share_group_title": "Compartir Grupo",
+		"share_group_description": "Comparte tu grupo con otros",
+		"back_to_group": "Volver al Grupo",
+		"collaborate_tab_title": "Colaborar",
+		"copy_group_tab_title": "Copiar Grupo",
 		// Navigation
 		"nav.features": "Características",
 		"nav.integrations": "Integraciones",
@@ -593,6 +722,8 @@ const translations = {
 		"footer.company": "Empresa",
 		"footer.copyright":
 			"Todos los derechos reservados. Hecho con ❤️ para creadores de contenido.",
+
+		"share_link_generated_success_description": "El link de compartilhamento foi gerado com sucesso.",
 	},
 };
 
@@ -611,12 +742,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 		localStorage.setItem("language", lang);
 	};
 
-	const t = (key: string): string => {
-		return (
-			translations[language][
-				key as keyof (typeof translations)[typeof language]
-			] || key
-		);
+	const t = (key: string, params?: Record<string, string>): string => {
+		const translation = translations[language][key as keyof (typeof translations)[typeof language]];
+		if (translation && params) {
+			return Object.keys(params).reduce((acc, paramKey) => {
+				const placeholder = `{${paramKey}}`;
+				return acc.replace(new RegExp(placeholder, 'g'), params[paramKey]);
+			}, translation);
+		}
+		return translation || key;
 	};
 
 	return (
