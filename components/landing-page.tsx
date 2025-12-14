@@ -196,12 +196,13 @@ export function LandingPage() {
 		},
 		{
 			name: t("pricing.pro.name"),
-			price: "$3",
+			price: "$3.99",
 			period: "month",
 			description: t("pricing.pro.desc"),
 			features: [
-				"Up to 50 groups",
-				"Up to 500 channels",
+				"Up to 10 groups",
+				"Up to 1000 channels",
+				"Create subgroups",
 				"Create anime groups",
 				"Create new categories",
 				"Share groups with others",

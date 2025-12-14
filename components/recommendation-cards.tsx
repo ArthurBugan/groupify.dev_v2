@@ -111,8 +111,8 @@ function CrunchyrollIntegrationCard() {
 					className="w-full bg-orange-600 hover:bg-orange-700 text-white"
 					asChild
 				>
-					<Link to="/dashboard/settings/integrations">
-						Connect Crunchyroll <ArrowRight className="ml-2 h-4 w-4" />
+					<Link to="/dashboard/animes">
+						Checkout Crunchyroll <ArrowRight className="ml-2 h-4 w-4" />
 					</Link>
 				</Button>
 			</CardFooter>
@@ -168,6 +168,7 @@ function DonationSupportCard() {
 									? "bg-primary text-primary"
 									: "bg-muted hover:bg-muted/80",
 							)}
+							type="button"
 							onClick={() => handleSelectType("one-time")}
 						>
 							One-time
@@ -179,6 +180,7 @@ function DonationSupportCard() {
 									? "bg-primary text-primary"
 									: "bg-muted hover:bg-muted/80",
 							)}
+							type="button"
 							onClick={() => handleSelectType("monthly")}
 						>
 							Monthly
@@ -190,6 +192,7 @@ function DonationSupportCard() {
 							{["5", "10", "25"].map((amount) => (
 								<button
 									key={amount}
+									type="button"
 									onClick={() => handleSelectAmount(amount)}
 									className={cn(
 										"flex flex-col h-auto py-3 rounded-md border transition-all",
@@ -210,6 +213,7 @@ function DonationSupportCard() {
 							{["5", "10"].map((amount) => (
 								<button
 									key={amount}
+									type="button"
 									onClick={() => handleSelectAmount(amount)}
 									className={cn(
 										"flex flex-col h-auto py-3 rounded-md border transition-all",
@@ -234,7 +238,9 @@ function DonationSupportCard() {
 			</CardContent>
 
 			<CardFooter className="flex flex-col gap-2">
-				<Button className="w-full">
+				<Button variant={"secondary"} onClick={() => {
+					window.open(`https://ko-fi.com/scriptingarthur?amount=${selectedAmount}`)
+				}} className="w-full" type="button">
 					<Coffee className="mr-2 h-4 w-4" />
 					Donate ${selectedAmount} {donationType === "monthly" ? "monthly" : ""}
 				</Button>
