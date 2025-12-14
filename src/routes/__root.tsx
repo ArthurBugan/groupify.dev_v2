@@ -19,8 +19,11 @@ import { Toaster } from "@/components/ui/sonner";
 import { queryClient } from "@/hooks/utils/queryClient";
 import appCss from "@/styles/app.css?url";
 import posthog from "posthog-js";
+import HyperDX from '@hyperdx/browser';
 
 const PUBLIC_POST_HOG_ID = import.meta.env.VITE_POST_HOG_ID;
+const PUBLIC_HYPER_DX_ID = import.meta.env.VITE_HYPER_DX_ID;
+const PUBLIC_HYPER_DX_URL = import.meta.env.VITE_HYPER_DX_URL;
 const NODE_ENV = import.meta.env.MODE;
 
 if (
@@ -29,6 +32,20 @@ if (
 ) {
 	posthog.init(PUBLIC_POST_HOG_ID, {
 		api_host: "https://app.posthog.com",
+	});
+}
+
+if (
+	NODE_ENV === "production" &&
+	PUBLIC_HYPER_DX_ID
+) {
+	HyperDX.init({
+		url: PUBLIC_HYPER_DX_URL,
+		apiKey: PUBLIC_HYPER_DX_ID,
+		service: 'groupify-web',
+		tracePropagationTargets: [/coolify.groupify.dev/i], // Set to link traces from frontend to backend requests
+		consoleCapture: true, // Capture console logs (default false)
+		advancedNetworkCapture: true, // Capture full HTTP request/response headers and bodies (default false)
 	});
 }
 

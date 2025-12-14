@@ -30,13 +30,13 @@ export function DashboardStats() {
 					) : (
 						<div className="text-2xl font-bold">{groups}</div>
 					)}
-					<div className="flex items-center text-xs text-muted-foreground">
+					{/* <div className="flex items-center text-xs text-muted-foreground">
 						<span className="text-green-500 flex items-center mr-1">
 							<TrendingUp className="mr-1 h-3 w-3" />
 							+2
 						</span>
 						from last month
-					</div>
+					</div> */}
 				</CardContent>
 			</Card>
 			<Card>
@@ -50,13 +50,13 @@ export function DashboardStats() {
 					) : (
 						<div className="text-2xl font-bold">{channels}</div>
 					)}
-					<div className="flex items-center text-xs text-muted-foreground">
+					{/* <div className="flex items-center text-xs text-muted-foreground">
 						<span className="text-green-500 flex items-center mr-1">
 							<TrendingUp className="mr-1 h-3 w-3" />
 							+5
 						</span>
 						from last month
-					</div>
+					</div> */}
 				</CardContent>
 			</Card>
 			<Card>
@@ -70,13 +70,13 @@ export function DashboardStats() {
 					) : (
 						<div className="text-2xl font-bold">{sharedGroups}</div>
 					)}
-					<div className="flex items-center text-xs text-muted-foreground">
+					{/* <div className="flex items-center text-xs text-muted-foreground">
 						<span className="text-green-500 flex items-center mr-1">
 							<TrendingUp className="mr-1 h-3 w-3" />
 							+3
 						</span>
 						from last month
-					</div>
+					</div> */}
 				</CardContent>
 			</Card>
 			<Card>
@@ -92,13 +92,13 @@ export function DashboardStats() {
 					) : (
 						<div className="text-2xl font-bold">{youtubeChannels}</div>
 					)}
-					<div className="flex items-center text-xs text-muted-foreground">
+					{/* <div className="flex items-center text-xs text-muted-foreground">
 						<span className="text-green-500 flex items-center mr-1">
 							<TrendingUp className="mr-1 h-3 w-3" />
 							+8
 						</span>
 						posted this week
-					</div>
+					</div> */}
 				</CardContent>
 			</Card>
 			<Card>
@@ -114,13 +114,13 @@ export function DashboardStats() {
 					) : (
 						<div className="text-2xl font-bold">{animeChannels}</div>
 					)}
-					<div className="flex items-center text-xs text-muted-foreground">
+					{/* <div className="flex items-center text-xs text-muted-foreground">
 						<span className="text-green-500 flex items-center mr-1">
 							<TrendingUp className="mr-1 h-3 w-3" />
 							+8
 						</span>
 						posted this week
-					</div>
+					</div> */}
 				</CardContent>
 			</Card>
 		</div>
