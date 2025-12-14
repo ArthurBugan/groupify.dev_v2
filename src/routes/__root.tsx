@@ -35,19 +35,19 @@ if (
 	});
 }
 
-if (
-	NODE_ENV === "production" &&
-	PUBLIC_HYPER_DX_ID
-) {
-	HyperDX.init({
-		url: PUBLIC_HYPER_DX_URL,
-		apiKey: PUBLIC_HYPER_DX_ID,
-		service: 'groupify-web',
-		tracePropagationTargets: [/coolify.groupify.dev/i], // Set to link traces from frontend to backend requests
-		consoleCapture: true, // Capture console logs (default false)
-		advancedNetworkCapture: true, // Capture full HTTP request/response headers and bodies (default false)
-	});
-}
+// if (
+// 	NODE_ENV === "production" &&
+// 	PUBLIC_HYPER_DX_ID
+// ) {
+// 	HyperDX.init({
+// 		url: PUBLIC_HYPER_DX_URL,
+// 		apiKey: PUBLIC_HYPER_DX_ID,
+// 		service: 'groupify-web',
+// 		tracePropagationTargets: [/coolify.groupify.dev/i], // Set to link traces from frontend to backend requests
+// 		consoleCapture: true, // Capture console logs (default false)
+// 		advancedNetworkCapture: true, // Capture full HTTP request/response headers and bodies (default false)
+// 	});
+// }
 
 export const Route = createRootRoute({
 	notFoundComponent: () => <NotFound />,
