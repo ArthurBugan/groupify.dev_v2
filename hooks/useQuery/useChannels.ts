@@ -63,6 +63,7 @@ const getChannels = async (params?: {
 	search?: string;
 	groupId?: string;
 }): Promise<ChannelsResponse> => {
+	console.log("params", params);
 	const response = await apiClient.get<ChannelsResponse>(
 		"/api/v2/channels",
 		params,
