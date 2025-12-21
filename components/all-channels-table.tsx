@@ -72,6 +72,7 @@ export function AllChannelsTable() {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setDebouncedSearchTerm(searchTerm);
+			setCurrentPage(1);
 		}, 300);
 
 		return () => clearTimeout(timer);

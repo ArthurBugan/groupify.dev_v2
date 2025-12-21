@@ -76,11 +76,12 @@ export function GroupsTable() {
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
+	
+	console.log(debouncedSearchTerm)
 	const { data: apiGroups, isLoading } = useGroups({
 		page: currentPage,
 		limit: itemsPerPage,
-		search: debouncedSearchTerm,
+		search: debouncedSearchTerm || undefined,
 	});
 
 	const updateDisplayOrder = useUpdateGroupDisplayOrder();
@@ -110,8 +111,10 @@ export function GroupsTable() {
 	const [draggedGroup, setDraggedGroup] = useState<TableGroup | null>(null);
 	const [dragOverGroup, setDragOverGroup] = useState<string | null>(null);
 	useEffect(() => {
+		console.log(searchTerm)
 		const timer = setTimeout(() => {
 			setDebouncedSearchTerm(searchTerm);
+			setCurrentPage(1);
 		}, 300);
 
 		return () => clearTimeout(timer);
@@ -125,7 +128,6 @@ export function GroupsTable() {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <cant apply the rule as the transformApiGroups changes on every render>
 	useEffect(() => {
 		if (apiGroups?.data) {
-			console.log("apiGroups?.data", apiGroups?.data);
 			const newGroups = transformApiGroups(apiGroups.data);
 			const savedOrder = localStorage.getItem("groupsOrder");
 

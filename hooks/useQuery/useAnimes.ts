@@ -36,7 +36,7 @@ export const getAnimes = async (params?: {
   search?: string;
 }): Promise<PaginatedAnimesResponse> => {
   const response = await apiClient.get<PaginatedAnimesResponse>(
-    "/api/v2/animes",
+    "/api/v3/animes",
     params,
   );
   return response;

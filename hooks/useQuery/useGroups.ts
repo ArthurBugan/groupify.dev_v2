@@ -61,6 +61,7 @@ const getGroups = async (params?: {
 	limit?: number;
 	search?: string;
 }): Promise<GroupsResponse> => {
+	console.log("params", params);
 	const response = await apiClient.get<GroupsResponse>("api/v2/groups", params);
 	return response;
 };
@@ -80,7 +81,7 @@ export function useGroups(params?: {
 	search?: string;
 }) {
 	return useQuery({
-		queryKey: ["groups"],
+		queryKey: queryKeys.groups(params),
 		queryFn: () => getGroups(params),
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes
