@@ -1,9 +1,9 @@
 "use client";
 
 // import { Checkbox } from "@/components/ui/checkbox";
-import { Checkbox } from "@base-ui-components/react/checkbox";
+import { Checkbox } from "@base-ui/react/checkbox";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckIcon, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
 import { useLanguage } from "@/components/language-provider";

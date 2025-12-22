@@ -11,21 +11,36 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useUser } from "@/hooks/useQuery/useUser";
+import { useDashboardTotal } from "@/hooks/useQuery/useDashboard";
 
 export function BillingSettings() {
-	const currentPlan = "Pro";
+	const { data: user } = useUser();
+	const { data: dashboardTotal, isLoading } = useDashboardTotal();
+	
+
+	const currentPlan = user?.planName || "Free";
 	const billingCycle = "monthly";
-	const nextBillingDate = "January 15, 2024";
+	const nextBillingDate =
+		user?.subscriptionStartDate &&
+		// add 1 month to this date
+		new Date(
+			new Date(user?.subscriptionStartDate).getTime() + 30 * 24 * 60 * 60 * 1000,
+		).toLocaleDateString("en-US", {
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		});
 	const usage = {
-		groups: { used: 12, limit: 50 },
-		channels: { used: 45, limit: 500 },
-		apiCalls: { used: 24500, limit: 100000 },
+		groups: { used: dashboardTotal?.groups || 0, limit: user?.maxGroups || 0 },
+		channels: { used: dashboardTotal?.channels || 0, limit: user?.maxChannels || 0 },
 	};
 
 	const plans = [
 		{
 			name: "Free",
 			price: "$0",
+			current: currentPlan === "free",
 			features: [
 				"Up to 3 groups",
 				"Up to 20 channels",
@@ -36,7 +51,7 @@ export function BillingSettings() {
 		{
 			name: "Basic",
 			price: "$3.99",
-			current: true,
+			current: currentPlan === "basic",
 			features: [
 				"Up to 10 groups",
 				"Up to 1000 channels",
@@ -49,6 +64,7 @@ export function BillingSettings() {
 		{
 			name: "Pro",
 			price: "$9.99",
+			current: currentPlan === "pro",
 			features: [
 				"Everything from free",
 				"Everything from pro",
@@ -72,9 +88,14 @@ export function BillingSettings() {
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div>
-							<p className="text-2xl font-bold">$9/month</p>
+							<p className="text-2xl font-bold">
+								{user?.priceYearly?.toLocaleString("en-US", {
+									style: "currency",
+									currency: "USD",
+								})}
+							</p>
 							<p className="text-sm text-muted-foreground">
-								Billed {billingCycle}ly • Next billing date: {nextBillingDate}
+								Billed {billingCycle} • Next billing date: {nextBillingDate}
 							</p>
 						</div>
 						<Badge variant="outline" className="text-lg px-3 py-1">
@@ -110,7 +131,7 @@ export function BillingSettings() {
 								{usage.groups.used} / {usage.groups.limit}
 							</span>
 						</div>
-						<Progress value={(usage.groups.used / usage.groups.limit) * 100} />
+						<Progress value={usage.groups.limit === 0 ? 0 : (usage.groups.used / usage.groups.limit) * 100} />
 					</div>
 
 					<div className="space-y-2">
@@ -121,20 +142,7 @@ export function BillingSettings() {
 							</span>
 						</div>
 						<Progress
-							value={(usage.channels.used / usage.channels.limit) * 100}
-						/>
-					</div>
-
-					<div className="space-y-2">
-						<div className="flex justify-between text-sm">
-							<span>API Calls</span>
-							<span className="font-medium">
-								{usage.apiCalls.used.toLocaleString()} /{" "}
-								{usage.apiCalls.limit.toLocaleString()}
-							</span>
-						</div>
-						<Progress
-							value={(usage.apiCalls.used / usage.apiCalls.limit) * 100}
+							value={usage.channels.limit === 0 ? 0 : (usage.channels.used / usage.channels.limit) * 100}
 						/>
 					</div>
 				</CardContent>
@@ -168,8 +176,11 @@ export function BillingSettings() {
 									))}
 								</ul>
 								<Button
+									onClick={() => {
+										window.open(`https://${plan.name.toLowerCase()}.groupify.dev`, "_blank");
+									}}
 									className="w-full mt-4"
-									variant={plan.current ? "outline" : "default"}
+									variant={plan.current ? "outline" : "secondary"}
 									disabled={plan.current}
 								>
 									{plan.current

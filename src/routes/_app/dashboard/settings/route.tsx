@@ -18,11 +18,8 @@ function SettingsPage() {
 	const location = useLocation();
 
 	useEffect(() => {
-		if (location.pathname === "/dashboard/settings") {
-			setActiveTab("account");
-			router({ to: "/dashboard/settings/account" });
-		}
-	}, [location.pathname, router]);
+		setActiveTab(location.pathname.split("/")[3]);
+	}, [location.pathname]);
 
 	
 
