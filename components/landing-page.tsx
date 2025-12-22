@@ -9,6 +9,7 @@ import {
 	Database,
 	FolderKanban,
 	GitBranch,
+	Github,
 	Monitor,
 	Play,
 	Rocket,
@@ -33,6 +34,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "./language-provider";
 import { MainNavbar } from "./main-navbar";
 import { IconViewer } from "./icon-picker";
+import { Icons } from "./ui/icons";
 
 // Tech-inspired animated background component
 function TechBackground() {
@@ -479,7 +481,6 @@ export function LandingPage() {
 				</div>
 			</section>
 
-
 			{/* Testimonials Section */}
 			<section id={testimonialsId} className="py-20 lg:py-32">
 				<div className="container mx-auto px-4">
@@ -688,7 +689,7 @@ export function LandingPage() {
 			{/* Footer */}
 			<footer className="py-16 border-t bg-muted/30">
 				<div className="container mx-auto px-4">
-					<div className="grid md:grid-cols-4 gap-8">
+					<div className="grid md:grid-cols-3 gap-8">
 						<div className="space-y-4">
 							<div className="flex items-center gap-2">
 								<Youtube className="h-6 w-6 text-red-500" />
@@ -698,54 +699,20 @@ export function LandingPage() {
 								{t("footer.description")}
 							</p>
 							<div className="flex gap-4">
+								<Link to="https://www.youtube.com/@scriptingarthur">
+									<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
+										<Youtube className="h-4 w-4" />
+									</div>
+								</Link>
+								<Link to="https://discord.gg/Hp4MvPanwr">
+									<div className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
+										<Icons.discord className="h-4 w-4" />
+									</div>
+								</Link>
 								<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
-									<span className="text-xs">𝕏</span>
-								</div>
-								<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
-									<span className="text-xs">in</span>
-								</div>
-								<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
-									<span className="text-xs">gh</span>
+									<Icons.gitHub className="h-4 w-4" />
 								</div>
 							</div>
-						</div>
-
-						<div className="space-y-4">
-							<h3 className="font-semibold">{t("footer.product")}</h3>
-							<ul className="space-y-2 text-sm text-muted-foreground">
-								<li>
-									<Link
-										to="#"
-										className="hover:text-foreground transition-colors hover:underline"
-									>
-										Features
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="#"
-										className="hover:text-foreground transition-colors hover:underline"
-									>
-										API Docs
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="#"
-										className="hover:text-foreground transition-colors hover:underline"
-									>
-										Integrations
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="#"
-										className="hover:text-foreground transition-colors hover:underline"
-									>
-										Changelog
-									</Link>
-								</li>
-							</ul>
 						</div>
 
 						<div className="space-y-4">
@@ -753,7 +720,7 @@ export function LandingPage() {
 							<ul className="space-y-2 text-sm text-muted-foreground">
 								<li>
 									<Link
-										to="/help"
+										to="https://discord.gg/Hp4MvPanwr"
 										className="hover:text-foreground transition-colors hover:underline"
 									>
 										Help Center
@@ -761,7 +728,7 @@ export function LandingPage() {
 								</li>
 								<li>
 									<Link
-										to="/contact"
+										to="mailto:admin@groupify.dev"
 										className="hover:text-foreground transition-colors hover:underline"
 									>
 										Contact
@@ -769,15 +736,7 @@ export function LandingPage() {
 								</li>
 								<li>
 									<Link
-										to="/status"
-										className="hover:text-foreground transition-colors hover:underline"
-									>
-										Status
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/community"
+										to="https://discord.gg/Hp4MvPanwr"
 										className="hover:text-foreground transition-colors hover:underline"
 									>
 										Community
@@ -791,26 +750,10 @@ export function LandingPage() {
 							<ul className="space-y-2 text-sm text-muted-foreground">
 								<li>
 									<Link
-										to="/about"
-										className="hover:text-foreground transition-colors hover:underline"
-									>
-										About
-									</Link>
-								</li>
-								<li>
-									<Link
 										to="/blog"
 										className="hover:text-foreground transition-colors hover:underline"
 									>
 										Blog
-									</Link>
-								</li>
-								<li>
-									<Link
-										to="/careers"
-										className="hover:text-foreground transition-colors hover:underline"
-									>
-										Careers
 									</Link>
 								</li>
 								<li>
@@ -826,7 +769,7 @@ export function LandingPage() {
 					</div>
 
 					<div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-						<p>&copy; 2024 Groupify. {t("footer.copyright")}</p>
+						<p>&copy; 2025 Groupify. {t("footer.copyright")}</p>
 					</div>
 				</div>
 			</footer>
