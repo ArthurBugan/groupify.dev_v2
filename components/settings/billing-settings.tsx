@@ -177,7 +177,7 @@ export function BillingSettings() {
 								</ul>
 								<Button
 									onClick={() => {
-										window.open(`https://${plan.name.toLowerCase()}.groupify.dev`, "_blank");
+										window.open(`https://${plan.name.toLowerCase()}.groupify.dev?user_id=${user?.id}`, "_blank");
 									}}
 									className="w-full mt-4"
 									variant={plan.current ? "outline" : "secondary"}
