@@ -82,7 +82,7 @@ const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
 	}, []);
 	return (
 		<div className="flex justify-center">
-			<div className="w-full flex justify-center">
+			<div className="flex justify-center">
 				<ins
 					className="adsbygoogle"
 					style={{ display: 'inline-block', width: 1200, height: 69 }}
