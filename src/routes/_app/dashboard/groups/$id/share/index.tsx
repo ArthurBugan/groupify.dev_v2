@@ -54,14 +54,7 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 		category: "",
 		channelCount: 0,
 	});
-	const [collaborators, setCollaborators] = useState<{
-		id: string;
-		name: string;
-		email: string;
-		avatar: string;
-		role: string;
-	}[]>([]);
-	const [newCollaborator, setNewCollaborator] = useState("");
+
 	const [shareLink, setShareLink] = useState("");
 	const [linkCopied, setLinkCopied] = useState(false);
 	const [sharePermission, setSharePermission] = useState("view");
@@ -90,7 +83,7 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 				setShareLink(data?.shareLink || "");
 			},
 			onError: (error) => {
-				console.error("Error generating share link:", error);
+				toast.error("Error sharing group", { description: error.message });
 			},
 		});
 	};
@@ -307,12 +300,12 @@ function ShareGroupPage({ params }: ShareGroupPageProps) {
 										<span className="font-medium">{group.channelCount}</span>
 									)}
 								</div>
-								<div className="flex justify-between">
+								{/* <div className="flex justify-between">
 									<span className="text-sm text-muted-foreground">
 										{t("collaborators_label")}
 									</span>
 									<span className="font-medium">{collaborators.length}</span>
-								</div>
+								</div> */}
 							</div>
 
 							<Separator />

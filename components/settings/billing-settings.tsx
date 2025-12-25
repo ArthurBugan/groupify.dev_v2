@@ -51,7 +51,7 @@ export function BillingSettings() {
 		{
 			name: "Basic",
 			price: "$3.99",
-			current: currentPlan === "basic",
+			current: currentPlan === "Groupify Basic Monthly",
 			features: [
 				"Up to 10 groups",
 				"Up to 1000 channels",
@@ -64,7 +64,7 @@ export function BillingSettings() {
 		{
 			name: "Pro",
 			price: "$9.99",
-			current: currentPlan === "pro",
+			current: currentPlan === "Groupify Pro Monthly",
 			features: [
 				"Everything from free",
 				"Everything from pro",
@@ -76,8 +76,99 @@ export function BillingSettings() {
 		},
 	];
 
-	return (
-		<div className="space-y-6">
+	if (isLoading) {
+			return (
+				<div className="space-y-6">
+					<Card>
+						<CardHeader>
+							<CardTitle>Current Plan</CardTitle>
+							<CardDescription>
+								<div className="h-4 w-48 rounded bg-muted animate-pulse" />
+							</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							<div className="flex items-center justify-between">
+								<div>
+									<div className="h-6 w-24 rounded bg-muted animate-pulse" />
+									<div className="h-4 w-64 rounded bg-muted animate-pulse mt-2" />
+								</div>
+								<div className="h-8 w-24 rounded bg-muted animate-pulse" />
+							</div>
+						</CardContent>
+					</Card>
+
+					<Card>
+						<CardHeader>
+							<CardTitle>Usage</CardTitle>
+							<CardDescription>
+								<div className="h-4 w-60 rounded bg-muted animate-pulse" />
+							</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-6">
+							<div className="space-y-2">
+								<div className="flex justify-between text-sm">
+									<span>Groups</span>
+									<div className="h-4 w-20 rounded bg-muted animate-pulse" />
+								</div>
+								<div className="h-2 w-full rounded bg-muted animate-pulse" />
+							</div>
+							<div className="space-y-2">
+								<div className="flex justify-between text-sm">
+									<span>Channels</span>
+									<div className="h-4 w-24 rounded bg-muted animate-pulse" />
+								</div>
+								<div className="h-2 w-full rounded bg-muted animate-pulse" />
+							</div>
+						</CardContent>
+					</Card>
+
+					<div className="space-y-4">
+						<h3 className="text-lg font-semibold">Available Plans</h3>
+						<div className="grid gap-4 md:grid-cols-3">
+							{Array.from({ length: 3 }).map((_, i) => (
+								<Card key={i} className="h-full flex flex-col">
+									<CardHeader>
+										<div className="flex items-center justify-between">
+											<div className="h-6 w-24 rounded bg-muted animate-pulse" />
+											<div className="h-6 w-16 rounded bg-muted animate-pulse" />
+										</div>
+										<CardDescription>
+											<div className="h-6 w-20 rounded bg-muted animate-pulse" />
+										</CardDescription>
+									</CardHeader>
+									<CardContent className="flex-1 flex flex-col">
+										<ul className="space-y-2">
+											{Array.from({ length: 3 }).map((_, j) => (
+												<li key={j} className="flex items-center gap-2">
+													<div className="h-4 w-4 rounded bg-muted animate-pulse" />
+													<div className="h-4 w-40 rounded bg-muted animate-pulse" />
+												</li>
+											))}
+										</ul>
+										<div className="w-full h-10 rounded bg-muted animate-pulse mt-auto" />
+									</CardContent>
+								</Card>
+							))}
+						</div>
+					</div>
+
+					<Card>
+						<CardHeader>
+							<CardTitle>Billing History</CardTitle>
+							<CardDescription>
+								<div className="h-4 w-72 rounded bg-muted animate-pulse" />
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className="w-full h-10 rounded bg-muted animate-pulse" />
+						</CardContent>
+					</Card>
+				</div>
+			);
+		}
+
+		return (
+			<div className="space-y-6">
 			<Card>
 				<CardHeader>
 					<CardTitle>Current Plan</CardTitle>
@@ -89,29 +180,26 @@ export function BillingSettings() {
 					<div className="flex items-center justify-between">
 						<div>
 							<p className="text-2xl font-bold">
-								{user?.priceYearly?.toLocaleString("en-US", {
-									style: "currency",
-									currency: "USD",
-								})}
+								{isLoading ? (
+									<div className="h-6 w-24 rounded bg-muted animate-pulse" />
+								) : (
+									user?.priceMonthly?.toLocaleString("en-US", {
+										style: "currency",
+										currency: "USD",
+									})
+								)}
 							</p>
 							<p className="text-sm text-muted-foreground">
-								Billed {billingCycle} • Next billing date: {nextBillingDate}
+								{isLoading ? (
+									<div className="mt-4 h-4 w-64 rounded bg-muted animate-pulse" />
+								) : (
+									<>Billed {billingCycle} • Next billing date: {nextBillingDate}</>
+								)}
 							</p>
 						</div>
 						<Badge variant="outline" className="text-lg px-3 py-1">
 							{currentPlan}
 						</Badge>
-					</div>
-
-					<div className="flex gap-2">
-						<Button variant="outline">
-							<CreditCard className="mr-2 h-4 w-4" />
-							Update Payment Method
-						</Button>
-						<Button variant="outline">
-							<Download className="mr-2 h-4 w-4" />
-							Download Invoice
-						</Button>
 					</div>
 				</CardContent>
 			</Card>
@@ -125,26 +213,32 @@ export function BillingSettings() {
 				</CardHeader>
 				<CardContent className="space-y-6">
 					<div className="space-y-2">
-						<div className="flex justify-between text-sm">
-							<span>Groups</span>
-							<span className="font-medium">
-								{usage.groups.used} / {usage.groups.limit}
-							</span>
+							<div className="flex justify-between text-sm">
+								<span>Groups</span>
+								<span className="font-medium">
+									{isLoading ? <div className="h-4 w-20 rounded bg-muted animate-pulse" /> : `${usage.groups.used} / ${usage.groups.limit}`}
+								</span>
+							</div>
+							{isLoading ? (
+								<div className="h-2 w-full rounded bg-muted animate-pulse" />
+							) : (
+								<Progress value={usage.groups.limit === 0 ? 0 : (usage.groups.used / usage.groups.limit) * 100} />
+							)}
 						</div>
-						<Progress value={usage.groups.limit === 0 ? 0 : (usage.groups.used / usage.groups.limit) * 100} />
-					</div>
 
 					<div className="space-y-2">
-						<div className="flex justify-between text-sm">
-							<span>Channels</span>
-							<span className="font-medium">
-								{usage.channels.used} / {usage.channels.limit}
-							</span>
+							<div className="flex justify-between text-sm">
+								<span>Channels</span>
+								<span className="font-medium">
+									{isLoading ? <div className="h-4 w-24 rounded bg-muted animate-pulse" /> : `${usage.channels.used} / ${usage.channels.limit}`}
+								</span>
+							</div>
+							{isLoading ? (
+								<div className="h-2 w-full rounded bg-muted animate-pulse" />
+							) : (
+								<Progress value={usage.channels.limit === 0 ? 0 : (usage.channels.used / usage.channels.limit) * 100} />
+							)}
 						</div>
-						<Progress
-							value={usage.channels.limit === 0 ? 0 : (usage.channels.used / usage.channels.limit) * 100}
-						/>
-					</div>
 				</CardContent>
 			</Card>
 
@@ -154,7 +248,7 @@ export function BillingSettings() {
 					{plans.map((plan) => (
 						<Card
 							key={plan.name}
-							className={plan.current ? "border-primary" : ""}
+							className={`${plan.current ? "border-primary" : ""} h-full flex flex-col`}
 						>
 							<CardHeader>
 								<div className="flex items-center justify-between">
@@ -166,8 +260,8 @@ export function BillingSettings() {
 									<span className="text-muted-foreground">/month</span>
 								</CardDescription>
 							</CardHeader>
-							<CardContent>
-								<ul className="space-y-2">
+							<CardContent className="flex-1 flex flex-col">
+								<ul className="space-y-2 mb-4">
 									{plan.features.map((feature) => (
 										<li key={feature} className="flex items-center gap-2">
 											<Check className="h-4 w-4 text-primary" />
@@ -179,15 +273,11 @@ export function BillingSettings() {
 									onClick={() => {
 										window.open(`https://${plan.name.toLowerCase()}.groupify.dev?user_id=${user?.id}`, "_blank");
 									}}
-									className="w-full mt-4"
+									className="w-full mt-auto"
 									variant={plan.current ? "outline" : "secondary"}
 									disabled={plan.current}
 								>
-									{plan.current
-										? "Current Plan"
-										: plan.name === "Free"
-											? "Downgrade"
-											: "Upgrade"}
+									{plan.current ? "Current Plan" : "Change plan"}
 								</Button>
 							</CardContent>
 						</Card>
@@ -199,54 +289,19 @@ export function BillingSettings() {
 				<CardHeader>
 					<CardTitle>Billing History</CardTitle>
 					<CardDescription>
-						Your recent transactions and invoices
+						Check your billing history and download invoices on Gumroad
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<div className="space-y-2">
-						<div className="flex items-center justify-between py-2 border-b">
-							<div>
-								<p className="font-medium">Pro Plan - December 2023</p>
-								<p className="text-sm text-muted-foreground">
-									December 15, 2023
-								</p>
-							</div>
-							<div className="flex items-center gap-2">
-								<span className="font-medium">$9.00</span>
-								<Button variant="ghost" size="sm">
-									<Download className="h-4 w-4" />
-								</Button>
-							</div>
-						</div>
-						<div className="flex items-center justify-between py-2 border-b">
-							<div>
-								<p className="font-medium">Pro Plan - November 2023</p>
-								<p className="text-sm text-muted-foreground">
-									November 15, 2023
-								</p>
-							</div>
-							<div className="flex items-center gap-2">
-								<span className="font-medium">$9.00</span>
-								<Button variant="ghost" size="sm">
-									<Download className="h-4 w-4" />
-								</Button>
-							</div>
-						</div>
-						<div className="flex items-center justify-between py-2">
-							<div>
-								<p className="font-medium">Pro Plan - October 2023</p>
-								<p className="text-sm text-muted-foreground">
-									October 15, 2023
-								</p>
-							</div>
-							<div className="flex items-center gap-2">
-								<span className="font-medium">$9.00</span>
-								<Button variant="ghost" size="sm">
-									<Download className="h-4 w-4" />
-								</Button>
-							</div>
-						</div>
-					</div>
+					<Button
+						onClick={() => {
+							window.open("https://gumroad.com/dashboard", "_blank");
+						}}
+						className="w-full"
+						variant="secondary"
+					>
+						View Billing History
+					</Button>
 				</CardContent>
 			</Card>
 		</div>
