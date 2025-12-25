@@ -26,9 +26,7 @@ export const Route = createFileRoute("/_auth/register/")({
 	component: RegisterPage,
 });
 
-// Discord OAuth configuration
-const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID;
-const DISCORD_REDIRECT_URI = import.meta.env.VITE_DISCORD_REDIRECT_URI;
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;;
 
 function RegisterPage() {
 	const { t } = useLanguage();
@@ -108,27 +106,14 @@ function RegisterPage() {
 		}
 	};
 
-	const handleDiscordAuth = () => {
-		if (!DISCORD_CLIENT_ID) {
-			console.error("Discord client ID not configured");
-			setErrors({ general: "Discord authentication is not configured" });
-			return;
-		}
+	const handleDiscordAuth = (e) => {
+		e.preventDefault();
+		window.location.href = `${VITE_BASE_URL}/auth/discord`;
+	};
 
-		// Generate a random state for security
-		const state = Math.random().toString(36).substring(2, 15);
-		localStorage.setItem("discord_oauth_state", state);
-
-		// Build Discord OAuth URL
-		const discordAuthUrl = new URL("https://discord.com/api/oauth2/authorize");
-		discordAuthUrl.searchParams.set("client_id", DISCORD_CLIENT_ID);
-		discordAuthUrl.searchParams.set("redirect_uri", DISCORD_REDIRECT_URI);
-		discordAuthUrl.searchParams.set("response_type", "code");
-		discordAuthUrl.searchParams.set("scope", "identify email");
-		discordAuthUrl.searchParams.set("state", state);
-
-		// Redirect to Discord OAuth
-		window.location.href = discordAuthUrl.toString();
+	const handleGoogleAuth = (e) => {
+		e.preventDefault();
+		window.location.href = `${VITE_BASE_URL}/auth/google`;
 	};
 
 	return (
@@ -327,6 +312,8 @@ function RegisterPage() {
 								className="w-full flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 								type="button"
 								disabled={registerMutation.isPending}
+								onClick={handleGoogleAuth}
+
 							>
 								<Icons.google className="mr-2 h-4 w-4" />
 								{t("register.google")}

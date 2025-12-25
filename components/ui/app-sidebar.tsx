@@ -59,8 +59,9 @@ const items = [
 
 export function AppSidebar() {
 	const logoutMutation = useLogoutMutation();
+	const navigate = useNavigate();
 
-	const signOut =()  => {
+	const signOut = () => {
 		logoutMutation.mutateAsync();
 	}
 
@@ -97,7 +98,7 @@ export function AppSidebar() {
 								<DropdownMenuItem>
 									<span>Account</span>
 								</DropdownMenuItem>
-								<DropdownMenuItem>
+								<DropdownMenuItem onClick={() => navigate({ to: "/dashboard/settings/billing" })}>
 									<span>Billing</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => signOut()}>
