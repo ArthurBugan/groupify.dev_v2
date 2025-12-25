@@ -83,6 +83,12 @@ export function AppSidebar() {
 						))}
 					</SidebarMenu>
 				</SidebarGroup>
+				<div className="mt-auto">
+					<ins className="adsbygoogle"
+						style={{ display: "inline-block", width: "255px", height: "300px" }}
+						data-ad-client="ca-pub-4077364511521347"
+					data-ad-slot="9387808543"></ins>
+				</div>
 			</SidebarContent>
 			<SidebarFooter>
 				<SidebarMenu>
