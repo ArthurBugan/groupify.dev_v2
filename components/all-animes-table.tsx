@@ -43,25 +43,25 @@ import { useGroups } from "@/hooks/useQuery/useGroups";
 import { useDeleteChannelMutation, useUpdateChannel } from "@/hooks/useQuery/useChannels";
 
 const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
-        const adRef = useRef<any>(null);
-        useEffect(() => {
-            const w: any = typeof window !== 'undefined' ? (window as any) : null;
-            if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
-                try { w.adsbygoogle.push({}); } catch (_) {}
-            }
-        }, []);
-        return (
-            <TableRow>
-                <TableCell colSpan={colSpan}>
-                    <div className="flex justify-center">
-                        <div>
-                            <ins className="adsbygoogle" style={{ display: 'inline-block', width: 1200, height: 69 }} data-ad-client="ca-pub-4077364511521347" data-ad-slot="2439256813" ref={adRef}></ins>
-                        </div>
+    const adRef = useRef<any>(null);
+    useEffect(() => {
+        const w: any = typeof window !== 'undefined' ? (window as any) : null;
+        if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
+            try { w.adsbygoogle.push({}); } catch (_) {}
+        }
+    }, []);
+    return (
+        <TableRow>
+            <TableCell colSpan={colSpan}>
+                <div className="flex justify-center">
+                    <div>
+                        <ins className="adsbygoogle" style={{ display: 'inline-block', width: 1200, height: 69 }} data-ad-client="ca-pub-4077364511521347" data-ad-slot="2439256813" ref={adRef}></ins>
                     </div>
-                </TableCell>
-            </TableRow>
-        );
-    };
+                </div>
+            </TableCell>
+        </TableRow>
+    );
+};
 
 export function AllAnimesTable() {
     const [currentPage, setCurrentPage] = useState(1);
