@@ -13,7 +13,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import { IconViewer } from "@/components/icon-picker";
 import { Badge } from "@/components/ui/badge";
@@ -71,12 +71,37 @@ interface TableGroup {
 	order: number;
 }
 
+
+const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
+	const adRef = useRef<any>(null);
+	useEffect(() => {
+		const w: any = typeof window !== 'undefined' ? (window as any) : null;
+		if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
+			try { w.adsbygoogle.push({}); } catch (_) { }
+		}
+	}, []);
+	return (
+		<div className="flex justify-center">
+			<div className="w-full flex justify-center">
+				<ins
+					className="adsbygoogle"
+					style={{ display: 'inline-block', width: 1200, height: 69 }}
+					data-ad-client="ca-pub-4077364511521347"
+					data-ad-slot="2439256813"
+					ref={adRef}
+				/>
+			</div>
+		</div>
+	);
+};
+
+
 export function GroupsTable() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-	
+
 	console.log(debouncedSearchTerm)
 	const { data: apiGroups, isLoading } = useGroups({
 		page: currentPage,
@@ -110,6 +135,7 @@ export function GroupsTable() {
 	const [groups, setGroups] = useState(initialGroups);
 	const [draggedGroup, setDraggedGroup] = useState<TableGroup | null>(null);
 	const [dragOverGroup, setDragOverGroup] = useState<string | null>(null);
+	const [adIndices, setAdIndices] = useState<number[]>([]);
 	useEffect(() => {
 		console.log(searchTerm)
 		const timer = setTimeout(() => {
@@ -471,6 +497,20 @@ export function GroupsTable() {
 
 	const sortedGroups = getSortedGroups();
 
+	useEffect(() => {
+		if (sortedGroups.length > 0) {
+			const maxAds = Math.min(4, sortedGroups.length);
+			const count = Math.floor(Math.random() * maxAds) + 1;
+			const indices = new Set<number>();
+			while (indices.size < count) {
+				indices.add(Math.floor(Math.random() * sortedGroups.length));
+			}
+			setAdIndices(Array.from(indices));
+		} else {
+			setAdIndices([]);
+		}
+	}, [sortedGroups.length]);
+
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center gap-2">
@@ -526,7 +566,7 @@ export function GroupsTable() {
 								</TableCell>
 							</TableRow>
 						) : (
-							sortedGroups.filter(isVisible).map((group) => {
+							sortedGroups.filter(isVisible).map((group, idx) => {
 								const siblingGroups = groups
 									.filter((g) => g.parentId === group.parentId)
 									.sort((a, b) => a.order - b.order);
@@ -537,158 +577,163 @@ export function GroupsTable() {
 								const canMoveDown = currentIndex < siblingGroups.length - 1;
 
 								return (
-									<TableRow
-										key={group.id}
-										className={cn(
-											"group",
-											dragOverGroup === group.id && "bg-accent/50",
-											draggedGroup?.id === group.id && "opacity-50",
+									<>
+										{adIndices.includes(idx) && (
+											<AdRow colSpan={5} key={`ad-${group.id}-${idx}`} />
 										)}
-										draggable={!debouncedSearchTerm}
-										onDragStart={(e) => handleDragStart(e, group)}
-										onDragOver={(e) => handleDragOver(e, group)}
-										onDragLeave={handleDragLeave}
-										onDrop={(e) => handleDrop(e, group)}
-										onDragEnd={handleDragEnd}
-									>
-										<TableCell>
-											{!debouncedSearchTerm && (
-												<div className="flex items-center gap-1">
-													<GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-												</div>
+										<TableRow
+											key={group.id}
+											className={cn(
+												"group",
+												dragOverGroup === group.id && "bg-accent/50",
+												draggedGroup?.id === group.id && "opacity-50",
 											)}
-										</TableCell>
-										<TableCell>
-											<div
-												className="flex items-center gap-2"
-												style={{
-													paddingLeft: `${group.parentId && !groups.some((g) => g.id === group.parentId) ? 0 : group.level * 1.5}rem`,
-												}}
-											>
-												{groups.some((g) => g.parentId === group.id) ? (
+											draggable={!debouncedSearchTerm}
+											onDragStart={(e) => handleDragStart(e, group)}
+											onDragOver={(e) => handleDragOver(e, group)}
+											onDragLeave={handleDragLeave}
+											onDrop={(e) => handleDrop(e, group)}
+											onDragEnd={handleDragEnd}
+										>
+											<TableCell>
+												{!debouncedSearchTerm && (
+													<div className="flex items-center gap-1">
+														<GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+													</div>
+												)}
+											</TableCell>
+											<TableCell>
+												<div
+													className="flex items-center gap-2"
+													style={{
+														paddingLeft: `${group.parentId && !groups.some((g) => g.id === group.parentId) ? 0 : group.level * 1.5}rem`,
+													}}
+												>
+													{groups.some((g) => g.parentId === group.id) ? (
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-6 w-6 p-0"
+															onClick={() => toggleExpand(group.id)}
+														>
+															{group.expanded ? (
+																<ChevronDown className="h-4 w-4" />
+															) : (
+																<ChevronRight className="h-4 w-4" />
+															)}
+														</Button>
+													) : (
+														<div className="w-6"></div> // Spacer for alignment
+													)}
+
+													<IconViewer
+														icon={group.icon}
+														className="h-4 w-4 mr-4 text-muted-foreground"
+													/>
+													<Link
+														to={`/dashboard/groups/$id`}
+														params={{ id: group.id }}
+														className="font-medium hover:underline"
+													>
+														{group.name}
+														{group.parentId &&
+															!groups.some((g) => g.id === group.parentId) && (
+																<span className="ml-2 text-xs text-muted-foreground">
+																	(subgroup)
+																</span>
+															)}
+													</Link>
+
+													{/* Add subgroup button */}
 													<Button
 														variant="ghost"
 														size="icon"
-														className="h-6 w-6 p-0"
-														onClick={() => toggleExpand(group.id)}
+														className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+														asChild
 													>
-														{group.expanded ? (
-															<ChevronDown className="h-4 w-4" />
-														) : (
-															<ChevronRight className="h-4 w-4" />
-														)}
-													</Button>
-												) : (
-													<div className="w-6"></div> // Spacer for alignment
-												)}
-
-												<IconViewer
-													icon={group.icon}
-													className="h-4 w-4 mr-4 text-muted-foreground"
-												/>
-												<Link
-													to={`/dashboard/groups/$id`}
-													params={{ id: group.id }}
-													className="font-medium hover:underline"
-												>
-													{group.name}
-													{group.parentId &&
-														!groups.some((g) => g.id === group.parentId) && (
-															<span className="ml-2 text-xs text-muted-foreground">
-																(subgroup)
-															</span>
-														)}
-												</Link>
-
-												{/* Add subgroup button */}
-												<Button
-													variant="ghost"
-													size="icon"
-													className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-													asChild
-												>
-													<Link
-														to="/dashboard/groups/new"
-														search={{ parentId: group.id }}
-													>
-														<Plus className="h-3 w-3" />
-														<span className="sr-only">Add subgroup</span>
-													</Link>
-												</Button>
-											</div>
-										</TableCell>
-										<TableCell>
-											<Badge variant="outline">{group.category}</Badge>
-										</TableCell>
-										<TableCell>{group.channelCount}</TableCell>
-										<TableCell>{group.createdAt}</TableCell>
-										<TableCell className="text-right">
-											<DropdownMenu>
-												<DropdownMenuTrigger asChild>
-													<Button variant="ghost" size="icon">
-														<MoreHorizontal className="h-4 w-4" />
-														<span className="sr-only">Open menu</span>
-													</Button>
-												</DropdownMenuTrigger>
-												<DropdownMenuContent align="end">
-													<DropdownMenuItem asChild>
-														<Link
-															to={`/dashboard/groups/$id`}
-															params={{ id: group.id }}
-														>
-															View details
-														</Link>
-													</DropdownMenuItem>
-													<DropdownMenuItem asChild>
-														<Link
-															to={`/dashboard/groups/$id/edit`}
-															params={{ id: group.id }}
-														>
-															<Pencil className="mr-2 h-4 w-4" />
-															Edit
-														</Link>
-													</DropdownMenuItem>
-													<DropdownMenuItem asChild>
 														<Link
 															to="/dashboard/groups/new"
 															search={{ parentId: group.id }}
 														>
-															<Plus className="mr-2 h-4 w-4" />
-															Add Subgroup
+															<Plus className="h-3 w-3" />
+															<span className="sr-only">Add subgroup</span>
 														</Link>
-													</DropdownMenuItem>
-													<DropdownMenuSeparator />
-													<DropdownMenuItem
-														onClick={() => moveGroup(group, "up")}
-														disabled={!canMoveUp || debouncedSearchTerm !== ""}
-													>
-														<ArrowUp className="mr-2 h-4 w-4" />
-														Move Up
-													</DropdownMenuItem>
-													<DropdownMenuItem
-														onClick={() => moveGroup(group, "down")}
-														disabled={
-															!canMoveDown || debouncedSearchTerm !== ""
-														}
-													>
-														<ArrowDown className="mr-2 h-4 w-4" />
-														Move Down
-													</DropdownMenuItem>
-													<DropdownMenuSeparator />
-													<DropdownMenuItem
-														className="text-destructive"
-														onClick={() =>
-															handleDeleteGroup(group.id, group.name)
-														}
-														disabled={deleteGroup.isPending}
-													>
-														<Trash2 className="mr-2 h-4 w-4" />
-														Delete
-													</DropdownMenuItem>
-												</DropdownMenuContent>
-											</DropdownMenu>
-										</TableCell>
-									</TableRow>
+													</Button>
+												</div>
+											</TableCell>
+											<TableCell>
+												<Badge variant="outline">{group.category}</Badge>
+											</TableCell>
+											<TableCell>{group.channelCount}</TableCell>
+											<TableCell>{group.createdAt}</TableCell>
+											<TableCell className="text-right">
+												<DropdownMenu>
+													<DropdownMenuTrigger asChild>
+														<Button variant="ghost" size="icon">
+															<MoreHorizontal className="h-4 w-4" />
+															<span className="sr-only">Open menu</span>
+														</Button>
+													</DropdownMenuTrigger>
+													<DropdownMenuContent align="end">
+														<DropdownMenuItem asChild>
+															<Link
+																to={`/dashboard/groups/$id`}
+																params={{ id: group.id }}
+															>
+																View details
+															</Link>
+														</DropdownMenuItem>
+														<DropdownMenuItem asChild>
+															<Link
+																to={`/dashboard/groups/$id/edit`}
+																params={{ id: group.id }}
+															>
+																<Pencil className="mr-2 h-4 w-4" />
+																Edit
+															</Link>
+														</DropdownMenuItem>
+														<DropdownMenuItem asChild>
+															<Link
+																to="/dashboard/groups/new"
+																search={{ parentId: group.id }}
+															>
+																<Plus className="mr-2 h-4 w-4" />
+																Add Subgroup
+															</Link>
+														</DropdownMenuItem>
+														<DropdownMenuSeparator />
+														<DropdownMenuItem
+															onClick={() => moveGroup(group, "up")}
+															disabled={!canMoveUp || debouncedSearchTerm !== ""}
+														>
+															<ArrowUp className="mr-2 h-4 w-4" />
+															Move Up
+														</DropdownMenuItem>
+														<DropdownMenuItem
+															onClick={() => moveGroup(group, "down")}
+															disabled={
+																!canMoveDown || debouncedSearchTerm !== ""
+															}
+														>
+															<ArrowDown className="mr-2 h-4 w-4" />
+															Move Down
+														</DropdownMenuItem>
+														<DropdownMenuSeparator />
+														<DropdownMenuItem
+															className="text-destructive"
+															onClick={() =>
+																handleDeleteGroup(group.id, group.name)
+															}
+															disabled={deleteGroup.isPending}
+														>
+															<Trash2 className="mr-2 h-4 w-4" />
+															Delete
+														</DropdownMenuItem>
+													</DropdownMenuContent>
+												</DropdownMenu>
+											</TableCell>
+										</TableRow>
+									</>
 								);
 							})
 						)}
