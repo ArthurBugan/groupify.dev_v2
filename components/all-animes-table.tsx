@@ -54,7 +54,7 @@ const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
             <TableRow>
                 <TableCell colSpan={colSpan}>
                     <div className="flex justify-center">
-                        <div className="w-full">
+                        <div>
                             <ins className="adsbygoogle" style={{ display: 'inline-block', width: 1200, height: 69 }} data-ad-client="ca-pub-4077364511521347" data-ad-slot="2439256813" ref={adRef}></ins>
                         </div>
                     </div>
