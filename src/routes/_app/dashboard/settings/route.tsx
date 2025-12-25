@@ -36,7 +36,7 @@ function SettingsPage() {
 				className="space-y-4"
 			>
 				<div className="overflow-x-auto">
-					<TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground min-w-full lg:grid lg:grid-cols-5">
+					<TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground min-w-full lg:grid lg:grid-cols-4">
 						<TabsTrigger
 							onClick={() => router({ to: "/dashboard/settings/account" })}
 							value="account"
@@ -51,7 +51,7 @@ function SettingsPage() {
 						>
 							Appearance
 						</TabsTrigger>
-						<TabsTrigger
+						{/* <TabsTrigger
 							onClick={() =>
 								router({ to: "/dashboard/settings/notifications" })
 							}
@@ -59,7 +59,7 @@ function SettingsPage() {
 							className="whitespace-nowrap"
 						>
 							Notifications
-						</TabsTrigger>
+						</TabsTrigger> */}
 						<TabsTrigger
 							onClick={() => router({ to: "/dashboard/settings/groups" })}
 							value="groups"

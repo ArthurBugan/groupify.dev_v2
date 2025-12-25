@@ -47,7 +47,7 @@ function NewGroupPage() {
 		} catch (error) {
 			console.error("Error creating group:", error);
 			toast.error("Error", {
-				description: "Failed to create group. Please try again.",
+				description: error.message || "Failed to create group. Please try again.",
 			});
 		}
 	};

@@ -7,6 +7,7 @@ import {
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
 import type { Pagination } from "./types";
+import { toast } from "sonner";
 
 // Types for channels
 export interface Channel {
@@ -232,6 +233,11 @@ export function useUpdateChannel() {
 				queryKey: queryKeys.anime(updatedChannel.id),
 			});
 		},
+		onError: (error) => {
+			toast.error("Error", {
+				description: error.message || "Failed to update channel. Please try again.",
+			});
+		},
 	});
 }
 
@@ -255,14 +261,16 @@ export function useUpdateChannelsBatch() {
 		mutationFn: (data: BatchUpdateChannelRequest) => updateChannelsBatch(data),
 		onSuccess: (updatedChannels) => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.channels() });
-			// Invalidate the specific group query to update the UI
-
-			console.log("updatedChannels", updatedChannels);
 			if (updatedChannels.length > 0) {
 				queryClient.invalidateQueries({
 					queryKey: queryKeys.group(updatedChannels[0].groupId),
 				});
 			}
+		},
+		onError: (error) => {
+			toast.error("Error", {
+				description: error.message || "Failed to update channels. Please try again.",
+			});
 		},
 	});
 }

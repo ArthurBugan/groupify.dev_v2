@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
 import type { Pagination } from "./types";
+import { toast } from "sonner";
 
 // Types for groups
 export interface Group {
@@ -161,7 +162,7 @@ export function useCreateGroup() {
 		onSuccess: () => {
 			// Invalidate and refetch the groups query to update the UI
 			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
-		},
+		}
 	});
 }
 
