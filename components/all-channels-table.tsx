@@ -10,7 +10,7 @@ import {
 	Trash2,
 	Youtube,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { GenericCombobox } from "@/components/ui/combobox";
@@ -46,11 +46,33 @@ import {
 import { useGroups } from "@/hooks/useQuery/useGroups";
 import { IconViewer } from "./icon-picker";
 
+const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
+		const adRef = useRef<any>(null);
+		useEffect(() => {
+			const w: any = typeof window !== 'undefined' ? (window as any) : null;
+			if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
+				try { w.adsbygoogle.push({}); } catch (_) {}
+			}
+		}, []);
+		return (
+			<TableRow>
+				<TableCell colSpan={colSpan}>
+					<div className="flex justify-center">
+						<div className="w-full">
+							<ins className="adsbygoogle" style={{ display: 'inline-block', width: 1200, height: 69 }} data-ad-client="ca-pub-4077364511521347" data-ad-slot="2439256813" ref={adRef}></ins>
+						</div>
+					</div>
+				</TableCell>
+			</TableRow>
+		);
+	};
+
 export function AllChannelsTable() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+	const [adIndices, setAdIndices] = useState<number[]>([]);
 	// Fetch all groups
 	const { data: groupsData } = useGroups();
 	const { mutate: updateChannel } = useUpdateChannel();
@@ -77,6 +99,20 @@ export function AllChannelsTable() {
 
 		return () => clearTimeout(timer);
 	}, [searchTerm]);
+
+	useEffect(() => {
+		if (data?.data && data.data.length > 0) {
+			const maxAds = Math.min(4, data.data.length);
+			const count = Math.floor(Math.random() * maxAds) + 1;
+			const indices = new Set<number>();
+			while (indices.size < count) {
+				indices.add(Math.floor(Math.random() * data.data.length));
+			}
+			setAdIndices(Array.from(indices));
+		} else {
+			setAdIndices([]);
+		}
+	}, [data?.data]);
 
 	const handleSearchChange = (newSearchTerm: string) => {
 		setSearchTerm(newSearchTerm);
@@ -174,8 +210,12 @@ export function AllChannelsTable() {
 								</TableCell>
 							</TableRow>
 						) : (
-							data.data.map((channel) => (
-								<TableRow key={channel.id}>
+							data.data.map((channel, idx) => (
+								<>
+									{adIndices.includes(idx) && (
+										<AdRow colSpan={3} key={`ad-${channel.id}-${idx}`} />
+									)}
+									<TableRow key={channel.id}>
 									<TableCell>
 										<div className="flex items-center gap-3">
 											<Avatar className="h-4 w-4">
@@ -301,6 +341,7 @@ export function AllChannelsTable() {
 										</DropdownMenu>
 									</TableCell>
 								</TableRow>
+							</>
 							))
 						)}
 					</TableBody>
