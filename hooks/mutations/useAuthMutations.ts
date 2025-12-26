@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
+import { toast } from "sonner";
 
 // Types
 export type LoginCredentials = {
@@ -171,6 +172,64 @@ const confirmSubscription = async (
 	return response.data;
 };
 
+export type DeleteAccountResponse = {
+	success: boolean;
+};
+
+const deleteAccount = async (): Promise<DeleteAccountResponse> => {
+	const response = await apiClient.delete<ApiResponse<DeleteAccountResponse>>(
+		"/account",
+	);
+	return response.data;
+};
+
+export const useDeleteAccountMutation = () => {
+	const navigate = useNavigate();
+	return useMutation({
+		mutationFn: () => deleteAccount(),
+		onSuccess: () => {
+			localStorage.removeItem("authToken");
+			localStorage.removeItem("user");
+			navigate({ to: "/" });
+		},
+		onError: (error) => {
+			console.error("Delete account failed:", error);
+			throw error;
+		},
+	});
+};
+
+export type UpdatePasswordRequest = {
+	password: string;
+	passwordConfirmation: string;
+};
+
+export type UpdatePasswordResponse = {
+	success: boolean;
+};
+
+const updatePassword = async (
+	data: UpdatePasswordRequest,
+): Promise<UpdatePasswordResponse> => {
+	const response = await apiClient.patch<ApiResponse<UpdatePasswordResponse>>(
+		"/auth/update_password",
+		data,
+	);
+	return response.data;
+};
+
+export const useUpdatePasswordMutation = () => {
+	return useMutation({
+		mutationFn: (data: UpdatePasswordRequest) => updatePassword(data),
+		onSuccess: (data) => {
+			toast.success("Password updated successfully");
+		},
+		onError: (error) => {
+			toast.error(error.message ?? "Password update failed");
+		},
+	});
+};
+
 export const useConfirmSubscriptionMutation = () => {
 	return useMutation({
 		mutationFn: (data: SubscriptionConfirmRequest) => confirmSubscription(data),
@@ -184,5 +243,4 @@ export const useConfirmSubscriptionMutation = () => {
 	});
 };
 
-// Export API functions for direct use if needed
-export { loginUser, registerUser, forgotPassword, confirmSubscription };
+export { loginUser, registerUser, forgotPassword, confirmSubscription, deleteAccount, updatePassword };
