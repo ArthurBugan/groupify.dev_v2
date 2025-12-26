@@ -11,6 +11,7 @@ import { fallback, zodValidator } from '@tanstack/zod-adapter'
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sendToBackgroundViaRelay } from "@plasmohq/messaging";
+import { useUser } from "@/hooks/useQuery/useUser";
 
 const dashboardParams = z.object({
 	origin: fallback(z.string(), '').default(""),
@@ -23,6 +24,14 @@ export const Route = createFileRoute("/_app/dashboard/")({
 
 function DashboardPage() {
 	const { origin } = Route.useSearch();
+	const { data: user } = useUser();
+
+	useEffect(() => {
+		if (user) {
+			try { localStorage.setItem("user", JSON.stringify(user)); } catch (_) {}
+		}
+	}, [user]);
+
 
 	useEffect(() => {
 		if (origin) {
