@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Link, Shield, Trash2, Unlink } from "lucide-react";
+import { AlertTriangle, Link, Shield, Trash2, Unlink, Eye, EyeOff } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { type SocialLoginSessionStatus, useCheckDiscordSession, useCheckGoogleSession, useDisconnectDiscordSession, useDisconnectGoogleSession } from "@/hooks/useQuery/useSocialLogin";
 import { Icons } from "@/components/ui/icons";
+import { useDeleteAccountMutation, useUpdatePasswordMutation } from "@/hooks/mutations/useAuthMutations";
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -34,12 +35,19 @@ export function AccountSettings() {
 	const [deleteConfirmation, setDeleteConfirmation] = useState("");
 	const [acknowledgeDataLoss, setAcknowledgeDataLoss] = useState(false);
 	const [acknowledgeNoRecovery, setAcknowledgeNoRecovery] = useState(false);
+	const [currentPassword, setCurrentPassword] = useState("");
+	const [newPassword, setNewPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [showNewPassword, setShowNewPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 	const { data: discordSession } = useCheckDiscordSession();
 	const { data: googleSession } = useCheckGoogleSession();
 
 	const disconnectGoogleMutation = useDisconnectGoogleSession();
 	const disconnectDiscordMutation = useDisconnectDiscordSession();
+	const deleteAccountMutation = useDeleteAccountMutation();
+	const { mutateAsync: updatePasswordMutation, isPending: passwordMutation } = useUpdatePasswordMutation();
 
 	const [socialConnections, setSocialConnections] = useState<{
 		discord: SocialLoginSessionStatus;
@@ -87,13 +95,6 @@ export function AccountSettings() {
 		}
 	}, [googleSession]);
 
-	const handleSave = async () => {
-		setIsLoading(true);
-		// Simulate API call
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		setIsLoading(false);
-	};
-
 	const handleSocialConnect = async (provider: "google" | "discord") => {
 		console.log(`Connecting to ${provider}...`);
 		if (provider === "google") {
@@ -108,6 +109,16 @@ export function AccountSettings() {
 			await disconnectGoogleMutation.mutateAsync();
 		} else if (provider === "discord") {
 			await disconnectDiscordMutation.mutateAsync();
+		}
+	};
+
+	const handleUpdatePassword = async () => {
+		try {
+			await updatePasswordMutation({ password: newPassword, passwordConfirmation: confirmPassword });
+			setNewPassword("");
+			setConfirmPassword("");
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -127,12 +138,12 @@ export function AccountSettings() {
 		}
 
 		setIsLoading(true);
-		// Simulate account deletion
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		console.log("Account deleted");
-		setIsLoading(false);
-		setDeleteDialogOpen(false);
-		// In real app, this would redirect to a goodbye page or login
+		try {
+			await deleteAccountMutation.mutateAsync();
+			setDeleteDialogOpen(false);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const canDeleteAccount =
@@ -264,19 +275,25 @@ export function AccountSettings() {
 				<CardContent className="space-y-4">
 					<div className="grid gap-4">
 						<div className="grid gap-2">
-							<Label htmlFor={useId()}>Current Password</Label>
-							<Input id={useId()} type="password" />
-						</div>
-						<div className="grid gap-2">
 							<Label htmlFor={useId()}>New Password</Label>
-							<Input id={useId()} type="password" />
+						<div className="relative">
+							<Input id={useId()} type={showNewPassword ? "text" : "password"} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="pr-10" />
+							<button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowNewPassword((p) => !p)}>
+								{showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+							</button>
+						</div>
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor={useId()}>Confirm New Password</Label>
-							<Input id={useId()} type="password" />
+						<div className="relative">
+							<Input id={useId()} type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="pr-10" />
+							<button type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowConfirmPassword((p) => !p)}>
+								{showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+							</button>
+						</div>
 						</div>
 					</div>
-					<Button>Update Password</Button>
+					<Button variant="outline" onClick={handleUpdatePassword} disabled={passwordMutation || !newPassword || newPassword !== confirmPassword || newPassword.length < 6 || confirmPassword.length < 6}>Update Password</Button>
 				</CardContent>
 			</Card>
 
@@ -380,7 +397,7 @@ export function AccountSettings() {
 										className="text-sm font-medium"
 									>
 										Type{" "}
-										<span className="font-mono bg-gray-100 px-1 rounded">
+										<span className="font-mono px-1 rounded">
 											DELETE
 										</span>{" "}
 										to confirm:
