@@ -109,8 +109,6 @@ export function AllChannelsTable() {
 				indices.add(Math.floor(Math.random() * data.data.length));
 			}
 			setAdIndices(Array.from(indices));
-		} else {
-			setAdIndices([]);
 		}
 	}, [data?.data]);
 
