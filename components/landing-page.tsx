@@ -362,7 +362,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Features Section */}
-			<section id={featuresId} className="py-20 lg:py-32">
+			<section id="features" className="py-20 lg:py-32">
 				<div className="container mx-auto px-4">
 					<div className="text-center space-y-4 mb-16">
 						<Badge variant="outline" className="mb-4 font-mono">
@@ -408,7 +408,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Integrations Section */}
-			<section id={integrationsId} className="relative py-20 lg:py-32 bg-background overflow-hidden">
+			<section id="integrations" className="relative py-20 lg:py-32 bg-background overflow-hidden">
 				{/* Optional grid background effect */}
 				<div className="absolute inset-0 pointer-events-none bg-grid-small bg-muted/5"></div>
 
@@ -486,7 +486,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Testimonials Section */}
-			<section id={testimonialsId} className="py-20 lg:py-32">
+			<section id="testimonials" className="py-20 lg:py-32">
 				<div className="container mx-auto px-4">
 					<div className="text-center space-y-4 mb-16">
 						<Badge variant="outline" className="mb-4 font-mono">
@@ -551,7 +551,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Pricing Section */}
-			<section id={pricingId} className="py-20 lg:py-32 bg-muted/50">
+			<section id="pricing" className="py-20 lg:py-32 bg-muted/50">
 				<div className="container mx-auto px-4">
 					<div className="text-center space-y-4 mb-16">
 						<Badge variant="outline" className="mb-4 font-mono">
