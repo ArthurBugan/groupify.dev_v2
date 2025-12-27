@@ -311,6 +311,10 @@ export function LandingPage() {
 										{t("hero.watchdemo")}
 									</Link>
 								</Button>
+								<a style={{ height: '46px' }} target="_blank"  rel="noopener noreferrer" href="https://acidtools.com">
+									<img src="https://acidtools.com/assets/images/badge-dark.png" style={{ height: '46px' }} alt="Acid Tools" />
+								</a>
+								
 							</div>
 
 							<div className="flex items-center gap-8 text-sm text-muted-foreground">
