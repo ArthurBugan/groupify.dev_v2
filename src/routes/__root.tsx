@@ -121,6 +121,15 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 					})(window,document,'script','dataLayer','GTM-TZ924QCW');
 				`}
 				</script>
+				<script async src="https://www.googletagmanager.com/gtag/js?id=G-D7BS3V6VJF"></script>
+				<script>
+					{`
+					window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', 'G-D7BS3V6VJF');
+					`}
+				</script>
 				<Scripts />
 			</body>
 		</html>
