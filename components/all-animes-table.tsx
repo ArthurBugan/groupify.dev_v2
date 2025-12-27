@@ -108,8 +108,6 @@ export function AllAnimesTable() {
                 indices.add(Math.floor(Math.random() * data.length));
             }
             setAdIndices(Array.from(indices));
-        } else {
-            setAdIndices([]);
         }
     }, [data]);
 

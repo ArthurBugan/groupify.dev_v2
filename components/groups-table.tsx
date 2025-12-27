@@ -503,8 +503,6 @@ export function GroupsTable() {
 				indices.add(Math.floor(Math.random() * sortedGroups.length));
 			}
 			setAdIndices(Array.from(indices));
-		} else {
-			setAdIndices([]);
 		}
 	}, [sortedGroups.length]);
 

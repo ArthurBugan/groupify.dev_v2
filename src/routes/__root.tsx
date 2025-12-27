@@ -20,6 +20,7 @@ import { queryClient } from "@/hooks/utils/queryClient";
 import appCss from "@/styles/app.css?url";
 import posthog from "posthog-js";
 import HyperDX from '@hyperdx/browser';
+import { AnalyticsListener } from "@/hooks/analytics-listener";
 
 const PUBLIC_POST_HOG_ID = import.meta.env.VITE_POST_HOG_ID;
 const PUBLIC_HYPER_DX_ID = import.meta.env.VITE_HYPER_DX_ID;
@@ -79,6 +80,7 @@ function RootComponent() {
 				<QueryClientProvider client={queryClient}>
 					<RootDocument>
 						<Outlet />
+						<AnalyticsListener />
 						<ReactQueryDevtools initialIsOpen={true} />
 						<Toaster richColors />
 					</RootDocument>
