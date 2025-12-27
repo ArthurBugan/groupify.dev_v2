@@ -311,11 +311,41 @@ export function LandingPage() {
 										{t("hero.watchdemo")}
 									</Link>
 								</Button>
-								<a style={{ height: '46px' }} target="_blank"  rel="noopener noreferrer" href="https://acidtools.com">
-									<img src="https://acidtools.com/assets/images/badge-dark.png" style={{ height: '46px' }} alt="Acid Tools" />
-								</a>
-								
-							</div>
+								<div className="flex items-center gap-3">
+									<Button
+										variant="outline"
+										size="icon"
+										asChild
+										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+										title="Available on Chrome Web Store"
+									>
+										<Link to="https://chromewebstore.google.com/detail/groupify-youtube-organize/dmdgaegnpjnnkcbdngfgkhlehlccbija">
+											<IconViewer icon="logos:chrome" className="h-6 w-6" />
+										</Link>
+									</Button>
+									<Button
+										variant="outline"
+										size="icon"
+										asChild
+										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+										title="Available on Firefox Add-ons"
+									>
+										<Link to="https://addons.mozilla.org/en-US/firefox/addon/groupify-yt-organize">
+											<IconViewer icon="logos:firefox" className="h-6 w-6" />
+										</Link>
+									</Button>
+									<Button
+										variant="outline"
+										size="icon"
+										asChild
+										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+										title="Available on Safari Extensions"
+									>
+										<Link to="https://apps.apple.com/us/app/groupify-yt-subscriptions/id6714452813?l=pt-BR">
+											<IconViewer icon="logos:safari" className="h-6 w-6" />
+										</Link>
+									</Button>
+								</div>							</div>
 
 							<div className="flex items-center gap-8 text-sm text-muted-foreground">
 								<div className="flex items-center gap-2">
@@ -769,6 +799,9 @@ export function LandingPage() {
 									</Link>
 								</li>
 							</ul>
+							<a style={{ height: '46px' }} target="_blank"  rel="noopener noreferrer" href="https://acidtools.com">
+									<img src="https://acidtools.com/assets/images/badge-dark.png" style={{ height: '46px' }} alt="Acid Tools" />
+								</a>
 						</div>
 					</div>
 
