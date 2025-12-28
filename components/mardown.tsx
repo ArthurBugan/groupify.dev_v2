@@ -5,34 +5,72 @@ import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 
+import { useRef } from 'react'
+
 declare global {
   interface Window {
     adsbygoogle: any[];
   }
 }
 
+function AdSense({ adSlot, adClient }: { adSlot?: string; adClient?: string }) {
+  const adRef = useRef<HTMLModElement>(null);
+  
+  useEffect(() => {
+    const w = typeof window !== 'undefined' ? window : null;
+    if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
+      try {
+        (w.adsbygoogle = w.adsbygoogle || []).push({});
+      } catch (e) {
+        console.error('AdSense error:', e);
+      }
+    }
+  }, []);
+
+  return (
+    <div className="my-12 flex justify-center overflow-hidden min-h-[90px] bg-muted/5 rounded-xl border border-dashed border-border/50">
+      <ins 
+        ref={adRef}
+        className="adsbygoogle"
+        data-ad-layout="in-article"
+        data-ad-format="fluid"
+        style={{ display: 'inline-block', width: '728px', height: '90px' }}
+        data-ad-client={adClient || "ca-pub-4077364511521347"}
+        data-ad-slot={adSlot || "8284537241"}
+      />
+    </div>
+  );
+}
+
+// Helper to inject ads every N paragraphs
+function injectAds(content: string, frequency = 4) {
+  const paragraphs = content.split('\n\n');
+  if (paragraphs.length <= frequency) return content;
+
+  const newParagraphs = [];
+  for (let i = 0; i < paragraphs.length; i++) {
+    newParagraphs.push(paragraphs[i]);
+    // Inject ad every 'frequency' paragraphs, but not after the last one
+    if ((i + 1) % frequency === 0 && i !== paragraphs.length - 1) {
+      newParagraphs.push('<ins class="adsbygoogle"></ins>');
+    }
+  }
+  return newParagraphs.join('\n\n');
+}
+
 type MarkdownProps = {
   content: string
   className?: string
+  autoInjectAds?: boolean
 }
 
-export function Markdown({ content, className }: MarkdownProps) {
+export function Markdown({ content, className, autoInjectAds = false }: MarkdownProps) {
   const [result, setResult] = useState<MarkdownResult | null>(null)
 
   useEffect(() => {
-    renderMarkdown(content).then(setResult)
-  }, [content])
-
-  // Re-initialize AdSense ads after content is rendered
-  useEffect(() => {
-    if (result) {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {
-        // Silently fail if AdSense script isn't loaded yet
-      }
-    }
-  }, [result])
+    const finalContent = autoInjectAds ? injectAds(content) : content;
+    renderMarkdown(finalContent).then(setResult)
+  }, [content, autoInjectAds])
 
   if (!result) {
     return <div className={cn("animate-pulse space-y-4", className)}>
@@ -48,14 +86,10 @@ export function Markdown({ content, className }: MarkdownProps) {
         // Handle Google AdSense <ins> tags
         if (domNode.name === 'ins' && domNode.attribs.class === 'adsbygoogle') {
           return (
-            <div className="my-12 flex justify-center overflow-hidden">
-              <ins 
-                className="adsbygoogle"
-                style={{ display: 'inline-block', width: '728px', height: '90px' }}
-                data-ad-client={domNode.attribs['data-ad-client'] || "ca-pub-4077364511521347"}
-                data-ad-slot={domNode.attribs['data-ad-slot'] || "5153442110"}
-              />
-            </div>
+            <AdSense 
+              adClient={domNode.attribs['data-ad-client']} 
+              adSlot={domNode.attribs['data-ad-slot']} 
+            />
           )
         }
 
