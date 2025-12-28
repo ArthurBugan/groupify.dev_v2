@@ -161,7 +161,7 @@ const translations = {
 			"Connect with your favorite platforms and tools to supercharge your workflow.",
 		"integrations.crunchyroll.desc": "Track anime content across platforms",
 		"integrations.youtube.desc": "Real-time channel data synchronization",
-		"integrations.export.desc": "Un lugar para reunir grupos de la comunidad.",
+		"integrations.export.desc": "A place to export your groups and channels to the community",
 
 		// Testimonials
 		"testimonials.badge": "Testimonials",
@@ -678,7 +678,7 @@ const translations = {
 		"integrations.crunchyroll.desc": "Rastrea conteúdo de anime em plataformas",
 		"integrations.youtube.desc":
 			"Sincronización de datos de canal em tempo real",
-		"integrations.export.desc": "Exporta dados em formatos JSON, CSV",
+		"integrations.export.desc": "Exporta seus grupos e canais para a comunidade",
 
 		// Testimonials
 		"testimonials.badge": "Testimonios",

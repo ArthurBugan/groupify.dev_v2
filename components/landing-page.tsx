@@ -19,7 +19,7 @@ import {
 	Users,
 	Youtube,
 } from "lucide-react";
-import { useId } from "react";
+import { useId, useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +38,16 @@ import { Icons } from "./ui/icons";
 
 // Tech-inspired animated background component
 function TechBackground() {
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
+	if (!mounted) {
+		return <div className="absolute inset-0 overflow-hidden pointer-events-none" />;
+	}
+
 	return (
 		<div className="absolute inset-0 overflow-hidden pointer-events-none">
 			{/* Grid pattern */}
@@ -53,30 +63,12 @@ function TechBackground() {
 			<div className="absolute bottom-32 left-32 text-xs font-mono text-muted-foreground/30 animate-pulse delay-2000">
 				<div>npm install @groupify/sdk</div>
 			</div>
-
-			{/* Animated dots */}
-			{Array.from({ length: 20 }).map((_, i) => (
-				<div
-					key={`dot-${Math.random().toString(36).substring(7)}-${i}`}
-					className="absolute w-1 h-1 bg-primary/20 rounded-full animate-pulse"
-					style={{
-						left: `${Math.random() * 100}%`,
-						top: `${Math.random() * 100}%`,
-						animationDelay: `${Math.random() * 3}s`,
-						animationDuration: `${2 + Math.random() * 2}s`,
-					}}
-				/>
-			))}
 		</div>
 	);
 }
 
 export function LandingPage() {
 	const { t } = useLanguage();
-	const featuresId = useId();
-	const integrationsId = useId();
-	const testimonialsId = useId();
-	const pricingId = useId();
 
 	const features = [
 		{
@@ -319,9 +311,9 @@ export function LandingPage() {
 										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
 										title="Available on Chrome Web Store"
 									>
-										<Link to="https://chromewebstore.google.com/detail/groupify-youtube-organize/dmdgaegnpjnnkcbdngfgkhlehlccbija">
+										<a href="https://chromewebstore.google.com/detail/groupify-youtube-organize/dmdgaegnpjnnkcbdngfgkhlehlccbija">
 											<IconViewer icon="logos:chrome" className="h-6 w-6" />
-										</Link>
+										</a>
 									</Button>
 									<Button
 										variant="outline"
@@ -330,9 +322,9 @@ export function LandingPage() {
 										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
 										title="Available on Firefox Add-ons"
 									>
-										<Link to="https://addons.mozilla.org/en-US/firefox/addon/groupify-yt-organize">
+										<a href="https://addons.mozilla.org/en-US/firefox/addon/groupify-yt-organize">
 											<IconViewer icon="logos:firefox" className="h-6 w-6" />
-										</Link>
+										</a>
 									</Button>
 									<Button
 										variant="outline"
@@ -341,9 +333,9 @@ export function LandingPage() {
 										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
 										title="Available on Safari Extensions"
 									>
-										<Link to="https://apps.apple.com/us/app/groupify-yt-subscriptions/id6714452813?l=pt-BR">
+										<a href="https://apps.apple.com/us/app/groupify-yt-subscriptions/id6714452813?l=pt-BR">
 											<IconViewer icon="logos:safari" className="h-6 w-6" />
-										</Link>
+										</a>
 									</Button>
 								</div>							</div>
 
@@ -392,6 +384,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Features Section */}
+			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
 			<section id="features" className="py-20 lg:py-32">
 				<div className="container mx-auto px-4">
 					<div className="text-center space-y-4 mb-16">
@@ -438,6 +431,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Integrations Section */}
+			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
 			<section id="integrations" className="relative py-20 lg:py-32 bg-background overflow-hidden">
 				{/* Optional grid background effect */}
 				<div className="absolute inset-0 pointer-events-none bg-grid-small bg-muted/5"></div>
@@ -516,6 +510,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Testimonials Section */}
+			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
 			<section id="testimonials" className="py-20 lg:py-32">
 				<div className="container mx-auto px-4">
 					<div className="text-center space-y-4 mb-16">
@@ -581,6 +576,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Pricing Section */}
+			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
 			<section id="pricing" className="py-20 lg:py-32 bg-muted/50">
 				<div className="container mx-auto px-4">
 					<div className="text-center space-y-4 mb-16">
@@ -638,7 +634,7 @@ export function LandingPage() {
 										<ul className="space-y-3">
 											{plan.features.map((feature, i) => (
 												<li
-													key={`feature-${index}-${i}`}
+													key={`feature-${index}-${feature}`}
 													className="flex items-center gap-3"
 												>
 													<CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
@@ -733,16 +729,16 @@ export function LandingPage() {
 								{t("footer.description")}
 							</p>
 							<div className="flex gap-4">
-								<Link to="https://www.youtube.com/@scriptingarthur">
+								<a href="https://www.youtube.com/@scriptingarthur">
 									<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
 										<Youtube className="h-4 w-4" />
 									</div>
-								</Link>
-								<Link to="https://discord.gg/Hp4MvPanwr">
+								</a>
+								<a href="https://discord.gg/Hp4MvPanwr">
 									<div className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
 										<Icons.discord className="h-4 w-4" />
 									</div>
-								</Link>
+								</a>
 								<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
 									<Icons.gitHub className="h-4 w-4" />
 								</div>
@@ -753,28 +749,28 @@ export function LandingPage() {
 							<h3 className="font-semibold">{t("footer.support")}</h3>
 							<ul className="space-y-2 text-sm text-muted-foreground">
 								<li>
-									<Link
-										to="https://discord.gg/Hp4MvPanwr"
+									<a
+										href="https://discord.gg/Hp4MvPanwr"
 										className="hover:text-foreground transition-colors hover:underline"
 									>
 										Help Center
-									</Link>
+									</a>
 								</li>
 								<li>
-									<Link
-										to="mailto:admin@groupify.dev"
+									<a
+										href="mailto:admin@groupify.dev"
 										className="hover:text-foreground transition-colors hover:underline"
 									>
 										Contact
-									</Link>
+									</a>
 								</li>
 								<li>
-									<Link
-										to="https://discord.gg/Hp4MvPanwr"
+									<a
+										href="https://discord.gg/Hp4MvPanwr"
 										className="hover:text-foreground transition-colors hover:underline"
 									>
 										Community
-									</Link>
+									</a>
 								</li>
 							</ul>
 						</div>

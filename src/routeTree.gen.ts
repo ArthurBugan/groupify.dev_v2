@@ -18,6 +18,8 @@ import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
 import { Route as AuthForgotPasswordIndexRouteImport } from './routes/_auth/forgot-password/index'
 import { Route as AppSupportIndexRouteImport } from './routes/_app/support/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
+import { Route as AppBlogIndexRouteImport } from './routes/_app/blog/index'
+import { Route as AppBlogSlugRouteImport } from './routes/_app/blog/$slug'
 import { Route as AppDashboardSettingsRouteRouteImport } from './routes/_app/dashboard/settings/route'
 import { Route as AppDashboardGroupsIndexRouteImport } from './routes/_app/dashboard/groups/index'
 import { Route as AppDashboardChannelsIndexRouteImport } from './routes/_app/dashboard/channels/index'
@@ -25,8 +27,6 @@ import { Route as AppDashboardAnimesIndexRouteImport } from './routes/_app/dashb
 import { Route as AuthSubscriptionsConfirmCodeRouteImport } from './routes/_auth/subscriptions/confirm.$code'
 import { Route as AuthForgotPasswordSuccessEmailIndexRouteImport } from './routes/_auth/forgot-password/success/$email/index'
 import { Route as AppShareTypeIdIndexRouteImport } from './routes/_app/share/$type/$id/index'
-import { Route as AppDashboardSettingsPrivacyIndexRouteImport } from './routes/_app/dashboard/settings/privacy/index'
-import { Route as AppDashboardSettingsNotificationsIndexRouteImport } from './routes/_app/dashboard/settings/notifications/index'
 import { Route as AppDashboardSettingsGroupsIndexRouteImport } from './routes/_app/dashboard/settings/groups/index'
 import { Route as AppDashboardSettingsBillingIndexRouteImport } from './routes/_app/dashboard/settings/billing/index'
 import { Route as AppDashboardSettingsAppearanceIndexRouteImport } from './routes/_app/dashboard/settings/appearance/index'
@@ -86,6 +86,16 @@ const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppDashboardRouteRoute,
 } as any)
+const AppBlogIndexRoute = AppBlogIndexRouteImport.update({
+  id: '/_app/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppBlogSlugRoute = AppBlogSlugRouteImport.update({
+  id: '/_app/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppDashboardSettingsRouteRoute =
   AppDashboardSettingsRouteRouteImport.update({
     id: '/settings',
@@ -125,18 +135,6 @@ const AppShareTypeIdIndexRoute = AppShareTypeIdIndexRouteImport.update({
   path: '/share/$type/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppDashboardSettingsPrivacyIndexRoute =
-  AppDashboardSettingsPrivacyIndexRouteImport.update({
-    id: '/privacy/',
-    path: '/privacy/',
-    getParentRoute: () => AppDashboardSettingsRouteRoute,
-  } as any)
-const AppDashboardSettingsNotificationsIndexRoute =
-  AppDashboardSettingsNotificationsIndexRouteImport.update({
-    id: '/notifications/',
-    path: '/notifications/',
-    getParentRoute: () => AppDashboardSettingsRouteRoute,
-  } as any)
 const AppDashboardSettingsGroupsIndexRoute =
   AppDashboardSettingsGroupsIndexRouteImport.update({
     id: '/groups/',
@@ -222,6 +220,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof AppTermsRoute
   '/': typeof AppIndexRoute
   '/dashboard/settings': typeof AppDashboardSettingsRouteRouteWithChildren
+  '/blog/$slug': typeof AppBlogSlugRoute
+  '/blog': typeof AppBlogIndexRoute
   '/dashboard/': typeof AppDashboardIndexRoute
   '/support': typeof AppSupportIndexRoute
   '/forgot-password': typeof AuthForgotPasswordIndexRoute
@@ -237,8 +237,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings/appearance': typeof AppDashboardSettingsAppearanceIndexRoute
   '/dashboard/settings/billing': typeof AppDashboardSettingsBillingIndexRoute
   '/dashboard/settings/groups': typeof AppDashboardSettingsGroupsIndexRoute
-  '/dashboard/settings/notifications': typeof AppDashboardSettingsNotificationsIndexRoute
-  '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
   '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
   '/dashboard/animes/change-group/$id': typeof AppDashboardAnimesChangeGroupIdIndexRoute
@@ -254,6 +252,8 @@ export interface FileRoutesByTo {
   '/terms': typeof AppTermsRoute
   '/': typeof AppIndexRoute
   '/dashboard/settings': typeof AppDashboardSettingsRouteRouteWithChildren
+  '/blog/$slug': typeof AppBlogSlugRoute
+  '/blog': typeof AppBlogIndexRoute
   '/dashboard': typeof AppDashboardIndexRoute
   '/support': typeof AppSupportIndexRoute
   '/forgot-password': typeof AuthForgotPasswordIndexRoute
@@ -269,8 +269,6 @@ export interface FileRoutesByTo {
   '/dashboard/settings/appearance': typeof AppDashboardSettingsAppearanceIndexRoute
   '/dashboard/settings/billing': typeof AppDashboardSettingsBillingIndexRoute
   '/dashboard/settings/groups': typeof AppDashboardSettingsGroupsIndexRoute
-  '/dashboard/settings/notifications': typeof AppDashboardSettingsNotificationsIndexRoute
-  '/dashboard/settings/privacy': typeof AppDashboardSettingsPrivacyIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
   '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
   '/dashboard/animes/change-group/$id': typeof AppDashboardAnimesChangeGroupIdIndexRoute
@@ -288,6 +286,8 @@ export interface FileRoutesById {
   '/_app/terms': typeof AppTermsRoute
   '/_app/': typeof AppIndexRoute
   '/_app/dashboard/settings': typeof AppDashboardSettingsRouteRouteWithChildren
+  '/_app/blog/$slug': typeof AppBlogSlugRoute
+  '/_app/blog/': typeof AppBlogIndexRoute
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/support/': typeof AppSupportIndexRoute
   '/_auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
@@ -303,8 +303,6 @@ export interface FileRoutesById {
   '/_app/dashboard/settings/appearance/': typeof AppDashboardSettingsAppearanceIndexRoute
   '/_app/dashboard/settings/billing/': typeof AppDashboardSettingsBillingIndexRoute
   '/_app/dashboard/settings/groups/': typeof AppDashboardSettingsGroupsIndexRoute
-  '/_app/dashboard/settings/notifications/': typeof AppDashboardSettingsNotificationsIndexRoute
-  '/_app/dashboard/settings/privacy/': typeof AppDashboardSettingsPrivacyIndexRoute
   '/_app/share/$type/$id/': typeof AppShareTypeIdIndexRoute
   '/_auth/forgot-password/success/$email/': typeof AuthForgotPasswordSuccessEmailIndexRoute
   '/_app/dashboard/animes/change-group/$id/': typeof AppDashboardAnimesChangeGroupIdIndexRoute
@@ -323,6 +321,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/'
     | '/dashboard/settings'
+    | '/blog/$slug'
+    | '/blog'
     | '/dashboard/'
     | '/support'
     | '/forgot-password'
@@ -338,8 +338,6 @@ export interface FileRouteTypes {
     | '/dashboard/settings/appearance'
     | '/dashboard/settings/billing'
     | '/dashboard/settings/groups'
-    | '/dashboard/settings/notifications'
-    | '/dashboard/settings/privacy'
     | '/share/$type/$id'
     | '/forgot-password/success/$email'
     | '/dashboard/animes/change-group/$id'
@@ -355,6 +353,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/'
     | '/dashboard/settings'
+    | '/blog/$slug'
+    | '/blog'
     | '/dashboard'
     | '/support'
     | '/forgot-password'
@@ -370,8 +370,6 @@ export interface FileRouteTypes {
     | '/dashboard/settings/appearance'
     | '/dashboard/settings/billing'
     | '/dashboard/settings/groups'
-    | '/dashboard/settings/notifications'
-    | '/dashboard/settings/privacy'
     | '/share/$type/$id'
     | '/forgot-password/success/$email'
     | '/dashboard/animes/change-group/$id'
@@ -388,6 +386,8 @@ export interface FileRouteTypes {
     | '/_app/terms'
     | '/_app/'
     | '/_app/dashboard/settings'
+    | '/_app/blog/$slug'
+    | '/_app/blog/'
     | '/_app/dashboard/'
     | '/_app/support/'
     | '/_auth/forgot-password/'
@@ -403,8 +403,6 @@ export interface FileRouteTypes {
     | '/_app/dashboard/settings/appearance/'
     | '/_app/dashboard/settings/billing/'
     | '/_app/dashboard/settings/groups/'
-    | '/_app/dashboard/settings/notifications/'
-    | '/_app/dashboard/settings/privacy/'
     | '/_app/share/$type/$id/'
     | '/_auth/forgot-password/success/$email/'
     | '/_app/dashboard/animes/change-group/$id/'
@@ -421,6 +419,8 @@ export interface RootRouteChildren {
   AppPrivacyRoute: typeof AppPrivacyRoute
   AppTermsRoute: typeof AppTermsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppBlogSlugRoute: typeof AppBlogSlugRoute
+  AppBlogIndexRoute: typeof AppBlogIndexRoute
   AppSupportIndexRoute: typeof AppSupportIndexRoute
   AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
@@ -495,6 +495,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardIndexRouteImport
       parentRoute: typeof AppDashboardRouteRoute
     }
+    '/_app/blog/': {
+      id: '/_app/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof AppBlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/blog/$slug': {
+      id: '/_app/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof AppBlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/dashboard/settings': {
       id: '/_app/dashboard/settings'
       path: '/settings'
@@ -543,20 +557,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/share/$type/$id'
       preLoaderRoute: typeof AppShareTypeIdIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_app/dashboard/settings/privacy/': {
-      id: '/_app/dashboard/settings/privacy/'
-      path: '/privacy'
-      fullPath: '/dashboard/settings/privacy'
-      preLoaderRoute: typeof AppDashboardSettingsPrivacyIndexRouteImport
-      parentRoute: typeof AppDashboardSettingsRouteRoute
-    }
-    '/_app/dashboard/settings/notifications/': {
-      id: '/_app/dashboard/settings/notifications/'
-      path: '/notifications'
-      fullPath: '/dashboard/settings/notifications'
-      preLoaderRoute: typeof AppDashboardSettingsNotificationsIndexRouteImport
-      parentRoute: typeof AppDashboardSettingsRouteRoute
     }
     '/_app/dashboard/settings/groups/': {
       id: '/_app/dashboard/settings/groups/'
@@ -657,8 +657,6 @@ interface AppDashboardSettingsRouteRouteChildren {
   AppDashboardSettingsAppearanceIndexRoute: typeof AppDashboardSettingsAppearanceIndexRoute
   AppDashboardSettingsBillingIndexRoute: typeof AppDashboardSettingsBillingIndexRoute
   AppDashboardSettingsGroupsIndexRoute: typeof AppDashboardSettingsGroupsIndexRoute
-  AppDashboardSettingsNotificationsIndexRoute: typeof AppDashboardSettingsNotificationsIndexRoute
-  AppDashboardSettingsPrivacyIndexRoute: typeof AppDashboardSettingsPrivacyIndexRoute
 }
 
 const AppDashboardSettingsRouteRouteChildren: AppDashboardSettingsRouteRouteChildren =
@@ -670,10 +668,6 @@ const AppDashboardSettingsRouteRouteChildren: AppDashboardSettingsRouteRouteChil
     AppDashboardSettingsBillingIndexRoute:
       AppDashboardSettingsBillingIndexRoute,
     AppDashboardSettingsGroupsIndexRoute: AppDashboardSettingsGroupsIndexRoute,
-    AppDashboardSettingsNotificationsIndexRoute:
-      AppDashboardSettingsNotificationsIndexRoute,
-    AppDashboardSettingsPrivacyIndexRoute:
-      AppDashboardSettingsPrivacyIndexRoute,
   }
 
 const AppDashboardSettingsRouteRouteWithChildren =
@@ -726,6 +720,8 @@ const rootRouteChildren: RootRouteChildren = {
   AppPrivacyRoute: AppPrivacyRoute,
   AppTermsRoute: AppTermsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppBlogSlugRoute: AppBlogSlugRoute,
+  AppBlogIndexRoute: AppBlogIndexRoute,
   AppSupportIndexRoute: AppSupportIndexRoute,
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,

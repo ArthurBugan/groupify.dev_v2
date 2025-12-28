@@ -91,7 +91,7 @@ function RootComponent() {
 }
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning={true}>
 			<head>
 				<HeadContent />
 				<script
@@ -111,7 +111,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				>
 					{children}
 				</ThemeProvider>
-				{/** biome-ignore lint/correctness/useUniqueElementIds: <explanation> */}
+				{/** biome-ignore lint/correctness/useUniqueElementIds: <implement gtm> */}
 				<script id="gtm">
 					{`
 					(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

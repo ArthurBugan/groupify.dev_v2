@@ -26,7 +26,7 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useLogoutMutation } from "@/hooks/mutations/useUserMutations";
 
 const items = [
@@ -67,7 +67,17 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar variant="sidebar">
-			<SidebarHeader>Groupify</SidebarHeader>
+			<SidebarHeader className="cursor-pointer" onClick={() => navigate({ to: "/" })}>
+				<Link to="/" className="flex items-center gap-4 ml-1">
+					<div className="relative">
+					<Youtube className="h-6 w-6 text-red-500" />
+					<div className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse"></div>
+				</div>
+				<span className="text-xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+					Groupify
+				</span>
+			</Link>
+			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarMenu>
@@ -87,7 +97,7 @@ export function AppSidebar() {
 					<ins className="adsbygoogle"
 						style={{ display: "inline-block", width: "255px", height: "300px" }}
 						data-ad-client="ca-pub-4077364511521347"
-					data-ad-slot="9387808543"></ins>
+						data-ad-slot="9387808543"></ins>
 				</div>
 			</SidebarContent>
 			<SidebarFooter>

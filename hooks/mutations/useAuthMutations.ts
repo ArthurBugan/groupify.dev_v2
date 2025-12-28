@@ -96,9 +96,6 @@ export const useLoginMutation = () => {
 	return useMutation({
 		mutationFn: (credentials: LoginCredentials) => loginUser(credentials),
 		onSuccess: (data) => {
-			// Handle successful login
-			console.log("Login successful:", data);
-
 			// Store user data in localStorage or context
 			localStorage.setItem("user", JSON.stringify(data.user));
 			if (data?.token) {
@@ -120,8 +117,6 @@ export const useRegisterMutation = () => {
 	return useMutation({
 		mutationFn: (credentials: RegisterCredentials) => registerUser(credentials),
 		onSuccess: (data) => {
-			// Handle successful registration
-			console.log("Registration successful:", data);
 			navigate({ to: "/dashboard" });
 		},
 		onError: (error) => {
@@ -137,9 +132,6 @@ export const useForgotPasswordMutation = () => {
 	return useMutation({
 		mutationFn: (data: ForgotPasswordRequest) => forgotPassword(data),
 		onSuccess: (data, variables) => {
-			// Handle successful forgot password request
-			console.log("Forgot password request successful:", data);
-
 			// Navigate to success page with email parameter
 			navigate({
 				to: "/forgot-password/success/$email",
@@ -234,11 +226,10 @@ export const useConfirmSubscriptionMutation = () => {
 	return useMutation({
 		mutationFn: (data: SubscriptionConfirmRequest) => confirmSubscription(data),
 		onSuccess: (data) => {
-			console.log("Subscription confirmed successfully:", data);
+			toast.success("Subscription confirmed successfully");
 		},
 		onError: (error) => {
-			console.error("Subscription confirmation failed:", error);
-			throw error; // Re-throw to let component handle the error
+			toast.error(error.message ?? "Subscription confirmation failed");
 		},
 	});
 };

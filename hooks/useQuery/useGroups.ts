@@ -62,7 +62,6 @@ const getGroups = async (params?: {
 	limit?: number;
 	search?: string;
 }): Promise<GroupsResponse> => {
-	console.log("params", params);
 	const response = await apiClient.get<GroupsResponse>("api/v2/groups", params);
 	return response;
 };

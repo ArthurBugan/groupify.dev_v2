@@ -97,9 +97,6 @@ export function GroupSettings() {
 		setIsSaving(false);
 
 		toast("Settings saved");
-
-		// Apply settings by refreshing the groups page
-		// router.refresh()
 	};
 
 	return (
