@@ -14,61 +14,9 @@ export const Route = createFileRoute("/_app/blog/")({
 
 const CATEGORIES = ["All", "Product", "Engineering", "Design", "Community", "Tutorials"];
 
-const POSTS = [
-	{
-		id: "1",
-		slug: "getting-started-with-groupify",
-		title: "Getting Started with Groupify: Organize Your YouTube Subscriptions",
-		description: "Learn how to use Groupify to create custom groups for your YouTube channels and stay organized.",
-		date: "Oct 24, 2023",
-		readTime: "5 min read",
-		category: "Tutorials",
-		author: "Arthur",
-		image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop",
-		featured: true,
-	},
-	{
-		id: "2",
-		slug: "new-feature-ai-grouping",
-		title: "Introducing AI-Powered Channel Grouping",
-		description: "Our latest update uses AI to automatically categorize your subscriptions into smart groups.",
-		date: "Nov 02, 2023",
-		readTime: "3 min read",
-		category: "Product",
-		author: "Sarah",
-		image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1000&auto=format&fit=crop",
-		featured: false,
-	},
-	{
-		id: "3",
-		slug: "scaling-our-extension-architecture",
-		title: "Scaling Our Extension Architecture to 100k Users",
-		description: "A deep dive into how we optimized our background scripts and storage for performance.",
-		date: "Nov 15, 2023",
-		readTime: "8 min read",
-		category: "Engineering",
-		author: "Mike",
-		image: "https://images.unsplash.com/photo-1551288049-bbbda546697a?q=80&w=1000&auto=format&fit=crop",
-		featured: false,
-	},
-	{
-		id: "4",
-		slug: "designing-the-perfect-sidebar",
-		title: "Designing the Perfect Sidebar for YouTube",
-		description: "The challenges of building a UI that feels native to YouTube while adding powerful new features.",
-		date: "Dec 05, 2023",
-		readTime: "6 min read",
-		category: "Design",
-		author: "Elena",
-		image: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=1000&auto=format&fit=crop",
-		featured: false,
-	},
-];
-
 function BlogIndex() {
 	const [activeCategory, setActiveCategory] = useState("All");
 	const [searchQuery, setSearchQuery] = useState("");
-    console.log(allPosts)
 
 	const filteredPosts = allPosts.filter((post) => {
 		const matchesCategory = activeCategory === "All" || post.category === activeCategory;

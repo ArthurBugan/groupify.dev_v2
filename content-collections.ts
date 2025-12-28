@@ -35,7 +35,6 @@ const posts = defineCollection({
       ...post,
       slug: post._meta.path,
       excerpt: frontMatter.excerpt,
-      description: frontMatter.data.description,
       headerImage,
       content: frontMatter.body,
     }

@@ -28,17 +28,17 @@ export const Route = createFileRoute("/_app/blog/$slug")({
      head: ({ loaderData }) => ({
         meta: [
         { title: loaderData?.post?.title || 'Groupify Blog' },
-        { name: 'description', content: loaderData?.post?.excerpt || 'Latest insights on productivity and YouTube tools' },
+        { name: 'description', content: loaderData?.post?.description || 'Latest insights on productivity and YouTube tools' },
         // Open Graph
         { property: 'og:title', content: loaderData?.post?.title || 'Groupify Blog' },
-        { property: 'og:description', content: loaderData?.post?.excerpt || 'Latest insights on productivity and YouTube tools' },
-        { property: 'og:image', content: loaderData?.post?.headerImage || 'https://groupify.dev/og-image.png' },
+        { property: 'og:description', content: loaderData?.post?.description || 'Latest insights on productivity and YouTube tools' },
+        { property: 'og:image', content: loaderData?.post?.image || 'https://groupify.dev/og-image.png' },
         { property: 'og:type', content: 'article' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: loaderData?.post?.title || 'Groupify Blog' },
-        { name: 'twitter:description', content: loaderData?.post?.excerpt || 'Latest insights on productivity and YouTube tools' },
-        { name: 'twitter:image', content: loaderData?.post?.headerImage || 'https://groupify.dev/og-image.png' },
+        { name: 'twitter:description', content: loaderData?.post?.description || 'Latest insights on productivity and YouTube tools' },
+        { name: 'twitter:image', content: loaderData?.post?.image || 'https://groupify.dev/og-image.png' },
         ],
   }),
 });

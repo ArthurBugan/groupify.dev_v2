@@ -1,13 +1,13 @@
 ---
 id: "2"
 slug: "mr-beast-empire-analysis"
-title: "The MrBeast Empire: A Deep Dive into YouTube's Most Successful Creator"
+title: "The MrBeast Empire: A Deep Dive into YouTubes Most Successful Creator"
 description: "An analysis of Jimmy Donaldson's content strategy, multi-channel growth, and record-breaking achievements."
 date: "Dec 28, 2025"
 readTime: "12 min read"
 category: "Community"
 author: "Groupify Team"
-image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1000&auto=format&fit=crop"
+image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=100&w=1000&auto=format&fit=crop"
 featured: true
 ---
 

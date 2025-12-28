@@ -7,7 +7,7 @@ date: "Dec 28, 2025"
 readTime: "11 min read"
 category: "Community"
 author: "Groupify Team"
-image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1000&auto=format&fit=crop"
+image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=100&w=1000&auto=format&fit=crop"
 featured: false
 ---
 

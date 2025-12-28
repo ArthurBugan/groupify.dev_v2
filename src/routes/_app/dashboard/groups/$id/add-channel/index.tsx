@@ -136,7 +136,6 @@ function AddChannelPage() {
 	};
 
 	const handleAddChannel = (channel: Channel | Anime) => {
-		console.log(channel);
 		setSelectedChannels((prev) => [...prev, channel]);
 	};
 
@@ -165,8 +164,6 @@ function AddChannelPage() {
 
 		router({ to: "/dashboard/groups/$id", params: { id: id } });
 	};
-
-	console.log(selectedChannels);
 
 	return (
 		<div className="space-y-6 flex flex-col h-full">
