@@ -8,6 +8,7 @@
 /.next/
 /out/
 
+.content-collections
 .nitro
 .output
 .tanstack

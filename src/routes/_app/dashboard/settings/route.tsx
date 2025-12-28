@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 export const Route = createFileRoute("/_app/dashboard/settings")({
 	component: SettingsPage,
 });
@@ -21,7 +22,6 @@ function SettingsPage() {
 		setActiveTab(location.pathname.split("/")[3]);
 	}, [location.pathname]);
 
-	
 
 	return (
 		<div className="space-y-6">
@@ -51,15 +51,6 @@ function SettingsPage() {
 						>
 							Appearance
 						</TabsTrigger>
-						{/* <TabsTrigger
-							onClick={() =>
-								router({ to: "/dashboard/settings/notifications" })
-							}
-							value="notifications"
-							className="whitespace-nowrap"
-						>
-							Notifications
-						</TabsTrigger> */}
 						<TabsTrigger
 							onClick={() => router({ to: "/dashboard/settings/groups" })}
 							value="groups"

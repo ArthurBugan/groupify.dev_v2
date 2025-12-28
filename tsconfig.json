@@ -11,7 +11,8 @@
 			"@/*": ["./src/*"],
 			"@/components/*": ["./components/*"],
 			"@/lib/*": ["./lib/*"],
-			"@/hooks/*": ["./hooks/*"]
+			"@/hooks/*": ["./hooks/*"],
+			"content-collections": ["./.content-collections/generated"]
 		}
 	}
 }
