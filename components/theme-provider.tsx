@@ -22,6 +22,8 @@ export interface UseThemeProps {
     theme?: string | undefined;
     /** If enableSystem is true, returns the System theme preference ("dark" or "light"), regardless what the active theme is */
     systemTheme?: 'dark' | 'light' | undefined;
+    /** The actual theme applied (light or dark) */
+    resolvedTheme?: 'dark' | 'light' | undefined;
 }
 
 export type Attribute = `data-${string}` | 'class';
@@ -82,6 +84,11 @@ const Theme = ({
                }: ThemeProviderProps) => {
 
     const [theme, setThemeState] = React.useState(() => getTheme(storageKey, defaultTheme));
+    const [resolvedTheme, setResolvedTheme] = React.useState<'dark' | 'light' | undefined>(() => {
+        const initial = getTheme(storageKey, defaultTheme);
+        if (initial === 'system') return getSystemTheme();
+        return initial as 'dark' | 'light';
+    });
     const attrs = !value ? themes : Object.values(value);
 
     // apply selected theme function (light, dark, system)
@@ -94,6 +101,8 @@ const Theme = ({
         if (theme === 'system' && enableSystem) {
             resolved = getSystemTheme();
         }
+
+        setResolvedTheme(resolved as 'dark' | 'light');
 
         const name = value ? value[resolved] : resolved;
         const enable = disableTransitionOnChange ? disableAnimation() : null;
@@ -194,9 +203,11 @@ const Theme = ({
             theme,
             setTheme,
             forcedTheme,
+            resolvedTheme,
+            systemTheme: theme === 'system' ? resolvedTheme : undefined,
             themes: enableSystem ? [...themes, 'system'] : themes,
         }),
-        [theme, setTheme, forcedTheme, enableSystem, themes],
+        [theme, setTheme, forcedTheme, resolvedTheme, enableSystem, themes],
     );
 
     return (

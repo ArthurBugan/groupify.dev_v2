@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme-provider";
 import * as React from "react";
 
 type AccentColor = "blue" | "green" | "purple" | "red" | "orange";
@@ -114,10 +114,10 @@ export function AppearanceProvider({
 			: accentColors[settings.accentColor].light;
 
 		// Set both primary and primary-foreground for better compatibility
-		root.style.setProperty("--primary", accentColorValue);
+		root.style.setProperty("--primary", `hsl(${accentColorValue})`);
 		root.style.setProperty(
 			"--primary-foreground",
-			isDark ? "210 40% 98%" : "210 40% 2%",
+			isDark ? "hsl(210 40% 98%)" : "hsl(210 40% 2%)",
 		);
 
 		// Apply font size
