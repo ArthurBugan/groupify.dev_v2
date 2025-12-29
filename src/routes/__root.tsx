@@ -76,16 +76,14 @@ export const Route = createRootRoute({
 function RootComponent() {
 	return (
 		<LanguageProvider>
-			<AppearanceProvider>
-				<QueryClientProvider client={queryClient}>
-					<RootDocument>
-						<Outlet />
-						<AnalyticsListener />
-						<ReactQueryDevtools initialIsOpen={true} />
-						<Toaster richColors />
-					</RootDocument>
-				</QueryClientProvider>
-			</AppearanceProvider>
+			<QueryClientProvider client={queryClient}>
+				<RootDocument>
+					<Outlet />
+					<AnalyticsListener />
+					<ReactQueryDevtools initialIsOpen={true} />
+					<Toaster richColors />
+				</RootDocument>
+			</QueryClientProvider>
 		</LanguageProvider>
 	);
 }
@@ -109,7 +107,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children}
+					<AppearanceProvider>
+						{children}
+					</AppearanceProvider>
 				</ThemeProvider>
 				{/** biome-ignore lint/correctness/useUniqueElementIds: <implement gtm> */}
 				<script id="gtm">
