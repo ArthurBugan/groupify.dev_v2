@@ -8,7 +8,7 @@ readTime: "12 min read"
 category: "Community"
 author: "Groupify Team"
 image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=100&w=1000&auto=format&fit=crop"
-featured: true
+featured: false
 ---
 
 <ins class="adsbygoogle">
