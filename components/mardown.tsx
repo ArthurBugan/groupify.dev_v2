@@ -25,15 +25,7 @@ function AdSense({ adSlot, adClient }: { adSlot?: string; adClient?: string }) {
 
   return (
     <div className="my-12 flex justify-center overflow-hidden min-h-[90px] bg-muted/5 rounded-xl border border-dashed border-border/50">
-      <ins 
-        ref={adRef}
-        className="adsbygoogle"
-        data-ad-layout="in-article"
-        data-ad-format="fluid"
-        style={{ display: 'inline-block', width: '728px', height: '90px' }}
-        data-ad-client={adClient || "ca-pub-4077364511521347"}
-        data-ad-slot={adSlot || "8284537241"}
-      />
+      <ins className="adsbygoogle" style={{ display: 'block', textAlign: 'center' }} data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-4077364511521347" data-ad-slot="8284537241" ref={adRef}></ins>
     </div>
   );
 }
