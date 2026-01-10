@@ -17,13 +17,9 @@ function AdSense({ adSlot, adClient }: { adSlot?: string; adClient?: string }) {
   const adRef = useRef<HTMLModElement>(null);
   
   useEffect(() => {
-    const w = typeof window !== 'undefined' ? window : null;
+    const w: any = typeof window !== 'undefined' ? (window as any) : null;
     if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
-      try {
-        (w.adsbygoogle = w.adsbygoogle || []).push({});
-      } catch (e) {
-        console.error('AdSense error:', e);
-      }
+      try { w.adsbygoogle.push({}); } catch (_) {}
     }
   }, []);
 
