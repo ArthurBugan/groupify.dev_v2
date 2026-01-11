@@ -23,7 +23,7 @@ function BlogIndex() {
 		const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              post.description.toLowerCase().includes(searchQuery.toLowerCase());
 		return matchesCategory && matchesSearch;
-	});
+	}).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 	const featuredPost = allPosts.find(p => p.featured);
 	const regularPosts = filteredPosts.filter(p => !p.featured || activeCategory !== "All" || searchQuery !== "");

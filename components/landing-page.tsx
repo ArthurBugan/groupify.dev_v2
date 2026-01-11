@@ -297,7 +297,7 @@ export function LandingPage() {
 								>
 									<Link
 										to="/"
-										href="https://www.youtube.com/watch?v=A2UDaMMP0Uk"
+										href="https://youtu.be/Hz-F6q0SZqU"
 									>
 										<Play className="mr-2 h-4 w-4" />
 										{t("hero.watchdemo")}
@@ -706,7 +706,7 @@ export function LandingPage() {
 								className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 backdrop-blur-sm"
 								asChild
 							>
-								<Link to="/" href="https://www.youtube.com/watch?v=A2UDaMMP0Uk">
+								<Link to="/" href="https://youtu.be/Hz-F6q0SZqU">
 									<Play className="mr-2 h-5 w-5" />
 									{t("hero.watchdemo")}
 								</Link>
