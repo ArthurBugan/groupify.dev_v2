@@ -12,18 +12,22 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { allPosts } from "content-collections";
 import { Markdown } from "@/components/mardown";
+import { useBlogPost } from "@/hooks/useQuery/useBlog";
+
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 export const Route = createFileRoute("/_app/blog/$slug")({
-	component: BlogPost,
+	component: BlogPostComponent,
     loader: async ({ params }) => {
-        const post = allPosts.find((p) => p.slug === params.slug);
-        // if not found, send to random post
-        if (!post) {
-            return { post: allPosts[Math.floor(Math.random() * allPosts.length)] };
+        const response = await fetch(`${VITE_BASE_URL}/api/v3/blog/${params.slug}`);
+        console.log(response)
+        const post = await response.json();
+        if (!response.ok) {
+            throw new Error(post.message || 'Failed to fetch blog post');
         }
-        return { post };
+        return {post};
     },
      head: ({ loaderData }) => ({
         meta: [
@@ -43,7 +47,7 @@ export const Route = createFileRoute("/_app/blog/$slug")({
   }),
 });
 
-function BlogPost() {
+function BlogPostComponent() {
     const { post } = Route.useLoaderData();
     const [layout, setLayout] = useState<LayoutType>("classic");
 
