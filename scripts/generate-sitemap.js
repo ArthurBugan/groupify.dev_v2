@@ -44,14 +44,27 @@ function getStaticRoutes(dir, base = '') {
     return [...new Set(routes)];
 }
 
-// 2. Get blog posts from content/posts
-function getBlogPosts() {
-    const postsDir = path.join(rootDir, 'content/posts');
-    if (!fs.existsSync(postsDir)) return [];
-    
-    return fs.readdirSync(postsDir)
-        .filter(file => file.endsWith('.md'))
-        .map(file => `/blog/${file.replace('.md', '')}`);
+// 2. Get blog posts from API
+async function getBlogPosts() {
+    try {
+        const response = await fetch('https://coolify.groupify.dev/api/v3/blog');
+        
+        if (!response.ok) {
+            console.warn('Failed to fetch blog posts from API:', response.status);
+            return [];
+        }
+        
+        const data = await response.json();
+        
+        // Only include published posts in sitemap
+        return data.data
+            .filter(post => post.status === 'published')
+            .map(post => `/blog/${post.slug}`);
+            
+    } catch (error) {
+        console.warn('Error fetching blog posts from API:', error.message);
+        return [];
+    }
 }
 
 async function generate() {
@@ -59,7 +72,7 @@ async function generate() {
 
     const routesDir = path.join(rootDir, 'src/routes');
     const staticRoutes = getStaticRoutes(routesDir);
-    const blogPosts = getBlogPosts();
+    const blogPosts = await getBlogPosts();
 
     // Filter out some internal or dashboard routes that shouldn't be indexed
     const excludedPrefixes = ['/subscriptions/confirm', '/share'];
@@ -69,6 +82,8 @@ async function generate() {
     );
 
     const allRoutes = [...new Set(['/', ...filteredStaticRoutes, ...blogPosts])];
+    
+    console.log(`📝 Found ${blogPosts.length} published blog posts from API`);
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

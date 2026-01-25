@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, Search, Tag, ChevronRight, User } from "lucide-react";
-import { allPosts } from "content-collections";
+import { Calendar, Clock, Search, ChevronRight } from "lucide-react";
+import { useBlogPosts } from "@/hooks/useQuery/useBlog";
 
 export const Route = createFileRoute("/_app/blog/")({
 	component: BlogIndex,
@@ -17,16 +17,21 @@ const CATEGORIES = ["All", "Product", "Engineering", "Design", "Community", "Tut
 function BlogIndex() {
 	const [activeCategory, setActiveCategory] = useState("All");
 	const [searchQuery, setSearchQuery] = useState("");
+	const { data: allPosts = [] } = useBlogPosts();
 
 	const filteredPosts = allPosts.filter((post) => {
+		console.log(post)
 		const matchesCategory = activeCategory === "All" || post.category === activeCategory;
 		const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              post.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+		console.log(matchesCategory, matchesSearch)
 		return matchesCategory && matchesSearch;
+
 	}).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 	const featuredPost = allPosts.find(p => p.featured);
-	const regularPosts = filteredPosts.filter(p => !p.featured || activeCategory !== "All" || searchQuery !== "");
+	const regularPosts = filteredPosts.filter(p => !p.featured);
 
 
 	return (
@@ -99,7 +104,7 @@ function BlogIndex() {
 										<div className="flex items-center justify-between">
 											<div className="flex items-center gap-2">
 												<div className="h-8 w-8 rounded-full bg-gradient-to-tr from-red-500 to-pink-500 flex items-center justify-center text-white font-bold text-xs">
-													{featuredPost.author[0]}
+													{featuredPost.author?.[0] || 'Groupify team'[0]}
 												</div>
 												<span className="font-medium">{featuredPost.author}</span>
 											</div>
@@ -143,9 +148,9 @@ function BlogIndex() {
 								<CardFooter className="p-6 pt-0 flex justify-between items-center">
 									<div className="flex items-center gap-2">
 										<div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold">
-											{post.author[0]}
+											{post.author?.[0] || 'Groupify team'[0]}
 										</div>
-										<span className="text-sm font-medium">{post.author}</span>
+										<span className="text-sm font-medium">{post.author || 'Groupify team'}</span>
 									</div>
 									<span className="text-xs text-muted-foreground">{post.date}</span>
 								</CardFooter>
