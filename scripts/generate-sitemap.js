@@ -47,7 +47,7 @@ function getStaticRoutes(dir, base = '') {
 // 2. Get blog posts from API
 async function getBlogPosts() {
     try {
-        const response = await fetch('https://coolify.groupify.dev/api/v3/blog');
+        const response = await fetch('https://coolify.groupify.dev/directus/items/posts?limit=-1');
         
         if (!response.ok) {
             console.warn('Failed to fetch blog posts from API:', response.status);

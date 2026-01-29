@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MainNavbar } from "@/components/main-navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, Search, ChevronRight } from "lucide-react";
-import { useBlogPosts } from "@/hooks/useQuery/useBlog";
+import { Calendar, Clock, Search, ChevronRight, Loader } from "lucide-react";
+import { useBlogPosts, type BlogQueryParams } from "@/hooks/useQuery/useBlog";
 
 export const Route = createFileRoute("/_app/blog/")({
 	component: BlogIndex,
@@ -17,22 +17,54 @@ const CATEGORIES = ["All", "Product", "Engineering", "Design", "Community", "Tut
 function BlogIndex() {
 	const [activeCategory, setActiveCategory] = useState("All");
 	const [searchQuery, setSearchQuery] = useState("");
-	const { data: allPosts = [] } = useBlogPosts();
+	const [debouncedSearch, setDebouncedSearch] = useState("");
+	const [currentPage, setCurrentPage] = useState(1);
+	const [itemsPerPage, setItemsPerPage] = useState(9);
 
-	const filteredPosts = allPosts.filter((post) => {
-		console.log(post)
-		const matchesCategory = activeCategory === "All" || post.category === activeCategory;
-		const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             post.description.toLowerCase().includes(searchQuery.toLowerCase());
+	// Debounce search input
+	useEffect(() => {
+		const handler = setTimeout(() => {
+			setDebouncedSearch(searchQuery);
+			setCurrentPage(1); // Reset to first page on new search
+		}, 300);
 
-		console.log(matchesCategory, matchesSearch)
-		return matchesCategory && matchesSearch;
+		return () => clearTimeout(handler);
+	}, [searchQuery]);
 
-	}).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	// Build API query parameters
+	const queryParams: BlogQueryParams = useMemo(() => {
+		const params: BlogQueryParams = {
+			status: "published",
+			page: currentPage,
+			limit: itemsPerPage,
+		};
 
-	const featuredPost = allPosts.find(p => p.featured);
-	const regularPosts = filteredPosts.filter(p => !p.featured);
+		if (activeCategory !== "All") {
+			params.category = activeCategory;
+		}
 
+		if (debouncedSearch) {
+			// Use server-side search through the API
+			params.search = debouncedSearch;
+		}
+
+		return params;
+	}, [activeCategory, debouncedSearch, currentPage, itemsPerPage]);
+
+	const { data: blogData, isLoading } = useBlogPosts(queryParams);
+	const allPosts = blogData?.data || [];
+	const totalPosts = blogData?.total || 0;
+
+	// Server-side pagination
+	const totalPages = Math.ceil(totalPosts / itemsPerPage);
+
+	const featuredPost = useMemo(() => {
+		return allPosts.find(p => p.featured);
+	}, [allPosts]);
+
+	const regularPosts = useMemo(() => {
+		return allPosts.filter(p => !p.featured);
+	}, [allPosts]);
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -50,32 +82,107 @@ function BlogIndex() {
 				</div>
 
 				{/* Search and Filters */}
-				<div className="flex flex-col md:flex-row gap-6 justify-between items-center mb-12">
-					<div className="flex flex-wrap gap-2 justify-center">
-						{CATEGORIES.map((cat) => (
-							<Button
-								key={cat}
-								variant={activeCategory === cat ? "default" : "outline"}
-								onClick={() => setActiveCategory(cat)}
-								className="rounded-full"
-							>
-								{cat}
-							</Button>
-						))}
-					</div>
-					<div className="relative w-full md:w-80">
-						<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-						<Input 
-							placeholder="Search allPosts..." 
-							className="pl-10"
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-						/>
-					</div>
+			<div className="flex flex-col md:flex-row gap-6 justify-between items-center mb-12">
+				<div className="flex flex-wrap gap-2 justify-center">
+					{CATEGORIES.map((cat) => (
+						<Button
+							key={cat}
+							variant={activeCategory === cat ? "default" : "outline"}
+							onClick={() => {
+								setActiveCategory(cat);
+								setCurrentPage(1);
+							}}
+							className="rounded-full"
+						>
+							{cat}
+						</Button>
+					))}
 				</div>
+				<div className="relative w-full md:w-80">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+					<Input 
+						placeholder="Search posts..." 
+						className="pl-10"
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+					/>
+				</div>
+			</div>
+
+			{isLoading && (
+				<div className="flex justify-center items-center py-20">
+					<Loader className="h-8 w-8 animate-spin text-red-500" />
+					<span className="ml-2 text-muted-foreground">Loading posts...</span>
+				</div>
+			)}
+
+			{/* Pagination */}
+		{totalPages > 1 && (
+			<div className="flex items-center justify-between mt-12 mb-4">
+				<div className="flex items-center gap-2 text-sm text-muted-foreground">
+					<span className="whitespace-nowrap">Items per page:</span>
+					<select
+						value={itemsPerPage}
+						onChange={(e) => {
+							setItemsPerPage(Number(e.target.value));
+							setCurrentPage(1); // Reset to first page when changing items per page
+						}}
+						className="border rounded-md px-2 py-1 text-sm"
+					>
+						<option value="9">9</option>
+						<option value="18">18</option>
+						<option value="27">27</option>
+						<option value="36">36</option>
+					</select>
+				</div>
+				
+				<div className="flex items-center gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={currentPage === 1}
+						onClick={() => setCurrentPage(currentPage - 1)}
+					>
+						Previous
+					</Button>
+					
+					<div className="flex items-center gap-1">
+						{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+							const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+							if (page > totalPages) return null;
+							
+							return (
+								<Button
+									key={page}
+									variant={currentPage === page ? "default" : "outline"}
+									size="sm"
+									onClick={() => setCurrentPage(page)}
+									className="h-8 w-8 p-0"
+								>
+									{page}
+								</Button>
+							);
+						})}
+					</div>
+
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={currentPage === totalPages}
+						onClick={() => setCurrentPage(currentPage + 1)}
+					>
+						Next
+					</Button>
+				</div>
+				
+				<div className="text-sm text-muted-foreground">
+					Showing {allPosts.length} of {totalPosts} posts
+				</div>
+			</div>
+		)}
 
 				{/* Featured Post */}
-				{featuredPost && activeCategory === "All" && searchQuery === "" && (
+			{featuredPost && activeCategory === "All" && !debouncedSearch && (
 					<div className="mb-16">
 						<Link to={`/blog/$slug`} params={{ slug: featuredPost.slug }}>
 							<Card className="overflow-hidden border-none bg-accent/30 hover:bg-accent/50 transition-colors cursor-pointer group">
@@ -120,8 +227,8 @@ function BlogIndex() {
 				)}
 
 				{/* Post Grid */}
-				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-					{regularPosts.map((post) => (
+			<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+				{regularPosts.map((post) => (
 						<Link key={post.id} to={`/blog/$slug`} params={{ slug: post.slug }}>
 							<Card className="h-full flex flex-col border-none bg-card hover:shadow-xl transition-all duration-300 cursor-pointer group">
 								<CardHeader className="p-0 overflow-hidden rounded-t-xl aspect-video">
@@ -159,7 +266,7 @@ function BlogIndex() {
 					))}
 				</div>
 
-				{filteredPosts.length === 0 && (
+				{!isLoading && allPosts.length === 0 && (
 					<div className="text-center py-20">
 						<p className="text-xl text-muted-foreground">No posts found matching your criteria.</p>
 						<Button variant="link" onClick={() => {setActiveCategory("All"); setSearchQuery("");}}>
