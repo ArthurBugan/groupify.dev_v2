@@ -33,6 +33,8 @@ export interface BlogQueryParams {
   category?: string;
   featured?: boolean;
   limit?: number;
+  page?: number;
+  search?: string;
   slug?: string;
 }
 
@@ -41,10 +43,8 @@ const getBlogPosts = async (params?: BlogQueryParams): Promise<BlogPostsResponse
     "/api/v3/blog",
     params
   );
-
-  console.log(response.data)
   
-  return response.data;
+  return response;
 };
 
 export function useBlogPosts(params?: BlogQueryParams) {
