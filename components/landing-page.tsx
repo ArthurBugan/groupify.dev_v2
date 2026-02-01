@@ -29,9 +29,9 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { IconViewer } from "./icon-picker";
 import { useLanguage } from "./language-provider";
 import { MainNavbar } from "./main-navbar";
-import { IconViewer } from "./icon-picker";
 
 // Animated background with floating particles
 function AnimatedBackground() {
@@ -247,6 +247,7 @@ function TestimonialCard({
 // Pricing Card Component
 function PricingCard({
 	plan,
+	popularLabel,
 }: {
 	plan: {
 		name: string;
@@ -257,6 +258,7 @@ function PricingCard({
 		cta: string;
 		popular: boolean;
 	};
+	popularLabel?: string;
 }) {
 	return (
 		<Card
@@ -268,9 +270,9 @@ function PricingCard({
 				"flex flex-col h-full bg-white dark:bg-slate-900",
 			)}
 		>
-			{plan.popular && (
+			{plan.popular && popularLabel && (
 				<div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-pink-500 text-white text-center py-1 text-xs font-semibold">
-					MOST POPULAR
+					{popularLabel}
 				</div>
 			)}
 
@@ -324,48 +326,42 @@ export function LandingPage() {
 	const features = [
 		{
 			icon: FolderKanban,
-			title: "Smart Organization",
-			description:
-				"Create unlimited groups with custom categories. Nest groups within groups for ultimate flexibility in managing your YouTube subscriptions.",
+			title: t("landing.features.smart.title"),
+			description: t("landing.features.smart.desc"),
 			color: "from-blue-500 to-cyan-500",
 			badge: "Core",
 		},
 		{
 			icon: Share2,
-			title: "Share & Collaborate",
-			description:
-				"Generate shareable links to let others view or copy your groups. Perfect for content creators, teams, and communities.",
+			title: t("landing.features.share.title"),
+			description: t("landing.features.share.desc"),
 			color: "from-purple-500 to-pink-500",
 			badge: "Popular",
 		},
 		{
 			icon: Users,
-			title: "Team Permissions",
-			description:
-				"Control access with granular permissions. Assign view-only, editor, or admin roles to manage who can modify your groups.",
+			title: t("landing.features.permissions.title"),
+			description: t("landing.features.permissions.desc"),
 			color: "from-green-500 to-emerald-500",
 			badge: "Pro",
 		},
 		{
 			icon: Layers,
-			title: "Bulk Operations",
-			description:
-				"Save time with powerful batch actions. Add, remove, or move multiple channels across groups in seconds.",
+			title: t("landing.features.bulk.title"),
+			description: t("landing.features.bulk.desc"),
 			color: "from-amber-500 to-orange-500",
 		},
 		{
 			icon: Zap,
-			title: "Extension Integration",
-			description:
-				"Our browser extension lets you add channels directly from YouTube. One-click organization while you browse.",
+			title: t("landing.features.extension.title"),
+			description: t("landing.features.extension.desc"),
 			color: "from-red-500 to-pink-500",
 			badge: "New",
 		},
 		{
 			icon: Globe,
-			title: "Works Everywhere",
-			description:
-				"Access your organized channels from any device. Web app and browser extensions for Chrome, Firefox, and Safari.",
+			title: t("landing.features.everywhere.title"),
+			description: t("landing.features.everywhere.desc"),
 			color: "from-indigo-500 to-blue-500",
 		},
 	];
@@ -374,24 +370,21 @@ export function LandingPage() {
 		{
 			name: "Alex Johnson",
 			role: "Content Creator",
-			content:
-				"Groupify has completely transformed how I manage my YouTube subscriptions. I can finally keep my educational content separate from entertainment!",
+			content: t("landing.testimonials.alex.content"),
 			rating: 5,
 			avatar: "/placeholder.svg",
 		},
 		{
 			name: "Sarah Chen",
 			role: "Marketing Manager",
-			content:
-				"The ability to share curated groups with my team has been a game-changer. We can quickly share industry insights and competitor analysis.",
+			content: t("landing.testimonials.sarah.content"),
 			rating: 5,
 			avatar: "/placeholder.svg",
 		},
 		{
 			name: "Mike Rodriguez",
 			role: "YouTube Strategist",
-			content:
-				"I have tried many tools, but Groupify is the only one that actually understands how content creators work. The nested groups feature is brilliant!",
+			content: t("landing.testimonials.mike.content"),
 			rating: 5,
 			avatar: "/placeholder.svg",
 		},
@@ -399,24 +392,24 @@ export function LandingPage() {
 
 	const pricingPlans = [
 		{
-			name: "Free",
+			name: t("landing.pricing.free.name"),
 			price: "$0",
 			period: "forever",
-			description: "Perfect for getting started",
+			description: t("pricing.free.desc"),
 			features: [
 				"Up to 3 groups",
 				"Up to 20 channels",
 				"Basic organization",
 				"Community support",
 			],
-			cta: "Get Started Free",
+			cta: t("landing.pricing.cta.free"),
 			popular: false,
 		},
 		{
-			name: "Pro",
+			name: t("landing.pricing.pro.name"),
 			price: "$3.99",
 			period: "month",
-			description: "Best for content creators",
+			description: t("pricing.pro.desc"),
 			features: [
 				"Up to 10 groups",
 				"Up to 1,000 channels",
@@ -424,14 +417,14 @@ export function LandingPage() {
 				"Share groups with others",
 				"Priority support",
 			],
-			cta: "Start Pro Trial",
+			cta: t("landing.pricing.cta.pro"),
 			popular: true,
 		},
 		{
-			name: "Business",
+			name: t("landing.pricing.business.name"),
 			price: "$9.99",
 			period: "month",
-			description: "For teams and agencies",
+			description: t("pricing.business.desc"),
 			features: [
 				"Unlimited groups",
 				"Unlimited channels",
@@ -440,7 +433,7 @@ export function LandingPage() {
 				"Priority support",
 				"API access",
 			],
-			cta: "Get Business",
+			cta: t("landing.pricing.cta.business"),
 			popular: false,
 		},
 	];
@@ -471,21 +464,15 @@ export function LandingPage() {
 									className="w-fit border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
 								>
 									<Sparkles className="mr-1 h-3 w-3" />
-									Now with Browser Extension
+									{t("landing.hero.badge")}
 								</Badge>
 
 								<h1 className="text-5xl lg:text-7xl font-bold tracking-tight">
-									Organize Your{" "}
-									<span className="bg-gradient-to-r from-red-500 via-pink-500 to-orange-500 bg-clip-text text-transparent">
-										YouTube
-									</span>{" "}
-									Like Never Before
+									{t("landing.hero.title")}
 								</h1>
 
 								<p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-									Groupify helps you organize, manage, and share your YouTube
-									subscriptions. Create custom groups, collaborate with teams,
-									and never lose track of your favorite channels again.
+									{t("landing.hero.subtitle")}
 								</p>
 							</div>
 
@@ -496,7 +483,7 @@ export function LandingPage() {
 									asChild
 								>
 									<Link to="/register">
-										Start Free Trial
+										{t("landing.hero.cta.primary")}
 										<ArrowRight className="ml-2 h-5 w-5" />
 									</Link>
 								</Button>
@@ -512,22 +499,24 @@ export function LandingPage() {
 										rel="noopener noreferrer"
 									>
 										<Play className="mr-2 h-5 w-5" />
-										Watch Demo
+										{t("landing.hero.cta.secondary")}
 									</a>
 								</Button>
 							</div>
 
 							<div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-								{[
-									"No credit card required",
-									"14-day free trial",
-									"Cancel anytime",
-								].map((item) => (
-									<div key={item} className="flex items-center gap-2">
-										<CheckCircle className="h-4 w-4 text-green-500" />
-										<span>{item}</span>
-									</div>
-								))}
+								<div className="flex items-center gap-2">
+									<CheckCircle className="h-4 w-4 text-green-500" />
+									<span>{t("landing.hero.trust1")}</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckCircle className="h-4 w-4 text-green-500" />
+									<span>{t("landing.hero.trust2")}</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckCircle className="h-4 w-4 text-green-500" />
+									<span>{t("landing.hero.trust3")}</span>
+								</div>
 							</div>
 
 							{/* Stats */}
@@ -558,7 +547,7 @@ export function LandingPage() {
 											<div className="w-3 h-3 rounded-full bg-green-500" />
 										</div>
 										<div className="ml-4 text-sm text-muted-foreground">
-											Groupify Dashboard
+											{t("landing.hero.preview")}
 										</div>
 									</div>
 
@@ -618,15 +607,13 @@ export function LandingPage() {
 							variant="outline"
 							className="mb-4 border-red-200 bg-red-50 text-red-700"
 						>
-							Features
+							{t("features.badge")}
 						</Badge>
 						<h2 className="text-3xl lg:text-5xl font-bold mb-4">
-							Everything You Need to{" "}
-							<span className="text-red-500">Organize YouTube</span>
+							{t("landing.features.title")}
 						</h2>
 						<p className="text-xl text-muted-foreground">
-							Powerful features designed for content creators, teams, and
-							YouTube enthusiasts
+							{t("landing.features.subtitle")}
 						</p>
 					</div>
 
@@ -649,51 +636,49 @@ export function LandingPage() {
 						<div className="space-y-6">
 							<Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
 								<Zap className="mr-1 h-3 w-3" />
-								Browser Extension
+								{t("landing.extension.badge")}
 							</Badge>
 							<h2 className="text-3xl lg:text-4xl font-bold">
-								Add Channels While You Browse
+								{t("landing.extension.title")}
 							</h2>
 							<p className="text-lg text-muted-foreground">
-								Our browser extension seamlessly integrates with YouTube. When
-								you find a channel you want to save, just click the Groupify
-								icon and add it to any group instantly.
+								{t("landing.extension.subtitle")}
 							</p>
 							<div className="flex items-center gap-3">
-									<Button
-										variant="outline"
-										size="icon"
-										asChild
-										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
-										title="Available on Chrome Web Store"
-									>
-										<a href="https://chromewebstore.google.com/detail/groupify-youtube-organize/dmdgaegnpjnnkcbdngfgkhlehlccbija">
-											<IconViewer icon="logos:chrome" className="h-6 w-6" />
-										</a>
-									</Button>
-									<Button
-										variant="outline"
-										size="icon"
-										asChild
-										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
-										title="Available on Firefox Add-ons"
-									>
-										<a href="https://addons.mozilla.org/en-US/firefox/addon/groupify-yt-organize">
-											<IconViewer icon="logos:firefox" className="h-6 w-6" />
-										</a>
-									</Button>
-									<Button
-										variant="outline"
-										size="icon"
-										asChild
-										className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
-										title="Available on Safari Extensions"
-									>
-										<a href="https://apps.apple.com/us/app/groupify-yt-subscriptions/id6714452813?l=pt-BR">
-											<IconViewer icon="logos:safari" className="h-6 w-6" />
-										</a>
-									</Button>
-								</div>	
+								<Button
+									variant="outline"
+									size="icon"
+									asChild
+									className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+									title="Available on Chrome Web Store"
+								>
+									<a href="https://chromewebstore.google.com/detail/groupify-youtube-organize/dmdgaegnpjnnkcbdngfgkhlehlccbija">
+										<IconViewer icon="logos:chrome" className="h-6 w-6" />
+									</a>
+								</Button>
+								<Button
+									variant="outline"
+									size="icon"
+									asChild
+									className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+									title="Available on Firefox Add-ons"
+								>
+									<a href="https://addons.mozilla.org/en-US/firefox/addon/groupify-yt-organize">
+										<IconViewer icon="logos:firefox" className="h-6 w-6" />
+									</a>
+								</Button>
+								<Button
+									variant="outline"
+									size="icon"
+									asChild
+									className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+									title="Available on Safari Extensions"
+								>
+									<a href="https://apps.apple.com/us/app/groupify-yt-subscriptions/id6714452813?l=pt-BR">
+										<IconViewer icon="logos:safari" className="h-6 w-6" />
+									</a>
+								</Button>
+							</div>
 						</div>
 						<div className="relative">
 							<div className="absolute -inset-4 bg-gradient-to-r from-red-500/10 to-pink-500/10 rounded-3xl blur-2xl" />
@@ -705,7 +690,7 @@ export function LandingPage() {
 									<div>
 										<div className="font-semibold">Marques Brownlee</div>
 										<div className="text-sm text-muted-foreground">
-											17.5M subscribers
+											17.5M {t("landing.extension.subscribers")}
 										</div>
 									</div>
 								</div>
@@ -719,7 +704,7 @@ export function LandingPage() {
 									</div>
 								</div>
 								<p className="text-sm text-muted-foreground mt-4 text-center">
-									Channel added to Tech Reviews group
+									{t("landing.extension.success")}
 								</p>
 							</div>
 						</div>
@@ -735,13 +720,13 @@ export function LandingPage() {
 							variant="outline"
 							className="mb-4 border-red-200 bg-red-50 text-red-700"
 						>
-							Testimonials
+							{t("testimonials.badge")}
 						</Badge>
 						<h2 className="text-3xl lg:text-5xl font-bold mb-4">
-							Loved by <span className="text-red-500">Content Creators</span>
+							{t("landing.testimonials.title")}
 						</h2>
 						<p className="text-xl text-muted-foreground">
-							See what our users are saying about Groupify
+							{t("landing.testimonials.subtitle")}
 						</p>
 					</div>
 
@@ -764,20 +749,23 @@ export function LandingPage() {
 							variant="outline"
 							className="mb-4 border-red-200 bg-red-50 text-red-700"
 						>
-							Pricing
+							{t("pricing.badge")}
 						</Badge>
 						<h2 className="text-3xl lg:text-5xl font-bold mb-4">
-							Simple, Transparent <span className="text-red-500">Pricing</span>
+							{t("landing.pricing.title")}
 						</h2>
 						<p className="text-xl text-muted-foreground">
-							Choose the plan that fits your needs. All plans include a 14-day
-							free trial.
+							{t("landing.pricing.subtitle")}
 						</p>
 					</div>
 
 					<div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
 						{pricingPlans.map((plan) => (
-							<PricingCard key={plan.name} plan={plan} />
+							<PricingCard
+								key={plan.name}
+								plan={plan}
+								popularLabel={t("landing.pricing.mostpopular")}
+							/>
 						))}
 					</div>
 				</div>
@@ -791,11 +779,10 @@ export function LandingPage() {
 				<div className="container mx-auto px-4 relative">
 					<div className="text-center max-w-3xl mx-auto">
 						<h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
-							Ready to Organize Your YouTube?
+							{t("landing.cta.title")}
 						</h2>
 						<p className="text-xl text-white/80 mb-8">
-							Join thousands of content creators and teams who trust Groupify to
-							manage their YouTube subscriptions.
+							{t("landing.cta.subtitle")}
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
 							<Button
@@ -805,7 +792,7 @@ export function LandingPage() {
 								asChild
 							>
 								<Link to="/register">
-									Get Started Free
+									{t("landing.cta.primary")}
 									<ArrowRight className="ml-2 h-5 w-5" />
 								</Link>
 							</Button>
@@ -820,7 +807,7 @@ export function LandingPage() {
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									Join Community
+									{t("landing.cta.secondary")}
 								</a>
 							</Button>
 						</div>

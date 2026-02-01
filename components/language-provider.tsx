@@ -117,7 +117,8 @@ const translations = {
 		"features.responsive.desc":
 			"Access your dashboard from any device with our fully responsive and mobile-optimized interface.",
 		"features.integrated.title": "Integrated UI",
-		"features.integrated.desc": "Access the groups directly from the Youtube and Crunchyroll website",
+		"features.integrated.desc":
+			"Access the groups directly from the Youtube and Crunchyroll website",
 
 		"register.welcome":
 			"Create your account and start organizing your YouTube channels.",
@@ -161,7 +162,84 @@ const translations = {
 			"Connect with your favorite platforms and tools to supercharge your workflow.",
 		"integrations.crunchyroll.desc": "Track anime content across platforms",
 		"integrations.youtube.desc": "Real-time channel data synchronization",
-		"integrations.export.desc": "A place to export your groups and channels to the community",
+		"integrations.export.desc":
+			"A place to export your groups and channels to the community",
+
+		// Landing Page - New Content
+		"landing.hero.badge": "Now with Browser Extension",
+		"landing.hero.title": "Organize Your YouTube Like Never Before",
+		"landing.hero.subtitle":
+			"Groupify helps you organize, manage, and share your YouTube subscriptions. Create custom groups, collaborate with teams, and never lose track of your favorite channels again.",
+		"landing.hero.cta.primary": "Start Free Trial",
+		"landing.hero.cta.secondary": "Watch Demo",
+		"landing.hero.trust1": "No credit card required",
+		"landing.hero.trust2": "14-day free trial",
+		"landing.hero.trust3": "Cancel anytime",
+		"landing.hero.preview": "Groupify Dashboard",
+
+		// Landing Page - Features Section
+		"landing.features.title": "Everything You Need to Organize YouTube",
+		"landing.features.subtitle":
+			"Powerful features designed for content creators, teams, and YouTube enthusiasts",
+		"landing.features.smart.title": "Smart Organization",
+		"landing.features.smart.desc":
+			"Create unlimited groups with custom categories. Nest groups within groups for ultimate flexibility in managing your YouTube subscriptions.",
+		"landing.features.share.title": "Share & Collaborate",
+		"landing.features.share.desc":
+			"Generate shareable links to let others view or copy your groups. Perfect for content creators, teams, and communities.",
+		"landing.features.permissions.title": "Team Permissions",
+		"landing.features.permissions.desc":
+			"Control access with granular permissions. Assign view-only, editor, or admin roles to manage who can modify your groups.",
+		"landing.features.bulk.title": "Bulk Operations",
+		"landing.features.bulk.desc":
+			"Save time with powerful batch actions. Add, remove, or move multiple channels across groups in seconds.",
+		"landing.features.extension.title": "Extension Integration",
+		"landing.features.extension.desc":
+			"Our browser extension lets you add channels directly from YouTube. One-click organization while you browse.",
+		"landing.features.everywhere.title": "Works Everywhere",
+		"landing.features.everywhere.desc":
+			"Access your organized channels from any device. Web app and browser extensions for Chrome, Firefox, and Safari.",
+
+		// Landing Page - Browser Extension Section
+		"landing.extension.badge": "Browser Extension",
+		"landing.extension.title": "Add Channels While You Browse",
+		"landing.extension.subtitle":
+			"Our browser extension seamlessly integrates with YouTube. When you find a channel you want to save, just click the Groupify icon and add it to any group instantly.",
+		"landing.extension.success": "Channel added to group",
+		"landing.extension.subscribers": "subscribers",
+
+		// Landing Page - Testimonials Section
+		"landing.testimonials.title": "Loved by Content Creators",
+		"landing.testimonials.subtitle":
+			"See what our users are saying about Groupify",
+		"landing.testimonials.alex.content":
+			"Groupify has completely transformed how I manage my YouTube subscriptions. I can finally keep my educational content separate from entertainment!",
+		"landing.testimonials.sarah.content":
+			"The ability to share curated groups with my team has been a game-changer. We can quickly share industry insights and competitor analysis.",
+		"landing.testimonials.mike.content":
+			"I have tried many tools, but Groupify is the only one that actually understands how content creators work. The nested groups feature is brilliant!",
+
+		// Landing Page - Pricing Section
+		"landing.pricing.title": "Simple, Transparent Pricing",
+		"landing.pricing.subtitle":
+			"Choose the plan that fits your needs. All plans include a 14-day free trial.",
+		"landing.pricing.free.name": "Free",
+		"landing.pricing.free.desc": "Perfect for getting started",
+		"landing.pricing.pro.name": "Pro",
+		"landing.pricing.pro.desc": "Best for content creators",
+		"landing.pricing.business.name": "Business",
+		"landing.pricing.business.desc": "For teams and agencies",
+		"landing.pricing.cta.free": "Get Started Free",
+		"landing.pricing.cta.pro": "Start Pro Trial",
+		"landing.pricing.cta.business": "Get Business",
+		"landing.pricing.mostpopular": "MOST POPULAR",
+
+		// Landing Page - CTA Section
+		"landing.cta.title": "Ready to Organize Your YouTube?",
+		"landing.cta.subtitle":
+			"Join thousands of content creators and teams who trust Groupify to manage their YouTube subscriptions.",
+		"landing.cta.primary": "Get Started Free",
+		"landing.cta.secondary": "Join Community",
 
 		// Testimonials
 		"testimonials.badge": "Testimonials",
@@ -196,53 +274,61 @@ const translations = {
 		"cta.title": "Ready to Get Started?",
 		"cta.subtitle":
 			"Join thousands of content creators who are already using Groupify to organize and grow their YouTube presence.",
-		
-		"share_link_generated_success_description": "Share link generated successfully",
+
+		share_link_generated_success_description:
+			"Share link generated successfully",
 
 		// Footer
 
 		// Collaborate Invite
-		"collaborate_invite_title": "Invite Collaborators",
-		"default_permission_title": "Default Permission",
-		"share_link_title": "Share Link",
-		"join_as": "Anyone with this link will join as a {role} permission.",
-		"copy_link_title": "Copy Group Link",
-		"copy_link_desc": "Share this link with others to allow them to copy this group's channels.",
-		"copy_destination_title": "Copy Destination",
-		"copy_destination_new": "A new group",
-		"copy_destination_existing": "An existing group",
-		"copy_alert_desc": "This will copy {count} channels to the selected destination.",
-		"copy_alert_info": "This link allows others to copy the channels to their own groups.",
-		"generate_copy_link": "Generate Copy Link",
-		"group_details_title": "Group Details",
-		"channels": "Channels",
-		"share_settings_title": "Share Settings",
-		"share_settings_collab": "Collaborators will have {permission} access to this group.",
-		"share_settings_copy": "Recipients will be able to copy all channels to {destination}.",
-		"destination_new": "a new group",
-		"destination_existing": "an existing group",
-		"share_group_title": "Share Group",
-		"share_group_description": "Share your group with others",
-		"back_to_group": "Back to Group",
-		"collaborate_tab_title": "Collaborate",
-		"copy_group_tab_title": "Copy Group",
-		"collaborate_invite_desc": "Invite collaborators to this group by entering their email address and assigning a role.",
-		"input_email_placeholder": "Enter collaborator's email",
-		"collaborators_label": "Collaborators",
-		"collaborators_empty": "No collaborators yet.",
-		"role_viewer": "Viewer",
-		"role_editor": "Editor",
-		"role_admin": "Admin",
-		"perm_view": "Can view group content",
-		"perm_edit": "Can edit group content",
-		"perm_admin": "Full administrative access",
-		"allow_comments_label": "Allow comments",
-		"share_link_desc": "Share this link with others to allow them to view or copy this group.",
-		"copied": "Copied!",
-		"copy": "Copy",
-		"generating": "Generating...",
-		"generate_link": "Generate Copy Link",
-		"add": "Add",
+		collaborate_invite_title: "Invite Collaborators",
+		default_permission_title: "Default Permission",
+		share_link_title: "Share Link",
+		join_as: "Anyone with this link will join as a {role} permission.",
+		copy_link_title: "Copy Group Link",
+		copy_link_desc:
+			"Share this link with others to allow them to copy this group's channels.",
+		copy_destination_title: "Copy Destination",
+		copy_destination_new: "A new group",
+		copy_destination_existing: "An existing group",
+		copy_alert_desc:
+			"This will copy {count} channels to the selected destination.",
+		copy_alert_info:
+			"This link allows others to copy the channels to their own groups.",
+		generate_copy_link: "Generate Copy Link",
+		group_details_title: "Group Details",
+		channels: "Channels",
+		share_settings_title: "Share Settings",
+		share_settings_collab:
+			"Collaborators will have {permission} access to this group.",
+		share_settings_copy:
+			"Recipients will be able to copy all channels to {destination}.",
+		destination_new: "a new group",
+		destination_existing: "an existing group",
+		share_group_title: "Share Group",
+		share_group_description: "Share your group with others",
+		back_to_group: "Back to Group",
+		collaborate_tab_title: "Collaborate",
+		copy_group_tab_title: "Copy Group",
+		collaborate_invite_desc:
+			"Invite collaborators to this group by entering their email address and assigning a role.",
+		input_email_placeholder: "Enter collaborator's email",
+		collaborators_label: "Collaborators",
+		collaborators_empty: "No collaborators yet.",
+		role_viewer: "Viewer",
+		role_editor: "Editor",
+		role_admin: "Admin",
+		perm_view: "Can view group content",
+		perm_edit: "Can edit group content",
+		perm_admin: "Full administrative access",
+		allow_comments_label: "Allow comments",
+		share_link_desc:
+			"Share this link with others to allow them to view or copy this group.",
+		copied: "Copied!",
+		copy: "Copy",
+		generating: "Generating...",
+		generate_link: "Generate Copy Link",
+		add: "Add",
 		"footer.description":
 			"The ultimate tool for organizing and managing your YouTube channel portfolio with modern design and powerful features.",
 		"footer.product": "Product",
@@ -252,47 +338,53 @@ const translations = {
 			"All rights reserved. Built with ❤️ for content creators.",
 	},
 	pt: {
-		"collaborate_invite_title": "Convidar Colaboradores",
-		"collaborate_invite_desc": "Convide colaboradores para este grupo inserindo o endereço de e-mail e atribuindo uma função.",
-		"input_email_placeholder": "Digite o e-mail do colaborador",
-		"collaborators_label": "Colaboradores",
-		"collaborators_empty": "Nenhum colaborador ainda.",
-		"role_viewer": "Visualizador",
-		"role_editor": "Editor",
-		"role_admin": "Administrador",
-		"perm_view": "Pode visualizar o conteúdo do grupo",
-		"perm_edit": "Pode editar o conteúdo do grupo",
-		"perm_admin": "Acesso administrativo total",
-		"allow_comments_label": "Permitir comentários",
-		"share_link_desc": "Compartilhe este link com outras pessoas para permitir que visualizem ou copiem este grupo.",
-		"copied": "Copiado!",
-		"copy": "Copiar",
-		"generating": "Gerando...",
-		"generate_link": "Gerar Link de Cópia",
-		"add": "Adicionar",
-		"default_permission_title": "Permissão Padrão",
-		"share_link_title": "Link de Compartilhamento",
-		"join_as": "Qualquer pessoa com este link entrará permissão de {role}.",
-		"copy_link_title": "Link para Copiar Grupo",
-		"copy_link_desc": "Compartilhe este link com outras pessoas para permitir que copiem os canais deste grupo.",
-		"copy_destination_title": "Destino da Cópia",
-		"copy_destination_new": "Um novo grupo",
-		"copy_destination_existing": "Um grupo existente",
-		"copy_alert_desc": "Isso copiará {count} canais para o destino selecionado.",
-		"copy_alert_info": "Este link permite que outros copiem os canais para seus próprios grupos.",
-		"generate_copy_link": "Gerar Link para Copiar",
-		"group_details_title": "Detalhes do Grupo",
-		"channels": "Canais",
-		"share_settings_title": "Configurações de Compartilhamento",
-		"share_settings_collab": "Colaboradores terão acesso de {permission} a este grupo.",
-		"share_settings_copy": "Os destinatários poderão copiar todos os canais para {destination}.",
-		"destination_new": "um novo grupo",
-		"destination_existing": "um grupo existente",
-		"share_group_title": "Compartilhar Grupo",
-		"share_group_description": "Compartilhe seu grupo com outras pessoas",
-		"back_to_group": "Voltar para o Grupo",
-		"collaborate_tab_title": "Colaborar",
-		"copy_group_tab_title": "Copiar Grupo",
+		collaborate_invite_title: "Convidar Colaboradores",
+		collaborate_invite_desc:
+			"Convide colaboradores para este grupo inserindo o endereço de e-mail e atribuindo uma função.",
+		input_email_placeholder: "Digite o e-mail do colaborador",
+		collaborators_label: "Colaboradores",
+		collaborators_empty: "Nenhum colaborador ainda.",
+		role_viewer: "Visualizador",
+		role_editor: "Editor",
+		role_admin: "Administrador",
+		perm_view: "Pode visualizar o conteúdo do grupo",
+		perm_edit: "Pode editar o conteúdo do grupo",
+		perm_admin: "Acesso administrativo total",
+		allow_comments_label: "Permitir comentários",
+		share_link_desc:
+			"Compartilhe este link com outras pessoas para permitir que visualizem ou copiem este grupo.",
+		copied: "Copiado!",
+		copy: "Copiar",
+		generating: "Gerando...",
+		generate_link: "Gerar Link de Cópia",
+		add: "Adicionar",
+		default_permission_title: "Permissão Padrão",
+		share_link_title: "Link de Compartilhamento",
+		join_as: "Qualquer pessoa com este link entrará permissão de {role}.",
+		copy_link_title: "Link para Copiar Grupo",
+		copy_link_desc:
+			"Compartilhe este link com outras pessoas para permitir que copiem os canais deste grupo.",
+		copy_destination_title: "Destino da Cópia",
+		copy_destination_new: "Um novo grupo",
+		copy_destination_existing: "Um grupo existente",
+		copy_alert_desc: "Isso copiará {count} canais para o destino selecionado.",
+		copy_alert_info:
+			"Este link permite que outros copiem os canais para seus próprios grupos.",
+		generate_copy_link: "Gerar Link para Copiar",
+		group_details_title: "Detalhes do Grupo",
+		channels: "Canais",
+		share_settings_title: "Configurações de Compartilhamento",
+		share_settings_collab:
+			"Colaboradores terão acesso de {permission} a este grupo.",
+		share_settings_copy:
+			"Os destinatários poderão copiar todos os canais para {destination}.",
+		destination_new: "um novo grupo",
+		destination_existing: "um grupo existente",
+		share_group_title: "Compartilhar Grupo",
+		share_group_description: "Compartilhe seu grupo com outras pessoas",
+		back_to_group: "Voltar para o Grupo",
+		collaborate_tab_title: "Colaborar",
+		copy_group_tab_title: "Copiar Grupo",
 		// Navigation
 		"nav.features": "Recursos",
 		"nav.integrations": "Integrações",
@@ -440,6 +532,82 @@ const translations = {
 			"Sincronização de dados de canal em tempo real",
 		"integrations.export.desc": "Um lugar para encontrar grupos da comunidade",
 
+		// Landing Page - New Content
+		"landing.hero.badge": "Agora com Extensão de Navegador",
+		"landing.hero.title": "Organize Seu YouTube Como Nunca Antes",
+		"landing.hero.subtitle":
+			"O Groupify ajuda você a organizar, gerenciar e compartilhar suas inscrições do YouTube. Crie grupos personalizados, colabore com equipes e nunca perca o controle de seus canais favoritos novamente.",
+		"landing.hero.cta.primary": "Iniciar Teste Grátis",
+		"landing.hero.cta.secondary": "Ver Demo",
+		"landing.hero.trust1": "Não requer cartão de crédito",
+		"landing.hero.trust2": "Teste grátis de 14 dias",
+		"landing.hero.trust3": "Cancele a qualquer momento",
+		"landing.hero.preview": "Painel do Groupify",
+
+		// Landing Page - Features Section
+		"landing.features.title": "Tudo Que Você Precisa para Organizar o YouTube",
+		"landing.features.subtitle":
+			"Recursos poderosos projetados para criadores de conteúdo, equipes e entusiastas do YouTube",
+		"landing.features.smart.title": "Organização Inteligente",
+		"landing.features.smart.desc":
+			"Crie grupos ilimitados com categorias personalizadas. Aninhe grupos dentro de grupos para máxima flexibilidade na gestão de suas inscrições do YouTube.",
+		"landing.features.share.title": "Compartilhar e Colaborar",
+		"landing.features.share.desc":
+			"Gere links compartilháveis para permitir que outros visualizem ou copiem seus grupos. Perfeito para criadores de conteúdo, equipes e comunidades.",
+		"landing.features.permissions.title": "Permissões de Equipe",
+		"landing.features.permissions.desc":
+			"Controle o acesso com permissões granulares. Atribua funções de somente visualização, editor ou administrador para gerenciar quem pode modificar seus grupos.",
+		"landing.features.bulk.title": "Operações em Massa",
+		"landing.features.bulk.desc":
+			"Economize tempo com ações em lote poderosas. Adicione, remova ou mova vários canais entre grupos em segundos.",
+		"landing.features.extension.title": "Integração com Extensão",
+		"landing.features.extension.desc":
+			"Nossa extensão de navegador permite adicionar canais diretamente do YouTube. Organização com um clique enquanto você navega.",
+		"landing.features.everywhere.title": "Funciona em Qualquer Lugar",
+		"landing.features.everywhere.desc":
+			"Acesse seus canais organizados de qualquer dispositivo. Aplicativo web e extensões de navegador para Chrome, Firefox e Safari.",
+
+		// Landing Page - Browser Extension Section
+		"landing.extension.badge": "Extensão de Navegador",
+		"landing.extension.title": "Adicione Canais Enquanto Navega",
+		"landing.extension.subtitle":
+			"Nossa extensão de navegador se integra perfeitamente com o YouTube. Quando encontrar um canal que deseja salvar, basta clicar no ícone do Groupify e adicioná-lo a qualquer grupo instantaneamente.",
+		"landing.extension.success": "Canal adicionado ao grupo",
+		"landing.extension.subscribers": "inscritos",
+
+		// Landing Page - Testimonials Section
+		"landing.testimonials.title": "Adorado por Criadores de Conteúdo",
+		"landing.testimonials.subtitle":
+			"Veja o que nossos usuários estão dizendo sobre o Groupify",
+		"landing.testimonials.alex.content":
+			"O Groupify transformou completamente como eu gerencio minhas inscrições do YouTube. Finalmente posso manter meu conteúdo educacional separado do entretenimento!",
+		"landing.testimonials.sarah.content":
+			"A capacidade de compartilhar grupos curados com minha equipe foi uma revolução. Podemos compartilhar rapidamente insights do setor e análises de concorrentes.",
+		"landing.testimonials.mike.content":
+			"Já experimentei muitas ferramentas, mas o Groupify é a única que realmente entende como os criadores de conteúdo trabalham. O recurso de grupos aninhados é brilhante!",
+
+		// Landing Page - Pricing Section
+		"landing.pricing.title": "Preços Simples e Transparentes",
+		"landing.pricing.subtitle":
+			"Escolha o plano que se adapta às suas necessidades. Todos os planos incluem um teste grátis de 14 dias.",
+		"landing.pricing.free.name": "Grátis",
+		"landing.pricing.free.desc": "Perfeito para começar",
+		"landing.pricing.pro.name": "Pro",
+		"landing.pricing.pro.desc": "Melhor para criadores de conteúdo",
+		"landing.pricing.business.name": "Business",
+		"landing.pricing.business.desc": "Para equipes e agências",
+		"landing.pricing.cta.free": "Começar Grátis",
+		"landing.pricing.cta.pro": "Iniciar Teste Pro",
+		"landing.pricing.cta.business": "Obter Business",
+		"landing.pricing.mostpopular": "MAIS POPULAR",
+
+		// Landing Page - CTA Section
+		"landing.cta.title": "Pronto para Organizar Seu YouTube?",
+		"landing.cta.subtitle":
+			"Junte-se a milhares de criadores de conteúdo e equipes que confiam no Groupify para gerenciar suas inscrições do YouTube.",
+		"landing.cta.primary": "Começar Grátis",
+		"landing.cta.secondary": "Juntar-se à Comunidade",
+
 		// Testimonials
 		"testimonials.badge": "Depoimentos",
 		"testimonials.title": "Amado por Criadores",
@@ -483,50 +651,57 @@ const translations = {
 		"footer.copyright":
 			"Todos los derechos reservados. Hecho con ❤️ para creadores de contenido.",
 
-		"share_link_generated_success_description": "Share link generated successfully",
+		share_link_generated_success_description:
+			"Share link generated successfully",
 	},
 	es: {
-		"collaborate_invite_title": "Invitar Colaboradores",
-		"collaborate_invite_desc": "Invita colaboradores a este grupo ingresando su dirección de correo electrónico y asignando un rol.",
-		"input_email_placeholder": "Ingresar correo electrónico del colaborador",
-		"collaborators_label": "Colaboradores",
-		"collaborators_empty": "Aún no hay colaboradores.",
-		"role_viewer": "Espectador",
-		"role_editor": "Editor",
-		"role_admin": "Administrador",
-		"perm_view": "Puede ver el contenido del grupo",
-		"perm_edit": "Puede editar el contenido del grupo",
-		"perm_admin": "Acceso administrativo total",
-		"allow_comments_label": "Permitir comentarios",
-		"share_link_desc": "Comparte este enlace con otros para permitirles ver o copiar este grupo.",
-		"copied": "¡Copiado!",
-		"copy": "Copiar",
-		"generating": "Generando...",
-		"generate_link": "Generar Enlace para Copiar",
-		"add": "Agregar",
-		"default_permission_title": "Permiso Predeterminado",
-		"share_link_title": "Enlace para Compartir",
-		"join_as": "Cualquiera con este enlace se unirá como {role}.",
-		"copy_link_title": "Enlace para Copiar Grupo",
-		"copy_link_desc": "Comparte este enlace con otros para permitirles copiar los canales de este grupo.",
-		"copy_destination_title": "Destino de Copia",
-		"copy_destination_new": "Un nuevo grupo",
-		"copy_destination_existing": "Un grupo existente",
-		"copy_alert_desc": "Esto copiará {count} canales al destino seleccionado.",
-		"copy_alert_info": "Este enlace permite a otros copiar los canales a sus propios grupos.",
-		"generate_copy_link": "Generar Enlace para Copiar",
-		"group_details_title": "Detalles del Grupo",
-		"channels": "Canales",
-		"share_settings_title": "Configuración de Compartir",
-		"share_settings_collab": "Los colaboradores tendrán acceso de {permission} a este grupo.",
-		"share_settings_copy": "Los destinatarios podrán copiar todos los canales a {destination}.",
-		"destination_new": "un nuevo grupo",
-		"destination_existing": "un grupo existente",
-		"share_group_title": "Compartir Grupo",
-		"share_group_description": "Comparte tu grupo con otros",
-		"back_to_group": "Volver al Grupo",
-		"collaborate_tab_title": "Colaborar",
-		"copy_group_tab_title": "Copiar Grupo",
+		collaborate_invite_title: "Invitar Colaboradores",
+		collaborate_invite_desc:
+			"Invita colaboradores a este grupo ingresando su dirección de correo electrónico y asignando un rol.",
+		input_email_placeholder: "Ingresar correo electrónico del colaborador",
+		collaborators_label: "Colaboradores",
+		collaborators_empty: "Aún no hay colaboradores.",
+		role_viewer: "Espectador",
+		role_editor: "Editor",
+		role_admin: "Administrador",
+		perm_view: "Puede ver el contenido del grupo",
+		perm_edit: "Puede editar el contenido del grupo",
+		perm_admin: "Acceso administrativo total",
+		allow_comments_label: "Permitir comentarios",
+		share_link_desc:
+			"Comparte este enlace con otros para permitirles ver o copiar este grupo.",
+		copied: "¡Copiado!",
+		copy: "Copiar",
+		generating: "Generando...",
+		generate_link: "Generar Enlace para Copiar",
+		add: "Agregar",
+		default_permission_title: "Permiso Predeterminado",
+		share_link_title: "Enlace para Compartir",
+		join_as: "Cualquiera con este enlace se unirá como {role}.",
+		copy_link_title: "Enlace para Copiar Grupo",
+		copy_link_desc:
+			"Comparte este enlace con otros para permitirles copiar los canales de este grupo.",
+		copy_destination_title: "Destino de Copia",
+		copy_destination_new: "Un nuevo grupo",
+		copy_destination_existing: "Un grupo existente",
+		copy_alert_desc: "Esto copiará {count} canales al destino seleccionado.",
+		copy_alert_info:
+			"Este enlace permite a otros copiar los canales a sus propios grupos.",
+		generate_copy_link: "Generar Enlace para Copiar",
+		group_details_title: "Detalles del Grupo",
+		channels: "Canales",
+		share_settings_title: "Configuración de Compartir",
+		share_settings_collab:
+			"Los colaboradores tendrán acceso de {permission} a este grupo.",
+		share_settings_copy:
+			"Los destinatarios podrán copiar todos los canales a {destination}.",
+		destination_new: "un nuevo grupo",
+		destination_existing: "un grupo existente",
+		share_group_title: "Compartir Grupo",
+		share_group_description: "Comparte tu grupo con otros",
+		back_to_group: "Volver al Grupo",
+		collaborate_tab_title: "Colaborar",
+		copy_group_tab_title: "Copiar Grupo",
 		// Navigation
 		"nav.features": "Características",
 		"nav.integrations": "Integraciones",
@@ -678,7 +853,84 @@ const translations = {
 		"integrations.crunchyroll.desc": "Rastrea conteúdo de anime em plataformas",
 		"integrations.youtube.desc":
 			"Sincronización de datos de canal em tempo real",
-		"integrations.export.desc": "Exporta seus grupos e canais para a comunidade",
+		"integrations.export.desc":
+			"Exporta seus grupos e canais para a comunidade",
+
+		// Landing Page - New Content
+		"landing.hero.badge": "Ahora con Extensión de Navegador",
+		"landing.hero.title": "Organiza Tu YouTube Como Nunca Antes",
+		"landing.hero.subtitle":
+			"Groupify te ayuda a organizar, gestionar y compartir tus suscripciones de YouTube. Crea grupos personalizados, colabora con equipos y nunca pierdas el control de tus canales favoritos.",
+		"landing.hero.cta.primary": "Iniciar Prueba Gratuita",
+		"landing.hero.cta.secondary": "Ver Demo",
+		"landing.hero.trust1": "No se requiere tarjeta de crédito",
+		"landing.hero.trust2": "Prueba gratuita de 14 días",
+		"landing.hero.trust3": "Cancela en cualquier momento",
+		"landing.hero.preview": "Panel de Groupify",
+
+		// Landing Page - Features Section
+		"landing.features.title": "Todo Lo Que Necesitas para Organizar YouTube",
+		"landing.features.subtitle":
+			"Características poderosas diseñadas para creadores de contenido, equipos y entusiastas de YouTube",
+		"landing.features.smart.title": "Organización Inteligente",
+		"landing.features.smart.desc":
+			"Crea grupos ilimitados con categorías personalizadas. Anida grupos dentro de grupos para máxima flexibilidad en la gestión de tus suscripciones de YouTube.",
+		"landing.features.share.title": "Compartir y Colaborar",
+		"landing.features.share.desc":
+			"Genera enlaces compartibles para permitir que otros vean o copien tus grupos. Perfecto para creadores de contenido, equipos y comunidades.",
+		"landing.features.permissions.title": "Permisos de Equipo",
+		"landing.features.permissions.desc":
+			"Controla el acceso con permisos granulares. Asigna roles de solo visualización, editor o administrador para gestionar quién puede modificar tus grupos.",
+		"landing.features.bulk.title": "Operaciones Masivas",
+		"landing.features.bulk.desc":
+			"Ahorra tiempo con acciones por lotes poderosas. Agrega, elimina o mueve varios canales entre grupos en segundos.",
+		"landing.features.extension.title": "Integración con Extensión",
+		"landing.features.extension.desc":
+			"Nuestra extensión de navegador te permite agregar canales directamente desde YouTube. Organización con un clic mientras navegas.",
+		"landing.features.everywhere.title": "Funciona en Cualquier Lugar",
+		"landing.features.everywhere.desc":
+			"Accede a tus canales organizados desde cualquier dispositivo. Aplicación web y extensiones de navegador para Chrome, Firefox y Safari.",
+
+		// Landing Page - Browser Extension Section
+		"landing.extension.badge": "Extensión de Navegador",
+		"landing.extension.title": "Agrega Canales Mientras Navegas",
+		"landing.extension.subtitle":
+			"Nuestra extensión de navegador se integra perfectamente con YouTube. Cuando encuentres un canal que quieras guardar, solo haz clic en el icono de Groupify y agrégalo a cualquier grupo instantáneamente.",
+		"landing.extension.success": "Canal agregado al grupo",
+		"landing.extension.subscribers": "suscriptores",
+
+		// Landing Page - Testimonials Section
+		"landing.testimonials.title": "Amado por Creadores de Contenido",
+		"landing.testimonials.subtitle":
+			"Mira lo que nuestros usuarios están diciendo sobre Groupify",
+		"landing.testimonials.alex.content":
+			"Groupify ha transformado completamente cómo gestiono mis suscripciones de YouTube. ¡Finalmente puedo mantener mi contenido educativo separado del entretenimiento!",
+		"landing.testimonials.sarah.content":
+			"La capacidad de compartir grupos curados con mi equipo ha sido un cambio radical. Podemos compartir rápidamente insights de la industria y análisis de competidores.",
+		"landing.testimonials.mike.content":
+			"He probado muchas herramientas, pero Groupify es la única que realmente entiende cómo trabajan los creadores de contenido. ¡La función de grupos anidados es brillante!",
+
+		// Landing Page - Pricing Section
+		"landing.pricing.title": "Precios Simples y Transparentes",
+		"landing.pricing.subtitle":
+			"Elige el plan que se adapte a tus necesidades. Todos los planes incluyen una prueba gratuita de 14 días.",
+		"landing.pricing.free.name": "Gratis",
+		"landing.pricing.free.desc": "Perfecto para comenzar",
+		"landing.pricing.pro.name": "Pro",
+		"landing.pricing.pro.desc": "Mejor para creadores de contenido",
+		"landing.pricing.business.name": "Business",
+		"landing.pricing.business.desc": "Para equipos y agencias",
+		"landing.pricing.cta.free": "Comenzar Gratis",
+		"landing.pricing.cta.pro": "Iniciar Prueba Pro",
+		"landing.pricing.cta.business": "Obtener Business",
+		"landing.pricing.mostpopular": "MÁS POPULAR",
+
+		// Landing Page - CTA Section
+		"landing.cta.title": "¿Listo para Organizar Tu YouTube?",
+		"landing.cta.subtitle":
+			"Únete a miles de creadores de contenido y equipos que confían en Groupify para gestionar sus suscripciones de YouTube.",
+		"landing.cta.primary": "Comenzar Gratis",
+		"landing.cta.secondary": "Unirse a la Comunidad",
 
 		// Testimonials
 		"testimonials.badge": "Testimonios",
@@ -723,7 +975,8 @@ const translations = {
 		"footer.copyright":
 			"Todos los derechos reservados. Hecho con ❤️ para creadores de contenido.",
 
-		"share_link_generated_success_description": "El link de compartilhamento foi gerado com sucesso.",
+		share_link_generated_success_description:
+			"El link de compartilhamento foi gerado com sucesso.",
 	},
 };
 
@@ -743,11 +996,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	const t = (key: string, params?: Record<string, string>): string => {
-		const translation = translations[language][key as keyof (typeof translations)[typeof language]];
+		const translation =
+			translations[language][
+				key as keyof (typeof translations)[typeof language]
+			];
 		if (translation && params) {
 			return Object.keys(params).reduce((acc, paramKey) => {
 				const placeholder = `{${paramKey}}`;
-				return acc.replace(new RegExp(placeholder, 'g'), params[paramKey]);
+				return acc.replace(new RegExp(placeholder, "g"), params[paramKey]);
 			}, translation);
 		}
 		return translation || key;
