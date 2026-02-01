@@ -216,12 +216,10 @@ export function AppSidebar() {
 				{/* Ad Section */}
 				<div className="mt-auto pt-4">
 					<div className="rounded-lg overflow-hidden bg-muted/30 border border-sidebar-border/30">
-						<ins
-							className="adsbygoogle"
-							style={{ display: "block", width: "100%", height: "250px" }}
+						<ins className="adsbygoogle"
+							style={{ display: "inline-block", width: "255px", height: "300px" }}
 							data-ad-client="ca-pub-4077364511521347"
-							data-ad-slot="9387808543"
-						></ins>
+							data-ad-slot="9387808543"></ins>
 					</div>
 				</div>
 			</SidebarContent>
