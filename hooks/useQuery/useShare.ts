@@ -35,12 +35,19 @@ interface GenerateShareLinkResponseData {
 	shareLink: string;
 }
 
+interface ShareLinkResponse {
+	message: string;
+	data?: ConsumedShareLinkResponse;
+	errors?: ConsumedShareLinkResponse[];
+	success?: boolean;
+}
+
 // Query function to fetch a single share link with consumed details
-const getShareLink = async (id: string): Promise<ConsumedShareLinkResponse> => {
-	const response = await apiClient.get<ApiResponse<ConsumedShareLinkResponse>>(
+const getShareLink = async (id: string): Promise<ShareLinkResponse> => {
+	const response = await apiClient.get<ShareLinkResponse>(
 		`/api/v2/share-link/${id}`,
 	);
-	return response.data;
+	return response;
 };
 
 const generateShareLink = async (
@@ -72,7 +79,7 @@ export const useGenerateShareLink = () => {
 };
 
 export function useShareLink(id: string) {
-	return useQuery<ConsumedShareLinkResponse, Error>({
+	return useQuery<ShareLinkResponse, Error>({
 		queryKey: queryKeys.shareLink(id),
 		queryFn: () => getShareLink(id),
 		enabled: !!id,
@@ -88,8 +95,8 @@ interface ConsumeShareLinkVariables {
 
 const consumeShareLink = async (
 	variables: ConsumeShareLinkVariables,
-): Promise<ConsumedShareLinkResponse> => {
-	const response = await apiClient.post<ApiResponse<ConsumedShareLinkResponse>>(
+): Promise<ShareLinkResponse> => {
+	const response = await apiClient.post<ApiResponse<ShareLinkResponse>>(
 		`/api/v2/share-link/${variables.linkType}/${variables.linkCode}`,
 	);
 	return response.data;
@@ -99,7 +106,7 @@ export const useConsumeShareLink = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation<
-		ConsumedShareLinkResponse,
+		ShareLinkResponse,
 		Error,
 		ConsumeShareLinkVariables
 	>({
@@ -107,13 +114,13 @@ export const useConsumeShareLink = () => {
 		onSuccess: async (data, variables) => {
       const router = getRouter();
 			await toast.success("Success", {
-        description: `You successfully joined ${variables?.linkType === "copy" ? "group" : "collaboration"} as ${data?.permission}`,
+        description: `You successfully joined ${variables?.linkType === "copy" ? "group" : "collaboration"} as ${data?.data?.permission}`,
 			});
 			queryClient.invalidateQueries({
         queryKey: queryKeys.shareLink(variables.linkCode),
 			});
 			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
-      router.navigate({ to: `/dashboard/groups/${data?.groupId}` });
+      router.navigate({ to: `/dashboard/groups/${data?.data?.groupId}` });
 		},
     onError: (error) => {
       toast.error("Error", {

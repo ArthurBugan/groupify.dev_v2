@@ -4,6 +4,7 @@ import {
 	FolderKanban,
 	LayoutDashboard,
 	Settings,
+	Share2,
 	User2,
 	Video,
 	Youtube,
@@ -46,6 +47,11 @@ const items = [
 		icon: Youtube,
 	},
 	{
+		title: "Share Links",
+		url: "/dashboard/share-links",
+		icon: Share2,
+	},
+	{
 		title: "Animes",
 		url: "/dashboard/animes",
 		icon: Video,
@@ -63,20 +69,23 @@ export function AppSidebar() {
 
 	const signOut = () => {
 		logoutMutation.mutateAsync();
-	}
+	};
 
 	return (
 		<Sidebar variant="sidebar">
-			<SidebarHeader className="cursor-pointer" onClick={() => navigate({ to: "/" })}>
+			<SidebarHeader
+				className="cursor-pointer"
+				onClick={() => navigate({ to: "/" })}
+			>
 				<Link to="/" className="flex items-center gap-4 ml-1">
 					<div className="relative">
-					<Youtube className="h-6 w-6 text-red-500" />
-					<div className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse"></div>
-				</div>
-				<span className="text-xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-					Groupify
-				</span>
-			</Link>
+						<Youtube className="h-6 w-6 text-red-500" />
+						<div className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse"></div>
+					</div>
+					<span className="text-xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+						Groupify
+					</span>
+				</Link>
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
@@ -84,20 +93,22 @@ export function AppSidebar() {
 						{items.map((item) => (
 							<SidebarMenuItem key={item.title}>
 								<SidebarMenuButton asChild>
-									<a href={item.url}>
+									<Link to={item.url}>
 										<item.icon />
 										<span>{item.title}</span>
-									</a>
+									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 						))}
 					</SidebarMenu>
 				</SidebarGroup>
 				<div className="mt-auto">
-					<ins className="adsbygoogle"
+					<ins
+						className="adsbygoogle"
 						style={{ display: "inline-block", width: "255px", height: "300px" }}
 						data-ad-client="ca-pub-4077364511521347"
-						data-ad-slot="9387808543"></ins>
+						data-ad-slot="9387808543"
+					></ins>
 				</div>
 			</SidebarContent>
 			<SidebarFooter>
@@ -114,7 +125,11 @@ export function AppSidebar() {
 								<DropdownMenuItem>
 									<span>Account</span>
 								</DropdownMenuItem>
-								<DropdownMenuItem onClick={() => navigate({ to: "/dashboard/settings/billing" })}>
+								<DropdownMenuItem
+									onClick={() =>
+										navigate({ to: "/dashboard/settings/billing" })
+									}
+								>
 									<span>Billing</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => signOut()}>

@@ -16,10 +16,9 @@ export const queryKeys = {
 	}) => (params ? ["channels", params] : ["channels"]),
 	channel: (id) => ["channel", id],
 	shareLink: (id) => ["shareLink", id],
-	animes: (params?: {
-		page?: number;
-		limit?: number;
-		search?: string;
-	}) => (params ? ["animes", params] : ["animes"]),
+	shareLinks: (params?: { page?: number; limit?: number; search?: string }) =>
+		params ? ["shareLinks", params] : ["shareLinks"],
+	animes: (params?: { page?: number; limit?: number; search?: string }) =>
+		params ? ["animes", params] : ["animes"],
 	anime: (id) => ["anime", id],
 };

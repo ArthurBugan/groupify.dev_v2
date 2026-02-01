@@ -1,7 +1,7 @@
 "use client";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Check, Copy, FolderKanban, Users } from "lucide-react";
+import { AlertTriangle, Clock, Copy, FolderKanban, Users } from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -26,8 +26,10 @@ function ShareLinkPage() {
 	const { id, type } = Route.useParams();
 	const router = useNavigate();
 	const { data: shareLink, isLoading, error } = useShareLink(id);
-	const { mutate: consumeShareLink, isPending: isConsuming } = useConsumeShareLink();
+	const { mutate: consumeShareLink, isPending: isConsuming } =
+		useConsumeShareLink();
 	const [newGroupName, setNewGroupName] = useState("");
+	const [isExpired, setIsExpired] = useState(false);
 
 	if (isLoading) {
 		return (
@@ -44,18 +46,36 @@ function ShareLinkPage() {
 		);
 	}
 
-	if (error) {
+	if (error || shareLink?.message != null) {
+		const errorMessage = shareLink?.message || "Failed to load group data";
+		const isLinkExpired =
+			errorMessage.toLowerCase().includes("expired") || isExpired;
+
 		return (
 			<div className="flex min-h-screen items-center justify-center">
 				<Card className="w-full max-w-md">
 					<CardHeader>
-						<CardTitle className="text-center text-destructive">
-							Error
+						<CardTitle className="text-center text-destructive flex items-center justify-center gap-2">
+							{isLinkExpired && <Clock className="h-5 w-5" />}
+							{isLinkExpired ? "Link Expired" : "Error"}
 						</CardTitle>
 						<CardDescription className="text-center">
-							{error.message || "Failed to load group data"}
+							{isLinkExpired
+								? "This share link has expired and is no longer valid."
+								: errorMessage}
 						</CardDescription>
 					</CardHeader>
+					<CardContent className="space-y-4">
+						{isLinkExpired && (
+							<Alert>
+								<AlertTriangle className="h-4 w-4" />
+								<AlertDescription>
+									Share links have a limited validity period. Please contact the
+									person who shared this link to get a new one.
+								</AlertDescription>
+							</Alert>
+						)}
+					</CardContent>
 					<CardFooter>
 						<Button
 							className="w-full"
@@ -65,7 +85,7 @@ function ShareLinkPage() {
 						</Button>
 					</CardFooter>
 				</Card>
-			</div>		
+			</div>
 		);
 	}
 
@@ -73,14 +93,14 @@ function ShareLinkPage() {
 		consumeShareLink({
 			linkCode: id,
 			linkType: type,
-		})
+		});
 	}
 
 	function handleCopyGroup() {
 		consumeShareLink({
 			linkCode: id,
 			linkType: type,
-		})
+		});
 	}
 
 	return (
@@ -99,10 +119,14 @@ function ShareLinkPage() {
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<div className="flex items-center justify-between">
-							<h3 className="font-medium">{shareLink?.groupName || "Unknown Group"}</h3>
+							<h3 className="font-medium">
+								{shareLink?.groupName || "Unknown Group"}
+							</h3>
 							<Badge>{shareLink?.groupDescription || "Unknown"}</Badge>
 						</div>
-						<p className="text-sm text-muted-foreground">{shareLink?.groupDescription || "No description available"}</p>
+						<p className="text-sm text-muted-foreground">
+							{shareLink?.groupDescription || "No description available"}
+						</p>
 					</div>
 
 					<Separator />
@@ -110,13 +134,18 @@ function ShareLinkPage() {
 					<div className="space-y-2">
 						<div className="flex justify-between">
 							<span className="text-sm text-muted-foreground">Channels</span>
-							<span className="font-medium">{shareLink?.channelCount || "0"}</span>
+							<span className="font-medium">
+								{shareLink?.channelCount || "0"}
+							</span>
 						</div>
 
 						<div className="max-h-32 overflow-y-auto border rounded-md p-2">
 							<div className="space-y-1">
 								{shareLink?.channels?.map((channel: any) => (
-									<div key={channel.id} className="flex justify-between text-sm">
+									<div
+										key={channel.id}
+										className="flex justify-between text-sm"
+									>
 										<span>{channel.name}</span>
 										<span className="text-muted-foreground">
 											{channel.subscribers}
@@ -131,12 +160,13 @@ function ShareLinkPage() {
 						<Alert>
 							<Users className="h-4 w-4" />
 							<AlertDescription>
-								You will join as a{" "}
-								{type} permission
-								.
-								{type === "view" && " You will only be able to view channels and groups"}
-								{type === "edit" && " You will be able to add, remove, and edit the groups and channels."}
-								{type === "admin" &&  " You will have full control over the group and can invite others."}
+								You will join as a {shareLink?.permission} permission .
+								{shareLink?.permission === "view" &&
+									" You will only be able to view channels and groups"}
+								{shareLink?.permission === "edit" &&
+									" You will be able to add, remove, and edit groups and channels."}
+								{shareLink?.permission === "admin" &&
+									" You will have full control over group and can invite others."}
 							</AlertDescription>
 						</Alert>
 					) : (
@@ -144,8 +174,8 @@ function ShareLinkPage() {
 							<Alert>
 								<Copy className="h-4 w-4" />
 								<AlertDescription>
-									This will copy all {shareLink?.channelCount || "0"} channels to your
-									account.
+									This will copy all {shareLink?.channelCount || "0"} channels
+									to your account.
 								</AlertDescription>
 							</Alert>
 						</div>
@@ -163,9 +193,7 @@ function ShareLinkPage() {
 						onClick={
 							type !== "copy" ? handleJoinCollaboration : handleCopyGroup
 						}
-						disabled={
-							isLoading || isConsuming
-						}
+						disabled={isLoading || isConsuming}
 					>
 						{isLoading || isConsuming
 							? type !== "copy"
