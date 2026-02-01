@@ -600,7 +600,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Features Section */}
-			<section className="py-24 lg:py-32 relative">
+			<section id="features" className="py-24 lg:py-32 relative">
 				<div className="container mx-auto px-4">
 					<div className="text-center max-w-3xl mx-auto mb-16">
 						<Badge
@@ -630,7 +630,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Browser Extension Section */}
-			<section className="py-24 bg-gradient-to-br from-red-500/5 to-pink-500/5">
+			<section id="integrations" className="py-24 bg-gradient-to-br from-red-500/5 to-pink-500/5">
 				<div className="container mx-auto px-4">
 					<div className="grid lg:grid-cols-2 gap-12 items-center">
 						<div className="space-y-6">
@@ -713,7 +713,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Testimonials Section */}
-			<section className="py-24 lg:py-32">
+			<section id="testimonials" className="py-24 lg:py-32">
 				<div className="container mx-auto px-4">
 					<div className="text-center max-w-3xl mx-auto mb-16">
 						<Badge
@@ -742,7 +742,7 @@ export function LandingPage() {
 			</section>
 
 			{/* Pricing Section */}
-			<section className="py-24 bg-gradient-to-br from-slate-50 to-white dark:from-slate-950 dark:to-background">
+			<section id="pricing" className="py-24 bg-gradient-to-br from-slate-50 to-white dark:from-slate-950 dark:to-background">
 				<div className="container mx-auto px-4">
 					<div className="text-center max-w-3xl mx-auto mb-16">
 						<Badge
