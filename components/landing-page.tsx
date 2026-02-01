@@ -1,25 +1,23 @@
+"use client";
+
 import { Link } from "@tanstack/react-router";
 import {
 	ArrowRight,
-	BarChart3,
-	BookAIcon,
 	CheckCircle,
-	ChevronRight,
-	Code2,
-	Database,
+	Clock,
 	FolderKanban,
-	GitBranch,
-	Github,
-	Monitor,
+	Globe,
+	Layers,
 	Play,
-	Rocket,
-	Server,
+	Share2,
+	Sparkles,
 	Star,
-	TrendingUp,
 	Users,
 	Youtube,
+	Zap,
 } from "lucide-react";
-import { useId, useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,36 +32,289 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "./language-provider";
 import { MainNavbar } from "./main-navbar";
 import { IconViewer } from "./icon-picker";
-import { Icons } from "./ui/icons";
 
-// Tech-inspired animated background component
-function TechBackground() {
-	const [mounted, setMounted] = useState(false);
+// Animated background with floating particles
+function AnimatedBackground() {
+	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
-		setMounted(true);
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+
+		const ctx = canvas.getContext("2d");
+		if (!ctx) return;
+
+		let animationFrameId: number;
+		let particles: Array<{
+			x: number;
+			y: number;
+			size: number;
+			speedX: number;
+			speedY: number;
+			opacity: number;
+		}> = [];
+
+		const resize = () => {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+		};
+
+		const createParticles = () => {
+			particles = [];
+			const particleCount = Math.min(50, Math.floor(window.innerWidth / 30));
+			for (let i = 0; i < particleCount; i++) {
+				particles.push({
+					x: Math.random() * canvas.width,
+					y: Math.random() * canvas.height,
+					size: Math.random() * 2 + 1,
+					speedX: (Math.random() - 0.5) * 0.5,
+					speedY: (Math.random() - 0.5) * 0.5,
+					opacity: Math.random() * 0.5 + 0.1,
+				});
+			}
+		};
+
+		const animate = () => {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			particles.forEach((particle) => {
+				particle.x += particle.speedX;
+				particle.y += particle.speedY;
+
+				if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+				if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+
+				ctx.beginPath();
+				ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+				ctx.fillStyle = `rgba(239, 68, 68, ${particle.opacity})`;
+				ctx.fill();
+			});
+
+			particles.forEach((p1, i) => {
+				particles.slice(i + 1).forEach((p2) => {
+					const distance = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+					if (distance < 150) {
+						ctx.beginPath();
+						ctx.moveTo(p1.x, p1.y);
+						ctx.lineTo(p2.x, p2.y);
+						ctx.strokeStyle = `rgba(239, 68, 68, ${0.1 * (1 - distance / 150)})`;
+						ctx.stroke();
+					}
+				});
+			});
+
+			animationFrameId = requestAnimationFrame(animate);
+		};
+
+		resize();
+		createParticles();
+		animate();
+
+		window.addEventListener("resize", () => {
+			resize();
+			createParticles();
+		});
+
+		return () => {
+			cancelAnimationFrame(animationFrameId);
+			window.removeEventListener("resize", resize);
+		};
 	}, []);
 
-	if (!mounted) {
-		return <div className="absolute inset-0 overflow-hidden pointer-events-none" />;
-	}
-
 	return (
-		<div className="absolute inset-0 overflow-hidden pointer-events-none">
-			{/* Grid pattern */}
-			<div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.1)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] dark:bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)]" />
+		<canvas
+			ref={canvasRef}
+			className="absolute inset-0 pointer-events-none opacity-40"
+		/>
+	);
+}
 
-			{/* Floating code elements */}
-			<div className="absolute top-20 left-20 text-xs font-mono text-muted-foreground/30 animate-pulse">
-				<div>const channels = await api.getChannels();</div>
-			</div>
-			<div className="absolute top-40 right-32 text-xs font-mono text-muted-foreground/30 animate-pulse delay-1000">
-				<div>{"{ analytics: true, realTime: true }"}</div>
-			</div>
-			<div className="absolute bottom-32 left-32 text-xs font-mono text-muted-foreground/30 animate-pulse delay-2000">
-				<div>npm install @groupify/sdk</div>
-			</div>
-		</div>
+// Feature Card Component
+function FeatureCard({
+	feature,
+	index,
+}: {
+	feature: {
+		icon: React.ElementType;
+		title: string;
+		description: string;
+		color: string;
+		badge?: string;
+	};
+	index: number;
+}) {
+	return (
+		<Card
+			className={cn(
+				"group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white dark:bg-slate-900",
+				index % 3 === 0 && "lg:translate-y-0",
+				index % 3 === 1 && "lg:translate-y-4",
+				index % 3 === 2 && "lg:translate-y-8",
+			)}
+		>
+			<div
+				className={cn(
+					"absolute top-0 left-0 w-full h-1 bg-gradient-to-r",
+					feature.color,
+				)}
+			/>
+			<div
+				className={cn(
+					"absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-500",
+					feature.color,
+				)}
+			/>
+
+			<CardHeader className="pb-4">
+				<div className="flex items-start justify-between mb-4">
+					<div
+						className={cn(
+							"w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300",
+							feature.color,
+						)}
+					>
+						<feature.icon className="h-7 w-7 text-white" />
+					</div>
+					{feature.badge && (
+						<Badge
+							variant="secondary"
+							className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0"
+						>
+							{feature.badge}
+						</Badge>
+					)}
+				</div>
+				<CardTitle className="text-xl group-hover:text-red-600 transition-colors">
+					{feature.title}
+				</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<p className="text-muted-foreground leading-relaxed">
+					{feature.description}
+				</p>
+			</CardContent>
+		</Card>
+	);
+}
+
+// Testimonial Card Component
+function TestimonialCard({
+	testimonial,
+}: {
+	testimonial: {
+		name: string;
+		role: string;
+		content: string;
+		rating: number;
+		avatar: string;
+	};
+}) {
+	return (
+		<Card className="group border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden bg-white dark:bg-slate-900">
+			<div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500/10 to-pink-500/10 rounded-bl-full" />
+
+			<CardHeader className="relative">
+				<div className="flex items-center gap-4">
+					<Avatar className="h-12 w-12 border-2 border-red-100">
+						<AvatarImage src={testimonial.avatar} />
+						<AvatarFallback className="bg-gradient-to-br from-red-500 to-pink-500 text-white">
+							{testimonial.name.charAt(0)}
+						</AvatarFallback>
+					</Avatar>
+					<div>
+						<CardTitle className="text-base">{testimonial.name}</CardTitle>
+						<CardDescription>{testimonial.role}</CardDescription>
+					</div>
+				</div>
+				<div className="flex gap-0.5 mt-4">
+					{Array.from({ length: testimonial.rating }).map((_, i) => (
+						<Star
+							key={`star-${i}`}
+							className="h-4 w-4 fill-yellow-400 text-yellow-400"
+						/>
+					))}
+				</div>
+			</CardHeader>
+			<CardContent>
+				<p className="text-muted-foreground italic leading-relaxed">
+					{testimonial.content}
+				</p>
+			</CardContent>
+		</Card>
+	);
+}
+
+// Pricing Card Component
+function PricingCard({
+	plan,
+}: {
+	plan: {
+		name: string;
+		price: string;
+		period: string;
+		description: string;
+		features: string[];
+		cta: string;
+		popular: boolean;
+	};
+}) {
+	return (
+		<Card
+			className={cn(
+				"relative group overflow-hidden transition-all duration-300 hover:shadow-2xl",
+				plan.popular
+					? "border-2 border-red-500 shadow-xl shadow-red-500/10 scale-105 z-10"
+					: "border shadow-lg hover:-translate-y-1",
+				"flex flex-col h-full bg-white dark:bg-slate-900",
+			)}
+		>
+			{plan.popular && (
+				<div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-pink-500 text-white text-center py-1 text-xs font-semibold">
+					MOST POPULAR
+				</div>
+			)}
+
+			<CardHeader className={cn("text-center pb-4", plan.popular && "pt-8")}>
+				<CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
+				<div className="flex items-baseline justify-center gap-1">
+					<span className="text-4xl font-bold">{plan.price}</span>
+					<span className="text-muted-foreground">/{plan.period}</span>
+				</div>
+				<p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
+			</CardHeader>
+
+			<CardContent className="flex-1">
+				<ul className="space-y-3">
+					{plan.features.map((feature, i) => (
+						<li
+							key={`feature-${plan.name}-${i}`}
+							className="flex items-start gap-2"
+						>
+							<CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+							<span className="text-sm">{feature}</span>
+						</li>
+					))}
+				</ul>
+			</CardContent>
+
+			<CardFooter>
+				<Button
+					className={cn(
+						"w-full py-6 text-base",
+						plan.popular
+							? "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/25"
+							: "",
+					)}
+					variant={plan.popular ? "default" : "outline"}
+					asChild
+				>
+					<Link to="/register">
+						{plan.cta}
+						<ArrowRight className="ml-2 h-4 w-4" />
+					</Link>
+				</Button>
+			</CardFooter>
+		</Card>
 	);
 }
 
@@ -72,76 +323,50 @@ export function LandingPage() {
 
 	const features = [
 		{
-			icon: Code2,
-			title: t("features.smartorg.title"),
-			description: t("features.smartorg.desc"),
+			icon: FolderKanban,
+			title: "Smart Organization",
+			description:
+				"Create unlimited groups with custom categories. Nest groups within groups for ultimate flexibility in managing your YouTube subscriptions.",
 			color: "from-blue-500 to-cyan-500",
-			bgColor:
-				"bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20",
+			badge: "Core",
 		},
 		{
-			icon: GitBranch,
-			title: t("features.collaboration.title"),
-			description: t("features.collaboration.desc"),
+			icon: Share2,
+			title: "Share & Collaborate",
+			description:
+				"Generate shareable links to let others view or copy your groups. Perfect for content creators, teams, and communities.",
+			color: "from-purple-500 to-pink-500",
+			badge: "Popular",
+		},
+		{
+			icon: Users,
+			title: "Team Permissions",
+			description:
+				"Control access with granular permissions. Assign view-only, editor, or admin roles to manage who can modify your groups.",
 			color: "from-green-500 to-emerald-500",
-			bgColor:
-				"bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20",
+			badge: "Pro",
 		},
 		{
-			icon: Server,
-			title: t("features.youtube.title"),
-			description: t("features.youtube.desc"),
-			color: "from-yellow-500 to-orange-500",
-			bgColor:
-				"bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20",
+			icon: Layers,
+			title: "Bulk Operations",
+			description:
+				"Save time with powerful batch actions. Add, remove, or move multiple channels across groups in seconds.",
+			color: "from-amber-500 to-orange-500",
 		},
 		{
-			icon: Database,
-			title: t("features.team.title"),
-			description: t("features.team.desc"),
+			icon: Zap,
+			title: "Extension Integration",
+			description:
+				"Our browser extension lets you add channels directly from YouTube. One-click organization while you browse.",
 			color: "from-red-500 to-pink-500",
-			bgColor:
-				"bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950/20 dark:to-pink-950/20",
-		},
-		{
-			icon: Monitor,
-			title: t("features.responsive.title"),
-			description: t("features.responsive.desc"),
-			color: "from-indigo-500 to-blue-500",
-			bgColor:
-				"bg-gradient-to-br from-indigo-50 to-blue-500 dark:from-indigo-950/20 dark:to-blue-950/20",
-		},
-		{
-			icon: Monitor,
-			title: t("features.integrated.title"),
-			description: t("features.integrated.desc"),
-			color: "from-indigo-500 to-blue-500",
-			bgColor:
-				"bg-gradient-to-br from-indigo-50 to-blue-500 dark:from-indigo-950/20 dark:to-blue-950/20",
-		},
-	];
-
-	const integrations = [
-		{
-			name: "Crunchyroll",
-			description: t("integrations.crunchyroll.desc"),
-			icon: "streamline-logos:crunchyroll-logo-block",
 			badge: "New",
-			color: "from-orange-500 to-red-500",
 		},
 		{
-			name: "YouTube API",
-			description: t("integrations.youtube.desc"),
-			icon: Youtube,
-			badge: "Active",
-			color: "from-red-500 to-red-600",
-		},
-		{
-			name: "Groupshelf",
-			description: t("integrations.export.desc"),
-			icon: BookAIcon,
-			badge: "Coming soon",
-			color: "from-blue-500 to-indigo-500",
+			icon: Globe,
+			title: "Works Everywhere",
+			description:
+				"Access your organized channels from any device. Web app and browser extensions for Chrome, Firefox, and Safari.",
+			color: "from-indigo-500 to-blue-500",
 		},
 	];
 
@@ -149,161 +374,292 @@ export function LandingPage() {
 		{
 			name: "Alex Johnson",
 			role: "Content Creator",
-			avatar: "/placeholder.svg?height=40&width=40",
-			content: t("testimonials.alex.content"),
+			content:
+				"Groupify has completely transformed how I manage my YouTube subscriptions. I can finally keep my educational content separate from entertainment!",
 			rating: 5,
-			company: "@alexcreates",
+			avatar: "/placeholder.svg",
 		},
 		{
 			name: "Sarah Chen",
-			role: "Digital Marketing Manager",
-			avatar: "/placeholder.svg?height=40&width=40",
-			content: t("testimonials.sarah.content"),
+			role: "Marketing Manager",
+			content:
+				"The ability to share curated groups with my team has been a game-changer. We can quickly share industry insights and competitor analysis.",
 			rating: 5,
-			company: "Digital Boost Agency",
+			avatar: "/placeholder.svg",
 		},
 		{
 			name: "Mike Rodriguez",
 			role: "YouTube Strategist",
-			avatar: "/placeholder.svg?height=40&width=40",
-			content: t("testimonials.mike.content"),
+			content:
+				"I have tried many tools, but Groupify is the only one that actually understands how content creators work. The nested groups feature is brilliant!",
 			rating: 5,
-			company: "Growth Labs",
+			avatar: "/placeholder.svg",
 		},
 	];
 
 	const pricingPlans = [
 		{
-			name: t("pricing.free.name"),
+			name: "Free",
 			price: "$0",
 			period: "forever",
-			description: t("pricing.free.desc"),
+			description: "Perfect for getting started",
 			features: [
 				"Up to 3 groups",
 				"Up to 20 channels",
-				"Create anime groups",
+				"Basic organization",
 				"Community support",
 			],
-			cta: t("pricing.getstarted"),
+			cta: "Get Started Free",
 			popular: false,
-			color: "border-border",
 		},
 		{
-			name: t("pricing.pro.name"),
+			name: "Pro",
 			price: "$3.99",
 			period: "month",
-			description: t("pricing.pro.desc"),
+			description: "Best for content creators",
 			features: [
 				"Up to 10 groups",
-				"Up to 1000 channels",
+				"Up to 1,000 channels",
 				"Create subgroups",
-				"Create anime groups",
-				"Create new categories",
 				"Share groups with others",
+				"Priority support",
 			],
-			cta: t("pricing.getstarted"),
+			cta: "Start Pro Trial",
 			popular: true,
-			color: "border-primary shadow-lg shadow-primary/25",
 		},
 		{
-			name: t("pricing.business.name"),
+			name: "Business",
 			price: "$9.99",
 			period: "month",
-			description: t("pricing.business.desc"),
+			description: "For teams and agencies",
 			features: [
-				"Everything from free",
-				"Everything from pro",
 				"Unlimited groups",
 				"Unlimited channels",
+				"Team collaboration",
+				"Custom categories",
 				"Priority support",
-				"Access to Groupshelf",
+				"API access",
 			],
-			cta: t("pricing.getstarted"),
+			cta: "Get Business",
 			popular: false,
-			color: "border-border",
 		},
 	];
 
 	const stats = [
-		{ label: t("stats.activeusers"), value: "10,000+", icon: Users },
-		{ label: t("stats.channelsmanaged"), value: "500K+", icon: Youtube },
-		{ label: t("stats.groupscreated"), value: "50K+", icon: FolderKanban },
-		{ label: t("stats.uptime"), value: "99.9%", icon: TrendingUp },
+		{ label: "Active Users", value: "10,000+", icon: Users },
+		{ label: "Channels Managed", value: "500K+", icon: Youtube },
+		{ label: "Groups Created", value: "50K+", icon: FolderKanban },
+		{ label: "Uptime", value: "99.9%", icon: Clock },
 	];
 
 	return (
-		<div className="min-h-screen bg-background relative">
-			<TechBackground />
+		<div className="min-h-screen bg-background relative overflow-hidden">
+			<AnimatedBackground />
 
 			<MainNavbar />
 
 			{/* Hero Section */}
-			<section className="relative min-h-screen flex items-center overflow-hidden">
-				{/* Background Elements */}
-				<div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950/50 dark:via-blue-950/30 dark:to-indigo-950/50"></div>
-				<div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl"></div>
-				<div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
+			<section className="relative min-h-screen flex items-center pt-20">
+				<div className="absolute inset-0 bg-gradient-to-br from-red-50/50 via-white to-pink-50/50 dark:from-red-950/20 dark:via-background dark:to-pink-950/20" />
 
-				<div className="container mx-auto px-4 relative w-full">
-					<div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
-						<div className="space-y-8">
+				<div className="container mx-auto px-4 relative">
+					<div className="grid lg:grid-cols-2 gap-12 items-center">
+						<div className="space-y-8 max-w-2xl">
 							<div className="space-y-6">
 								<Badge
 									variant="outline"
-									className="w-fit border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300 font-mono"
+									className="w-fit border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
 								>
-									<Rocket className="mr-2 h-3 w-3" />
-									{t("hero.badge")}
+									<Sparkles className="mr-1 h-3 w-3" />
+									Now with Browser Extension
 								</Badge>
-								<h1 className="text-4xl lg:text-7xl font-bold tracking-tight">
-									{t("hero.title")
-										.split("YouTube")
-										.map((part, index) => {
-											const key = `title-part-${index}`;
-											return (
-												<span key={key}>
-													{part}
-													{index === 0 && (
-														<span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-mono">
-															YouTube
-														</span>
-													)}
-												</span>
-											);
-										})}
+
+								<h1 className="text-5xl lg:text-7xl font-bold tracking-tight">
+									Organize Your{" "}
+									<span className="bg-gradient-to-r from-red-500 via-pink-500 to-orange-500 bg-clip-text text-transparent">
+										YouTube
+									</span>{" "}
+									Like Never Before
 								</h1>
-								<p className="text-xl lg:text-2xl text-muted-foreground max-w-[600px] leading-relaxed">
-									{t("hero.subtitle")}
+
+								<p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+									Groupify helps you organize, manage, and share your YouTube
+									subscriptions. Create custom groups, collaborate with teams,
+									and never lose track of your favorite channels again.
 								</p>
 							</div>
 
 							<div className="flex flex-col sm:flex-row gap-4">
 								<Button
 									size="lg"
-									variant="ghost"
+									className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg shadow-red-500/25 px-8 py-6 text-lg"
 									asChild
-									className="h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg shadow-blue-500/25 text-lg px-8 py-6 font-mono"
 								>
 									<Link to="/register">
-										{t("hero.starttrial")}
-										<ArrowRight className="ml-2 h-4 w-4" />
+										Start Free Trial
+										<ArrowRight className="ml-2 h-5 w-5" />
 									</Link>
 								</Button>
 								<Button
 									size="lg"
-									variant="secondary"
+									variant="outline"
+									className="px-8 py-6 text-lg"
 									asChild
-									className="h-10 text-lg px-8 py-6 hover:bg-accent font-mono"
 								>
-									<Link
-										to="/"
+									<a
 										href="https://youtu.be/Hz-F6q0SZqU"
+										target="_blank"
+										rel="noopener noreferrer"
 									>
-										<Play className="mr-2 h-4 w-4" />
-										{t("hero.watchdemo")}
-									</Link>
+										<Play className="mr-2 h-5 w-5" />
+										Watch Demo
+									</a>
 								</Button>
-								<div className="flex items-center gap-3">
+							</div>
+
+							<div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+								{[
+									"No credit card required",
+									"14-day free trial",
+									"Cancel anytime",
+								].map((item) => (
+									<div key={item} className="flex items-center gap-2">
+										<CheckCircle className="h-4 w-4 text-green-500" />
+										<span>{item}</span>
+									</div>
+								))}
+							</div>
+
+							{/* Stats */}
+							<div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8 border-t">
+								{stats.map((stat) => (
+									<div key={stat.label} className="text-center">
+										<div className="text-2xl font-bold text-foreground">
+											{stat.value}
+										</div>
+										<div className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+											<stat.icon className="h-3 w-3" />
+											{stat.label}
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+
+						{/* Hero Visual */}
+						<div className="hidden lg:block relative">
+							<div className="relative">
+								<div className="absolute -inset-4 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-3xl blur-2xl" />
+								<div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 border">
+									<div className="flex items-center gap-2 mb-6">
+										<div className="flex gap-1.5">
+											<div className="w-3 h-3 rounded-full bg-red-500" />
+											<div className="w-3 h-3 rounded-full bg-yellow-500" />
+											<div className="w-3 h-3 rounded-full bg-green-500" />
+										</div>
+										<div className="ml-4 text-sm text-muted-foreground">
+											Groupify Dashboard
+										</div>
+									</div>
+
+									{/* Mock Dashboard UI */}
+									<div className="space-y-3">
+										{[
+											{
+												name: "Tech Reviews",
+												channels: 12,
+												color: "bg-blue-500",
+											},
+											{
+												name: "Cooking",
+												channels: 8,
+												color: "bg-orange-500",
+											},
+											{
+												name: "Gaming",
+												channels: 15,
+												color: "bg-purple-500",
+											},
+										].map((group) => (
+											<div
+												key={group.name}
+												className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
+											>
+												<div
+													className={cn(
+														"w-10 h-10 rounded-lg flex items-center justify-center",
+														group.color,
+													)}
+												>
+													<FolderKanban className="h-5 w-5 text-white" />
+												</div>
+												<div className="flex-1">
+													<div className="font-medium">{group.name}</div>
+													<div className="text-xs text-muted-foreground">
+														{group.channels} channels
+													</div>
+												</div>
+												<Share2 className="h-4 w-4 text-muted-foreground" />
+											</div>
+										))}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Features Section */}
+			<section className="py-24 lg:py-32 relative">
+				<div className="container mx-auto px-4">
+					<div className="text-center max-w-3xl mx-auto mb-16">
+						<Badge
+							variant="outline"
+							className="mb-4 border-red-200 bg-red-50 text-red-700"
+						>
+							Features
+						</Badge>
+						<h2 className="text-3xl lg:text-5xl font-bold mb-4">
+							Everything You Need to{" "}
+							<span className="text-red-500">Organize YouTube</span>
+						</h2>
+						<p className="text-xl text-muted-foreground">
+							Powerful features designed for content creators, teams, and
+							YouTube enthusiasts
+						</p>
+					</div>
+
+					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{features.map((feature, index) => (
+							<FeatureCard
+								key={feature.title}
+								feature={feature}
+								index={index}
+							/>
+						))}
+					</div>
+				</div>
+			</section>
+
+			{/* Browser Extension Section */}
+			<section className="py-24 bg-gradient-to-br from-red-500/5 to-pink-500/5">
+				<div className="container mx-auto px-4">
+					<div className="grid lg:grid-cols-2 gap-12 items-center">
+						<div className="space-y-6">
+							<Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
+								<Zap className="mr-1 h-3 w-3" />
+								Browser Extension
+							</Badge>
+							<h2 className="text-3xl lg:text-4xl font-bold">
+								Add Channels While You Browse
+							</h2>
+							<p className="text-lg text-muted-foreground">
+								Our browser extension seamlessly integrates with YouTube. When
+								you find a channel you want to save, just click the Groupify
+								icon and add it to any group instantly.
+							</p>
+							<div className="flex items-center gap-3">
 									<Button
 										variant="outline"
 										size="icon"
@@ -337,379 +693,135 @@ export function LandingPage() {
 											<IconViewer icon="logos:safari" className="h-6 w-6" />
 										</a>
 									</Button>
-								</div>							</div>
-
-							<div className="flex items-center gap-8 text-sm text-muted-foreground">
-								<div className="flex items-center gap-2">
-									<CheckCircle className="h-4 w-4 text-green-500" />
-									<span className="font-mono">{t("hero.freetrial")}</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<CheckCircle className="h-4 w-4 text-green-500" />
-									<span className="font-mono">{t("hero.nocreditcard")}</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<CheckCircle className="h-4 w-4 text-green-500" />
-									<span className="font-mono">{t("hero.cancelanytime")}</span>
-								</div>
-							</div>
-
-							{/* Stats */}
-							<div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
-								{stats.map((stat, index) => {
-									const key = `stat-${stat.label}-${index}`;
-									return (
-										<div key={key} className="text-center">
-											<div className="flex items-center justify-center mb-2">
-												<stat.icon className="h-5 w-5 text-muted-foreground" />
-											</div>
-											<div className="text-2xl font-bold text-foreground font-mono">
-												{stat.value}
-											</div>
-											<div className="text-sm text-muted-foreground font-mono">
-												{stat.label}
-											</div>
-										</div>
-									);
-								})}
-							</div>
+								</div>	
 						</div>
-
 						<div className="relative">
-							<div className="absolute -top-6 -right-6 h-32 w-32 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-full blur-2xl animate-pulse"></div>
-							<div className="absolute -bottom-6 -left-6 h-40 w-40 bg-gradient-to-br from-cyan-500/30 to-pink-500/30 rounded-full blur-2xl animate-pulse delay-1000"></div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			{/* Features Section */}
-			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
-			<section id="features" className="py-20 lg:py-32">
-				<div className="container mx-auto px-4">
-					<div className="text-center space-y-4 mb-16">
-						<Badge variant="outline" className="mb-4 font-mono">
-							{t("features.badge")}
-						</Badge>
-						<h2 className="text-3xl lg:text-5xl font-bold font-mono">
-							{t("features.title")}
-						</h2>
-						<p className="text-xl text-muted-foreground max-w-[600px] mx-auto">
-							{t("features.subtitle")}
-						</p>
-					</div>
-
-					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-						{features.map((feature, index) => {
-							const key = `feature-${feature.title}-${index}`;
-							return (
-								<Card
-									key={key}
-									className="group border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden"
-								>
-									<div className={`h-2 ${feature.bgColor}`}></div>
-									<CardHeader className="pb-4">
-										<div
-											className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
-										>
-											<feature.icon className="h-7 w-7 text-white" />
+							<div className="absolute -inset-4 bg-gradient-to-r from-red-500/10 to-pink-500/10 rounded-3xl blur-2xl" />
+							<div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-8 border">
+								<div className="flex items-center gap-4 mb-6">
+									<div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center">
+										<Youtube className="h-6 w-6 text-white" />
+									</div>
+									<div>
+										<div className="font-semibold">Marques Brownlee</div>
+										<div className="text-sm text-muted-foreground">
+											17.5M subscribers
 										</div>
-										<CardTitle className="text-xl group-hover:text-primary transition-colors font-mono">
-											{feature.title}
-										</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<CardDescription className="text-base leading-relaxed">
-											{feature.description}
-										</CardDescription>
-									</CardContent>
-								</Card>
-							);
-						})}
-					</div>
-				</div>
-			</section>
-
-			{/* Integrations Section */}
-			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
-			<section id="integrations" className="relative py-20 lg:py-32 bg-background overflow-hidden">
-				{/* Optional grid background effect */}
-				<div className="absolute inset-0 pointer-events-none bg-grid-small bg-muted/5"></div>
-
-				<div className="relative container mx-auto px-4">
-					{/* Header */}
-					<div className="text-center space-y-4 mb-20">
-						<Badge variant="secondary" className="mb-4 font-mono uppercase tracking-wide text-xs">
-							{t("integrations.badge")}
-						</Badge>
-						<h2 className="text-4xl lg:text-5xl font-bold font-mono text-white">
-							{t("integrations.title")}
-						</h2>
-						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-							{t("integrations.subtitle")}
-						</p>
-					</div>
-
-					{/* Cards Grid */}
-					<div className="grid md:grid-cols-3 gap-10">
-						{integrations.map((integration, index) => {
-							const key = `integration-${integration.name}-${index}`;
-							return (
-								<Card
-									key={key}
-									className={cn(
-										"group relative border border-white/10 bg-white/5 backdrop-blur-lg rounded-xl p-6 text-center transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl"
-									)}
-								>
-									{/* Gradient top border */}
-									<div
-										className={cn(
-											"h-1 rounded-full mb-6",
-											"bg-gradient-to-r",
-											integration.color
-										)}
-									/>
-
-									{/* Icon */}
-									<div className="mx-auto w-16 h-16 rounded-xl bg-muted/20 backdrop-blur-sm flex items-center justify-center mb-5 border border-white/10 group-hover:scale-110 transition-transform duration-300 shadow-sm">
-										{typeof integration.icon === "string" ? (
-											<IconViewer className="text-3xl" icon={integration.icon} />
-										) : (
-											<integration.icon className="h-8 w-8 text-white" />
-										)}
 									</div>
-
-									{/* Title and Badge */}
-									<div className="flex items-center justify-center gap-2 mb-2">
-										<CardTitle className="text-lg font-mono text-white group-hover:text-primary transition-colors">
-											{integration.name}
-										</CardTitle>
-										<Badge
-											variant={
-												integration.badge === "New"
-													? "default"
-													: integration.badge === "Coming soon"
-														? "outline"
-														: "secondary"
-											}
-											className="text-xs font-mono px-2 py-0.5"
-										>
-											{integration.badge}
-										</Badge>
+								</div>
+								<div className="space-y-3">
+									<div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-red-500/10 to-pink-500/10 border border-red-200">
+										<FolderKanban className="h-5 w-5 text-red-500" />
+										<span className="flex-1 font-medium">
+											Add to Tech Reviews
+										</span>
+										<CheckCircle className="h-5 w-5 text-green-500" />
 									</div>
-
-									{/* Description */}
-									<CardDescription className="text-sm text-muted-foreground">
-										{integration.description}
-									</CardDescription>
-								</Card>
-							);
-						})}
+								</div>
+								<p className="text-sm text-muted-foreground mt-4 text-center">
+									Channel added to Tech Reviews group
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>
 
 			{/* Testimonials Section */}
-			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
-			<section id="testimonials" className="py-20 lg:py-32">
+			<section className="py-24 lg:py-32">
 				<div className="container mx-auto px-4">
-					<div className="text-center space-y-4 mb-16">
-						<Badge variant="outline" className="mb-4 font-mono">
-							{t("testimonials.badge")}
+					<div className="text-center max-w-3xl mx-auto mb-16">
+						<Badge
+							variant="outline"
+							className="mb-4 border-red-200 bg-red-50 text-red-700"
+						>
+							Testimonials
 						</Badge>
-						<h2 className="text-3xl lg:text-5xl font-bold font-mono">
-							{t("testimonials.title")}
+						<h2 className="text-3xl lg:text-5xl font-bold mb-4">
+							Loved by <span className="text-red-500">Content Creators</span>
 						</h2>
-						<p className="text-xl text-muted-foreground max-w-[600px] mx-auto">
-							{t("testimonials.subtitle")}
+						<p className="text-xl text-muted-foreground">
+							See what our users are saying about Groupify
 						</p>
 					</div>
 
-					<div className="grid md:grid-cols-3 gap-8">
-						{testimonials.map((testimonial, index) => {
-							const key = `testimonial-${testimonial.name}-${index}`;
-							return (
-								<Card
-									key={key}
-									className="group hover:shadow-2xl transition-all duration-300 hover:scale-105 border-0 shadow-lg"
-								>
-									<CardHeader className="pb-4">
-										<div className="flex items-center gap-4 mb-4">
-											<div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
-												<span className="text-lg font-medium text-white font-mono">
-													{testimonial.name.charAt(0)}
-												</span>
-											</div>
-											<div>
-												<CardTitle className="text-base group-hover:text-primary transition-colors font-mono">
-													{testimonial.name}
-												</CardTitle>
-												<CardDescription className="text-sm">
-													{testimonial.role}
-												</CardDescription>
-												<CardDescription className="text-xs text-primary font-mono">
-													{testimonial.company}
-												</CardDescription>
-											</div>
-										</div>
-										<div className="flex gap-1">
-											{Array.from({ length: testimonial.rating }).map(
-												(_, i) => (
-													<Star
-														key={`star-${testimonial.name}-${i}`}
-														className="h-4 w-4 fill-yellow-400 text-yellow-400"
-													/>
-												),
-											)}
-										</div>
-									</CardHeader>
-									<CardContent>
-										<p className="text-muted-foreground italic leading-relaxed">
-											"{testimonial.content}"
-										</p>
-									</CardContent>
-								</Card>
-							);
-						})}
+					<div className="grid md:grid-cols-3 gap-6">
+						{testimonials.map((testimonial) => (
+							<TestimonialCard
+								key={testimonial.name}
+								testimonial={testimonial}
+							/>
+						))}
 					</div>
 				</div>
 			</section>
 
 			{/* Pricing Section */}
-			{/** biome-ignore lint/correctness/useUniqueElementIds: <need id to link to this section> */}
-			<section id="pricing" className="py-20 lg:py-32 bg-muted/50">
+			<section className="py-24 bg-gradient-to-br from-slate-50 to-white dark:from-slate-950 dark:to-background">
 				<div className="container mx-auto px-4">
-					<div className="text-center space-y-4 mb-16">
-						<Badge variant="outline" className="mb-4 font-mono">
-							{t("pricing.badge")}
+					<div className="text-center max-w-3xl mx-auto mb-16">
+						<Badge
+							variant="outline"
+							className="mb-4 border-red-200 bg-red-50 text-red-700"
+						>
+							Pricing
 						</Badge>
-						<h2 className="text-3xl lg:text-5xl font-bold font-mono">
-							{t("pricing.title")}
+						<h2 className="text-3xl lg:text-5xl font-bold mb-4">
+							Simple, Transparent <span className="text-red-500">Pricing</span>
 						</h2>
-						<p className="text-xl text-muted-foreground max-w-[600px] mx-auto">
-							{t("pricing.subtitle")}
+						<p className="text-xl text-muted-foreground">
+							Choose the plan that fits your needs. All plans include a 14-day
+							free trial.
 						</p>
 					</div>
 
-					<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-						{pricingPlans.map((plan, index) => (
-							<Card
-								key={plan.name}
-								className={cn(
-									"relative group hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden",
-									"flex flex-col h-full",
-									plan.color,
-									plan.popular && "ring-2 ring-primary"
-								)}
-							>
-								{/* Popular Badge */}
-								{plan.popular && (
-									<div className="absolute left-1/2 -translate-x-1/2">
-										<Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
-											{t("pricing.popular")}
-										</Badge>
-									</div>
-								)}
-
-								{/* Content */}
-								<div className="flex-1 flex flex-col">
-									<CardHeader className="text-center pb-4">
-										<CardTitle className="text-2xl group-hover:text-primary transition-colors">
-											{plan.name}
-										</CardTitle>
-										<div className="space-y-2">
-											<div className="text-4xl lg:text-5xl font-bold">
-												{plan.price}
-												<span className="text-lg font-normal text-muted-foreground">
-													/{plan.period}
-												</span>
-											</div>
-											<CardDescription className="mt-2">
-												{plan.description}
-											</CardDescription>
-										</div>
-									</CardHeader>
-
-									<CardContent className="flex-1 space-y-6">
-										<ul className="space-y-3">
-											{plan.features.map((feature, i) => (
-												<li
-													key={`feature-${index}-${feature}`}
-													className="flex items-center gap-3"
-												>
-													<CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-													<span className="text-sm">{feature}</span>
-												</li>
-											))}
-										</ul>
-									</CardContent>
-								</div>
-
-								{/* Footer */}
-								<CardFooter>
-									<Button
-										className={cn(
-											"w-full text-base py-6",
-											plan.popular
-												? "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/25"
-												: ""
-										)}
-										variant={plan.popular ? "default" : "outline"}
-										asChild
-									>
-										<Link to="/register">
-											{plan.cta}
-											<ChevronRight className="ml-2 h-4 w-4" />
-										</Link>
-									</Button>
-								</CardFooter>
-							</Card>
+					<div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+						{pricingPlans.map((plan) => (
+							<PricingCard key={plan.name} plan={plan} />
 						))}
 					</div>
 				</div>
 			</section>
 
 			{/* CTA Section */}
-			<section className="py-20 lg:py-32 bg-gradient-to-br from-red-500 via-pink-500 to-orange-500 text-white relative overflow-hidden">
-				<div className="absolute inset-0 bg-black/10"></div>
-				<div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-				<div className="absolute bottom-20 right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+			<section className="py-24 relative overflow-hidden">
+				<div className="absolute inset-0 bg-gradient-to-r from-red-500 via-pink-500 to-orange-500" />
+				<div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRoLTJ2LTRoMnY0em0wLTZ2LTRoLTJ2NGgyem0tNiA2aC00djJoNHYtMnptMC02di00aC00djRoNHptLTYgNmgtNHYyaDR2LTJ6bTAtNnYtNGgtNHY0aDR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
 
-				<div className="container mx-auto px-4 text-center relative">
-					<div className="space-y-8 max-w-4xl mx-auto">
-						<Badge
-							variant="outline"
-							className="border-white/20 bg-white/10 text-white mb-4"
-						>
-							<Rocket className="mr-2 h-3 w-3" />
-							{t("cta.badge")}
-						</Badge>
-						<h2 className="text-3xl lg:text-6xl font-bold">{t("cta.title")}</h2>
-						<p className="text-xl lg:text-2xl opacity-90 leading-relaxed">
-							{t("cta.subtitle")}
+				<div className="container mx-auto px-4 relative">
+					<div className="text-center max-w-3xl mx-auto">
+						<h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
+							Ready to Organize Your YouTube?
+						</h2>
+						<p className="text-xl text-white/80 mb-8">
+							Join thousands of content creators and teams who trust Groupify to
+							manage their YouTube subscriptions.
 						</p>
-						<div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+						<div className="flex flex-col sm:flex-row gap-4 justify-center">
 							<Button
 								size="lg"
 								variant="secondary"
+								className="bg-white text-gray-900 hover:bg-gray-100 shadow-xl px-8 py-6 text-lg"
 								asChild
-								className="text-lg px-8 py-6 bg-white text-gray-900 hover:bg-gray-100 shadow-xl"
 							>
 								<Link to="/register">
-									{t("hero.starttrial")}
+									Get Started Free
 									<ArrowRight className="ml-2 h-5 w-5" />
 								</Link>
 							</Button>
 							<Button
 								size="lg"
 								variant="outline"
-								className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 backdrop-blur-sm"
+								className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
 								asChild
 							>
-								<Link to="/" href="https://youtu.be/Hz-F6q0SZqU">
-									<Play className="mr-2 h-5 w-5" />
-									{t("hero.watchdemo")}
-								</Link>
+								<a
+									href="https://discord.gg/Hp4MvPanwr"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									Join Community
+								</a>
 							</Button>
 						</div>
 					</div>
@@ -719,39 +831,67 @@ export function LandingPage() {
 			{/* Footer */}
 			<footer className="py-16 border-t bg-muted/30">
 				<div className="container mx-auto px-4">
-					<div className="grid md:grid-cols-3 gap-8">
+					<div className="grid md:grid-cols-4 gap-8 mb-12">
 						<div className="space-y-4">
 							<div className="flex items-center gap-2">
-								<Youtube className="h-6 w-6 text-red-500" />
+								<div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center">
+									<Youtube className="h-4 w-4 text-white" />
+								</div>
 								<span className="text-lg font-bold">Groupify</span>
 							</div>
-							<p className="text-muted-foreground text-sm">
-								{t("footer.description")}
+							<p className="text-sm text-muted-foreground">
+								The best way to organize, manage, and share your YouTube
+								subscriptions.
 							</p>
-							<div className="flex gap-4">
-								<a href="https://www.youtube.com/@scriptingarthur">
-									<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
-										<Youtube className="h-4 w-4" />
-									</div>
-								</a>
-								<a href="https://discord.gg/Hp4MvPanwr">
-									<div className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
-										<Icons.discord className="h-4 w-4" />
-									</div>
-								</a>
-								<div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-muted-foreground/20 transition-colors cursor-pointer">
-									<Icons.gitHub className="h-4 w-4" />
-								</div>
-							</div>
 						</div>
 
-						<div className="space-y-4">
-							<h3 className="font-semibold">{t("footer.support")}</h3>
+						<div>
+							<h3 className="font-semibold mb-4">Product</h3>
+							<ul className="space-y-2 text-sm text-muted-foreground">
+								<li>
+									<Link
+										to="/dashboard"
+										className="hover:text-foreground transition-colors"
+									>
+										Dashboard
+									</Link>
+								</li>
+								<li>
+									<Link
+										to="/dashboard/groups"
+										className="hover:text-foreground transition-colors"
+									>
+										Groups
+									</Link>
+								</li>
+								<li>
+									<a
+										href="#features"
+										className="hover:text-foreground transition-colors"
+									>
+										Features
+									</a>
+								</li>
+								<li>
+									<a
+										href="#pricing"
+										className="hover:text-foreground transition-colors"
+									>
+										Pricing
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						<div>
+							<h3 className="font-semibold mb-4">Support</h3>
 							<ul className="space-y-2 text-sm text-muted-foreground">
 								<li>
 									<a
 										href="https://discord.gg/Hp4MvPanwr"
-										className="hover:text-foreground transition-colors hover:underline"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="hover:text-foreground transition-colors"
 									>
 										Help Center
 									</a>
@@ -759,7 +899,7 @@ export function LandingPage() {
 								<li>
 									<a
 										href="mailto:admin@groupify.dev"
-										className="hover:text-foreground transition-colors hover:underline"
+										className="hover:text-foreground transition-colors"
 									>
 										Contact
 									</a>
@@ -767,7 +907,9 @@ export function LandingPage() {
 								<li>
 									<a
 										href="https://discord.gg/Hp4MvPanwr"
-										className="hover:text-foreground transition-colors hover:underline"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="hover:text-foreground transition-colors"
 									>
 										Community
 									</a>
@@ -775,13 +917,13 @@ export function LandingPage() {
 							</ul>
 						</div>
 
-						<div className="space-y-4">
-							<h3 className="font-semibold">{t("footer.company")}</h3>
+						<div>
+							<h3 className="font-semibold mb-4">Legal</h3>
 							<ul className="space-y-2 text-sm text-muted-foreground">
 								<li>
 									<Link
 										to="/blog"
-										className="hover:text-foreground transition-colors hover:underline"
+										className="hover:text-foreground transition-colors"
 									>
 										Blog
 									</Link>
@@ -789,20 +931,39 @@ export function LandingPage() {
 								<li>
 									<Link
 										to="/privacy"
-										className="hover:text-foreground transition-colors hover:underline"
+										className="hover:text-foreground transition-colors"
 									>
-										Privacy
+										Privacy Policy
+									</Link>
+								</li>
+								<li>
+									<Link
+										to="/terms"
+										className="hover:text-foreground transition-colors"
+									>
+										Terms of Service
 									</Link>
 								</li>
 							</ul>
-							<a style={{ height: '46px' }} target="_blank"  rel="noopener noreferrer" href="https://acidtools.com">
-									<img src="https://acidtools.com/assets/images/badge-dark.png" style={{ height: '46px' }} alt="Acid Tools" />
-								</a>
 						</div>
 					</div>
 
-					<div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-						<p>&copy; 2025 Groupify. {t("footer.copyright")}</p>
+					<div className="pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-4">
+						<p className="text-sm text-muted-foreground">
+							© 2025 Groupify. All rights reserved.
+						</p>
+						<a
+							href="https://acidtools.com"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="opacity-80 hover:opacity-100 transition-opacity"
+						>
+							<img
+								src="https://acidtools.com/assets/images/badge-dark.png"
+								alt="Acid Tools"
+								className="h-10"
+							/>
+						</a>
 					</div>
 				</div>
 			</footer>
