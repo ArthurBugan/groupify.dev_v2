@@ -289,7 +289,7 @@ function RegisterPage() {
 
 								<div className="flex items-start space-x-3 py-2">
 									<Checkbox.Root
-										id="terms"
+										id={termsId}
 										checked={formData.agreeToTerms}
 										onCheckedChange={(checked) =>
 											handleInputChange("agreeToTerms", checked as boolean)
