@@ -74,7 +74,7 @@ export function AllChannelsTable() {
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 	const [adIndices, setAdIndices] = useState<number[]>([]);
 	// Fetch all groups
-	const { data: groupsData } = useGroups();
+	const { data: groupsData } = useGroups({limit: 100});
 	const { mutate: updateChannel } = useUpdateChannel();
 	const { mutate: deleteChannel, isPending: isDeletingChannel } =
 		useDeleteChannelMutation();
