@@ -21,6 +21,7 @@ import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/i
 import { Route as AppBlogIndexRouteImport } from './routes/_app/blog/index'
 import { Route as AppBlogSlugRouteImport } from './routes/_app/blog/$slug'
 import { Route as AppDashboardSettingsRouteRouteImport } from './routes/_app/dashboard/settings/route'
+import { Route as AppDashboardShareLinksIndexRouteImport } from './routes/_app/dashboard/share-links/index'
 import { Route as AppDashboardGroupsIndexRouteImport } from './routes/_app/dashboard/groups/index'
 import { Route as AppDashboardChannelsIndexRouteImport } from './routes/_app/dashboard/channels/index'
 import { Route as AppDashboardAnimesIndexRouteImport } from './routes/_app/dashboard/animes/index'
@@ -100,6 +101,12 @@ const AppDashboardSettingsRouteRoute =
   AppDashboardSettingsRouteRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AppDashboardRouteRoute,
+  } as any)
+const AppDashboardShareLinksIndexRoute =
+  AppDashboardShareLinksIndexRouteImport.update({
+    id: '/share-links/',
+    path: '/share-links/',
     getParentRoute: () => AppDashboardRouteRoute,
   } as any)
 const AppDashboardGroupsIndexRoute = AppDashboardGroupsIndexRouteImport.update({
@@ -231,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/animes': typeof AppDashboardAnimesIndexRoute
   '/dashboard/channels': typeof AppDashboardChannelsIndexRoute
   '/dashboard/groups': typeof AppDashboardGroupsIndexRoute
+  '/dashboard/share-links': typeof AppDashboardShareLinksIndexRoute
   '/dashboard/groups/$id': typeof AppDashboardGroupsIdIndexRoute
   '/dashboard/groups/new': typeof AppDashboardGroupsNewIndexRoute
   '/dashboard/settings/account': typeof AppDashboardSettingsAccountIndexRoute
@@ -263,6 +271,7 @@ export interface FileRoutesByTo {
   '/dashboard/animes': typeof AppDashboardAnimesIndexRoute
   '/dashboard/channels': typeof AppDashboardChannelsIndexRoute
   '/dashboard/groups': typeof AppDashboardGroupsIndexRoute
+  '/dashboard/share-links': typeof AppDashboardShareLinksIndexRoute
   '/dashboard/groups/$id': typeof AppDashboardGroupsIdIndexRoute
   '/dashboard/groups/new': typeof AppDashboardGroupsNewIndexRoute
   '/dashboard/settings/account': typeof AppDashboardSettingsAccountIndexRoute
@@ -297,6 +306,7 @@ export interface FileRoutesById {
   '/_app/dashboard/animes/': typeof AppDashboardAnimesIndexRoute
   '/_app/dashboard/channels/': typeof AppDashboardChannelsIndexRoute
   '/_app/dashboard/groups/': typeof AppDashboardGroupsIndexRoute
+  '/_app/dashboard/share-links/': typeof AppDashboardShareLinksIndexRoute
   '/_app/dashboard/groups/$id/': typeof AppDashboardGroupsIdIndexRoute
   '/_app/dashboard/groups/new/': typeof AppDashboardGroupsNewIndexRoute
   '/_app/dashboard/settings/account/': typeof AppDashboardSettingsAccountIndexRoute
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/dashboard/animes'
     | '/dashboard/channels'
     | '/dashboard/groups'
+    | '/dashboard/share-links'
     | '/dashboard/groups/$id'
     | '/dashboard/groups/new'
     | '/dashboard/settings/account'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/dashboard/animes'
     | '/dashboard/channels'
     | '/dashboard/groups'
+    | '/dashboard/share-links'
     | '/dashboard/groups/$id'
     | '/dashboard/groups/new'
     | '/dashboard/settings/account'
@@ -397,6 +409,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard/animes/'
     | '/_app/dashboard/channels/'
     | '/_app/dashboard/groups/'
+    | '/_app/dashboard/share-links/'
     | '/_app/dashboard/groups/$id/'
     | '/_app/dashboard/groups/new/'
     | '/_app/dashboard/settings/account/'
@@ -514,6 +527,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/dashboard/settings'
       preLoaderRoute: typeof AppDashboardSettingsRouteRouteImport
+      parentRoute: typeof AppDashboardRouteRoute
+    }
+    '/_app/dashboard/share-links/': {
+      id: '/_app/dashboard/share-links/'
+      path: '/share-links'
+      fullPath: '/dashboard/share-links'
+      preLoaderRoute: typeof AppDashboardShareLinksIndexRouteImport
       parentRoute: typeof AppDashboardRouteRoute
     }
     '/_app/dashboard/groups/': {
@@ -681,6 +701,7 @@ interface AppDashboardRouteRouteChildren {
   AppDashboardAnimesIndexRoute: typeof AppDashboardAnimesIndexRoute
   AppDashboardChannelsIndexRoute: typeof AppDashboardChannelsIndexRoute
   AppDashboardGroupsIndexRoute: typeof AppDashboardGroupsIndexRoute
+  AppDashboardShareLinksIndexRoute: typeof AppDashboardShareLinksIndexRoute
   AppDashboardGroupsIdIndexRoute: typeof AppDashboardGroupsIdIndexRoute
   AppDashboardGroupsNewIndexRoute: typeof AppDashboardGroupsNewIndexRoute
   AppDashboardAnimesChangeGroupIdIndexRoute: typeof AppDashboardAnimesChangeGroupIdIndexRoute
@@ -698,6 +719,7 @@ const AppDashboardRouteRouteChildren: AppDashboardRouteRouteChildren = {
   AppDashboardAnimesIndexRoute: AppDashboardAnimesIndexRoute,
   AppDashboardChannelsIndexRoute: AppDashboardChannelsIndexRoute,
   AppDashboardGroupsIndexRoute: AppDashboardGroupsIndexRoute,
+  AppDashboardShareLinksIndexRoute: AppDashboardShareLinksIndexRoute,
   AppDashboardGroupsIdIndexRoute: AppDashboardGroupsIdIndexRoute,
   AppDashboardGroupsNewIndexRoute: AppDashboardGroupsNewIndexRoute,
   AppDashboardAnimesChangeGroupIdIndexRoute:
