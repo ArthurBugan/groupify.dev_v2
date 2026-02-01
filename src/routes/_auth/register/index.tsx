@@ -1,9 +1,17 @@
 "use client";
 
-// import { Checkbox } from "@/components/ui/checkbox";
 import { Checkbox } from "@base-ui/react/checkbox";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, EyeOff } from "lucide-react";
+import {
+	ArrowRight,
+	Check,
+	Eye,
+	EyeOff,
+	Lock,
+	Mail,
+	Sparkles,
+	User,
+} from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
 import { useLanguage } from "@/components/language-provider";
@@ -12,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
@@ -21,18 +29,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useRegisterMutation } from "@/hooks/mutations/useAuthMutations";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_auth/register/")({
 	component: RegisterPage,
 });
 
-const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;;
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 function RegisterPage() {
 	const { t } = useLanguage();
 	const registerMutation = useRegisterMutation();
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const termsId = useId();
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -42,7 +52,6 @@ function RegisterPage() {
 	});
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
-	// Create validation schema with translated messages
 	const registerSchema = z
 		.object({
 			name: z
@@ -55,20 +64,19 @@ function RegisterPage() {
 				.min(1, { message: t("register.validation.password.required") })
 				.min(6, { message: t("register.validation.password.min") }),
 			encryptedPassword: z.string().min(1, {
-				message: t("register.validation.encryptedPassword.required"),
+				message: t("register.validation.confirmpassword.required"),
 			}),
 			agreeToTerms: z.boolean().refine((val) => val === true, {
 				message: "You must agree to the terms and conditions",
 			}),
 		})
 		.refine((data) => data.password === data.encryptedPassword, {
-			message: t("register.validation.encryptedPassword.match"),
+			message: t("register.validation.confirmpassword.match"),
 			path: ["encryptedPassword"],
 		});
 
 	const handleInputChange = (field: string, value: string | boolean) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
-		// Clear error when user starts typing
 		if (errors[field]) {
 			setErrors((prev) => ({ ...prev, [field]: "" }));
 		}
@@ -80,8 +88,6 @@ function RegisterPage() {
 
 		try {
 			const validatedData = registerSchema.parse(formData);
-
-			// Use the register mutation
 			await registerMutation.mutateAsync({
 				name: validatedData.name,
 				email: validatedData.email,
@@ -106,246 +112,294 @@ function RegisterPage() {
 		}
 	};
 
-	const handleDiscordAuth = (e) => {
+	const handleDiscordAuth = (e: React.MouseEvent) => {
 		e.preventDefault();
 		window.location.href = `${VITE_BASE_URL}/auth/discord`;
 	};
 
-	const handleGoogleAuth = (e) => {
+	const handleGoogleAuth = (e: React.MouseEvent) => {
 		e.preventDefault();
 		window.location.href = `${VITE_BASE_URL}/auth/google`;
 	};
 
 	return (
-		<div className="min-h-screen bg-background flex flex-col">
+		<div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+			{/* Background decoration */}
+			<div className="absolute inset-0 bg-gradient-to-br from-red-50/50 via-white to-pink-50/50 dark:from-red-950/20 dark:via-background dark:to-pink-950/20" />
+			<div className="absolute top-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
+			<div className="absolute bottom-0 left-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+
 			<MainNavbar />
 
-			<div className="flex-1 flex items-center justify-center p-4">
-				<Card className="w-full max-w-md">
-					<CardHeader className="space-y-1">
-						<CardTitle className="text-2xl font-bold text-center">
+			<div className="flex-1 flex items-center justify-center px-4 py-12 relative">
+				<div className="w-full max-w-md space-y-6">
+					{/* Header */}
+					<div className="text-center space-y-2">
+						<div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-red-500/10 to-pink-500/10 text-red-600 dark:text-red-400 text-sm font-medium mb-4">
+							<Sparkles className="h-4 w-4" />
+							<span>Join Groupify</span>
+						</div>
+						<h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">
 							{t("register.title")}
-						</CardTitle>
-						<CardDescription className="text-center">
-							{t("register.description")}
-						</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<form onSubmit={handleSubmit} className="space-y-4">
-							{errors.message && (
-								<div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-									{errors.message}
+						</h1>
+						<p className="text-muted-foreground">{t("register.description")}</p>
+					</div>
+
+					<Card className="border-none shadow-2xl shadow-red-500/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
+						<CardContent className="pt-6">
+							<form onSubmit={handleSubmit} className="space-y-5">
+								{errors.message && (
+									<div className="p-3 text-sm text-red-600 bg-red-500/10 border border-red-500/20 rounded-lg">
+										{errors.message}
+									</div>
+								)}
+
+								<div className="space-y-2">
+									<Label htmlFor="name" className="text-sm font-medium">
+										{t("register.name")}
+									</Label>
+									<div className="relative">
+										<User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+										<Input
+											type="text"
+											placeholder={t("register.name.placeholder")}
+											value={formData.name}
+											onChange={(e) =>
+												handleInputChange("name", e.target.value)
+											}
+											className={cn(
+												"pl-10 h-12",
+												errors.name &&
+													"border-red-500 focus-visible:ring-red-500",
+											)}
+										/>
+									</div>
+									{errors.name && (
+										<p className="text-sm text-red-600">{errors.name}</p>
+									)}
 								</div>
-							)}
 
-							<div className="space-y-2">
-								<Label htmlFor="name">{t("register.name")}</Label>
-								<Input
-									id={useId()}
-									type="text"
-									placeholder={t("register.name.placeholder")}
-									value={formData.name}
-									onChange={(e) => handleInputChange("name", e.target.value)}
-									className={errors.name ? "border-destructive" : ""}
-								/>
-								{errors.name && (
-									<p className="text-sm text-destructive">{errors.name}</p>
-								)}
-							</div>
+								<div className="space-y-2">
+									<Label htmlFor="email" className="text-sm font-medium">
+										{t("register.email")}
+									</Label>
+									<div className="relative">
+										<Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+										<Input
+											type="email"
+											placeholder={t("register.email.placeholder")}
+											value={formData.email}
+											onChange={(e) =>
+												handleInputChange("email", e.target.value)
+											}
+											className={cn(
+												"pl-10 h-12",
+												errors.email &&
+													"border-red-500 focus-visible:ring-red-500",
+											)}
+										/>
+									</div>
+									{errors.email && (
+										<p className="text-sm text-red-600">{errors.email}</p>
+									)}
+								</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="email">{t("register.email")}</Label>
-								<Input
-									id={useId()}
-									type="email"
-									placeholder={t("register.email.placeholder")}
-									value={formData.email}
-									onChange={(e) => handleInputChange("email", e.target.value)}
-									className={errors.email ? "border-destructive" : ""}
-								/>
-								{errors.email && (
-									<p className="text-sm text-destructive">{errors.email}</p>
-								)}
-							</div>
+								<div className="space-y-2">
+									<Label htmlFor="password" className="text-sm font-medium">
+										{t("register.password")}
+									</Label>
+									<div className="relative">
+										<Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+										<Input
+											type={showPassword ? "text" : "password"}
+											placeholder={t("register.password.placeholder")}
+											value={formData.password}
+											onChange={(e) =>
+												handleInputChange("password", e.target.value)
+											}
+											className={cn(
+												"pl-10 pr-10 h-12",
+												errors.password &&
+													"border-red-500 focus-visible:ring-red-500",
+											)}
+										/>
+										<Button
+											type="button"
+											variant="ghost"
+											size="sm"
+											className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+											onClick={() => setShowPassword(!showPassword)}
+										>
+											{showPassword ? (
+												<EyeOff className="h-4 w-4 text-muted-foreground" />
+											) : (
+												<Eye className="h-4 w-4 text-muted-foreground" />
+											)}
+										</Button>
+									</div>
+									{errors.password && (
+										<p className="text-sm text-red-600">{errors.password}</p>
+									)}
+								</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="password">{t("register.password")}</Label>
-								<div className="relative">
-									<Input
-										id={useId()}
-										type={showPassword ? "text" : "password"}
-										placeholder={t("register.password.placeholder")}
-										value={formData.password}
-										onChange={(e) =>
-											handleInputChange("password", e.target.value)
-										}
-										className={
-											errors.password ? "border-destructive pr-10" : "pr-10"
-										}
-									/>
-									<button
-										type="button"
-										onClick={() => setShowPassword(!showPassword)}
-										className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+								<div className="space-y-2">
+									<Label
+										htmlFor="confirmPassword"
+										className="text-sm font-medium"
 									>
-										{showPassword ? (
-											<EyeOff className="h-4 w-4" />
-										) : (
-											<Eye className="h-4 w-4" />
-										)}
-									</button>
+										{t("register.confirmpassword")}
+									</Label>
+									<div className="relative">
+										<Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+										<Input
+											type={showConfirmPassword ? "text" : "password"}
+											placeholder={t("register.confirmpassword.placeholder")}
+											value={formData.encryptedPassword}
+											onChange={(e) =>
+												handleInputChange("encryptedPassword", e.target.value)
+											}
+											className={cn(
+												"pl-10 pr-10 h-12",
+												errors.encryptedPassword &&
+													"border-red-500 focus-visible:ring-red-500",
+											)}
+										/>
+										<Button
+											type="button"
+											variant="ghost"
+											size="sm"
+											className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+											onClick={() =>
+												setShowConfirmPassword(!showConfirmPassword)
+											}
+										>
+											{showConfirmPassword ? (
+												<EyeOff className="h-4 w-4 text-muted-foreground" />
+											) : (
+												<Eye className="h-4 w-4 text-muted-foreground" />
+											)}
+										</Button>
+									</div>
+									{errors.encryptedPassword && (
+										<p className="text-sm text-red-600">
+											{errors.encryptedPassword}
+										</p>
+									)}
 								</div>
-								{errors.password && (
-									<p className="text-sm text-destructive">{errors.password}</p>
-								)}
-							</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="confirmPassword">
-									{t("register.confirmpassword")}
-								</Label>
-								<div className="relative">
-									<Input
-										id={useId()}
-										type={showConfirmPassword ? "text" : "password"}
-										placeholder={t("register.confirmpassword.placeholder")}
-										value={formData.encryptedPassword}
-										onChange={(e) =>
-											handleInputChange("encryptedPassword", e.target.value)
-										}
-										className={
-											errors.confirmPassword
-												? "border-destructive pr-10"
-												: "pr-10"
-										}
-									/>
-									<button
-										type="button"
-										onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-										className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-									>
-										{showConfirmPassword ? (
-											<EyeOff className="h-4 w-4" />
-										) : (
-											<Eye className="h-4 w-4" />
-										)}
-									</button>
-								</div>
-								{errors.confirmPassword && (
-									<p className="text-sm text-destructive">
-										{errors.confirmPassword}
-									</p>
-								)}
-							</div>
-
-							<div className="flex items-center space-x-2">
-								<Label
-									htmlFor="terms"
-									className="flex items-center gap-2 text-base"
-								>
+								<div className="flex items-start space-x-3 py-2">
 									<Checkbox.Root
-										id={"terms"}
+										id={termsId}
 										checked={formData.agreeToTerms}
 										onCheckedChange={(checked) =>
 											handleInputChange("agreeToTerms", checked as boolean)
 										}
-										className="flex size-5 items-center justify-center rounded-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-800 data-[checked]:bg-gray-900 data-[unchecked]:border data-[unchecked]:border-gray-300"
+										className={cn(
+											"flex size-5 items-center justify-center rounded-md border-2 transition-colors mt-0.5",
+											formData.agreeToTerms
+												? "bg-gradient-to-r from-red-500 to-pink-500 border-red-500"
+												: "border-gray-300 hover:border-red-400",
+										)}
 									>
-										<Checkbox.Indicator className="flex text-gray-50 data-[unchecked]:hidden">
-											<svg
-												fill="currentcolor"
-												width="10"
-												height="10"
-												viewBox="0 0 10 10"
-												aria-hidden="true"
-											>
-												<path d="M9.1603 1.12218C9.50684 1.34873 9.60427 1.81354 9.37792 2.16038L5.13603 8.66012C5.01614 8.8438 4.82192 8.96576 4.60451 8.99384C4.3871 9.02194 4.1683 8.95335 4.00574 8.80615L1.24664 6.30769C0.939709 6.02975 0.916013 5.55541 1.19372 5.24822C1.47142 4.94102 1.94536 4.91731 2.2523 5.19524L4.36085 7.10461L8.12299 1.33999C8.34934 0.993152 8.81376 0.895638 9.1603 1.12218Z" />
-											</svg>
+										<Checkbox.Indicator className="flex text-white">
+											<Check className="h-3.5 w-3.5" />
 										</Checkbox.Indicator>
 									</Checkbox.Root>
-									{t("register.terms")}{" "}
-									<Link to="/terms" className="text-primary hover:underline">
-										{t("register.terms.link")}
-									</Link>{" "}
-									{t("register.privacy")}{" "}
-									<Link to="/privacy" className="text-primary hover:underline">
-										{t("register.privacy.link")}
-									</Link>
-								</Label>
-							</div>
-							{errors.agreeToTerms && (
-								<p className="text-sm text-destructive">
-									{errors.agreeToTerms}
-								</p>
-							)}
-
-							<Button
-								type="submit"
-								className="w-full"
-								variant="destructive"
-								disabled={registerMutation.isPending}
-							>
-								{registerMutation.isPending ? (
-									<>
-										<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-										{t("register.signing")}
-									</>
-								) : (
-									t("register.signup")
+									<Label
+										htmlFor="terms"
+										className="text-sm leading-relaxed cursor-pointer"
+									>
+										{t("register.terms")}{" "}
+										<Link
+											to="/terms"
+											className="text-red-600 hover:text-red-700 dark:text-red-400 font-semibold"
+										>
+											{t("register.terms.link")}
+										</Link>{" "}
+										{t("register.privacy")}{" "}
+										<Link
+											to="/privacy"
+											className="text-red-600 hover:text-red-700 dark:text-red-400 font-semibold"
+										>
+											{t("register.privacy.link")}
+										</Link>
+									</Label>
+								</div>
+								{errors.agreeToTerms && (
+									<p className="text-sm text-red-600 -mt-2">
+										{errors.agreeToTerms}
+									</p>
 								)}
-							</Button>
-						</form>
 
-						<div className="relative">
-							<div className="absolute inset-0 flex items-center">
-								<Separator className="w-full" />
+								<Button
+									type="submit"
+									className="w-full h-12 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg shadow-red-500/25"
+									disabled={registerMutation.isPending}
+								>
+									{registerMutation.isPending ? (
+										<>
+											<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+											{t("register.signing")}
+										</>
+									) : (
+										<>
+											{t("register.signup")}
+											<ArrowRight className="ml-2 h-4 w-4" />
+										</>
+									)}
+								</Button>
+							</form>
+
+							<div className="relative my-6">
+								<div className="absolute inset-0 flex items-center">
+									<Separator className="w-full" />
+								</div>
+								<div className="relative flex justify-center text-xs uppercase">
+									<span className="bg-white dark:bg-slate-900 px-2 text-muted-foreground">
+										{t("register.or")}
+									</span>
+								</div>
 							</div>
-							<div className="relative flex justify-center text-xs uppercase">
-								<span className="bg-background px-2 text-muted-foreground">
-									{t("register.or")}
-								</span>
+
+							<div className="grid grid-cols-2 gap-3">
+								<Button
+									type="button"
+									onClick={handleGoogleAuth}
+									variant="outline"
+									className="h-11 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+									disabled={registerMutation.isPending}
+								>
+									<Icons.google className="mr-2 h-4 w-4" />
+									<span className="text-sm">{t("register.google")}</span>
+								</Button>
+								<Button
+									type="button"
+									onClick={handleDiscordAuth}
+									variant="outline"
+									className="h-11 border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+									disabled={registerMutation.isPending}
+								>
+									<Icons.discord className="mr-2 h-4 w-4" />
+									<span className="text-sm">{t("register.discord")}</span>
+								</Button>
 							</div>
-						</div>
+						</CardContent>
 
-						<div className="grid grid-cols-2 gap-4">
-							<Button
-								className="w-full flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-								type="button"
-								disabled={registerMutation.isPending}
-								onClick={handleGoogleAuth}
-
-							>
-								<Icons.google className="mr-2 h-4 w-4" />
-								{t("register.google")}
-							</Button>
-							<Button
-								type="button"
-								className="w-full flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-								disabled={registerMutation.isPending}
-								onClick={handleDiscordAuth}
-							>
-								<Icons.discord className="mr-2 h-4 w-4 text-white" />
-								{t("register.discord")}
-							</Button>
-						</div>
-
-						<div className="text-center text-sm">
-							{t("register.hasaccount")}{" "}
-							<Link to="/login" className="text-primary hover:underline">
-								{t("register.signin")}
-							</Link>
-						</div>
-
-						<div className="text-center">
-							<Link
-								to="/"
-								className="text-sm text-muted-foreground hover:underline"
-							>
-								{t("register.backhome")}
-							</Link>
-						</div>
-					</CardContent>
-				</Card>
+						<CardFooter className="flex flex-col space-y-4 pb-6">
+							<div className="text-center text-sm">
+								<span className="text-muted-foreground">
+									{t("register.hasaccount")}
+								</span>{" "}
+								<Link
+									to="/login"
+									className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-semibold"
+								>
+									{t("register.signin")}
+								</Link>
+							</div>
+						</CardFooter>
+					</Card>
+				</div>
 			</div>
 		</div>
 	);

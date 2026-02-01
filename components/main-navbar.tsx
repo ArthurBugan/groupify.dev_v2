@@ -64,6 +64,13 @@ export function MainNavbar() {
 							{t("nav.reviews")}
 							<div className="h-0.5 w-0 bg-primary transition-all group-hover:w-full"></div>
 						</Link>
+						<Link
+							to="/blog"
+							className="text-sm font-medium hover:text-primary transition-colors group"
+						>
+							Blog
+							<div className="h-0.5 w-0 bg-primary transition-all group-hover:w-full"></div>
+						</Link>
 					</div>
 
 					<div className="hidden md:flex items-center gap-4">
