@@ -271,7 +271,12 @@ export function BillingSettings() {
 								</ul>
 								<Button
 									onClick={() => {
-										window.open(`https://${plan.name.toLowerCase()}.groupify.dev?user_id=${user?.id}`, "_blank");
+										console.log(plan)
+										if (plan.name === "Basic") {
+											window.open(`https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=6aeab594898948c6a68ceeaeff0eb15f&user_id=${user?.id}`, "_blank");
+										} else if (plan.name === "Pro") {
+											window.open(`https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=fbd278241f0a4b6f9aeb2df594f7747a&user_id=${user?.id}`, "_blank");
+										}
 									}}
 									className="w-full mt-auto"
 									variant={plan.current ? "outline" : "secondary"}
