@@ -1,13 +1,16 @@
 "use client";
 
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ChannelsTable } from "@/components/channels-table";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { GroupDetails } from "@/components/group-details";
+import { GroupVideosList } from "@/components/group-videos-list";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGroup } from "@/hooks/useQuery/useGroups";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
@@ -51,10 +54,21 @@ function GroupDetailPage() {
 				</Button>
 			</div>
 			<GroupDetails id={id} />
-			<div className="mt-6">
-				<h2 className="text-xl font-semibold mb-4">Channels in this group</h2>
-				<ChannelsTable groupId={id} />
-			</div>
+			<GroupVideosList groupId={id} />
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between pb-4">
+					<CardTitle className="text-lg flex items-center gap-2">
+						<Users className="h-5 w-5 text-red-500" />
+						Channels in this group
+						<Badge variant="secondary" className="ml-2">
+							{group.channels?.length || 0}
+						</Badge>
+					</CardTitle>
+				</CardHeader>
+				<CardContent className="pt-0">
+					<ChannelsTable groupId={id} />
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
