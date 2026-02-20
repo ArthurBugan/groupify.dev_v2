@@ -21,4 +21,6 @@ export const queryKeys = {
 	animes: (params?: { page?: number; limit?: number; search?: string }) =>
 		params ? ["animes", params] : ["animes"],
 	anime: (id) => ["anime", id],
+	groupVideos: (groupId: string, params?: { page?: number; limit?: number }) =>
+		params ? ["groupVideos", groupId, params] : ["groupVideos", groupId],
 };

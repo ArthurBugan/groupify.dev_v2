@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
 import type { Pagination } from "./types";
-import { toast } from "sonner";
 
 // Types for groups
 export interface Group {
@@ -134,6 +134,11 @@ const deleteGroup = async (id: string): Promise<void> => {
 	await apiClient.delete(`/api/v2/groups/${id}`);
 };
 
+// Sync group videos
+const syncGroupVideos = async (groupId: string): Promise<void> => {
+	await apiClient.post(`/api/v3/groups/${groupId}/videos/sync`);
+};
+
 export function useUpdateGroupDisplayOrder() {
 	const queryClient = useQueryClient();
 
@@ -161,7 +166,7 @@ export function useCreateGroup() {
 		onSuccess: () => {
 			// Invalidate and refetch the groups query to update the UI
 			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
-		}
+		},
 	});
 }
 
@@ -192,6 +197,18 @@ export function useDeleteGroup() {
 		onSuccess: () => {
 			// Invalidate and refetch the groups query to update the UI
 			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
+		},
+	});
+}
+
+// React Query mutation hook for syncing group videos
+export function useSyncGroupVideos() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (groupId: string) => syncGroupVideos(groupId),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.groupVideos("") });
 		},
 	});
 }

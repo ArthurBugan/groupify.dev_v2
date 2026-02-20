@@ -1,14 +1,17 @@
 "use client";
 
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
-import { useEffect } from "react";
+import { Plus, Users } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { ChannelsTable } from "@/components/channels-table";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { GroupDetails } from "@/components/group-details";
+import { GroupVideosList } from "@/components/group-videos-list";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useGroup } from "@/hooks/useQuery/useGroups";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGroup, useSyncGroupVideos } from "@/hooks/useQuery/useGroups";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 	component: GroupDetailPage,
@@ -17,6 +20,19 @@ export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 function GroupDetailPage() {
 	const { id } = Route.useParams();
 	const { data: group } = useGroup(id);
+	const syncVideos = useSyncGroupVideos();
+	const syncedIdRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (syncedIdRef.current !== id) {
+			syncedIdRef.current = id;
+			syncVideos.mutate(id, {
+				onError: () => {
+					toast.error("Failed to start video sync");
+				},
+			});
+		}
+	}, [id, syncVideos]);
 
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
@@ -51,10 +67,21 @@ function GroupDetailPage() {
 				</Button>
 			</div>
 			<GroupDetails id={id} />
-			<div className="mt-6">
-				<h2 className="text-xl font-semibold mb-4">Channels in this group</h2>
-				<ChannelsTable groupId={id} />
-			</div>
+			<GroupVideosList groupId={id} />
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between pb-4">
+					<CardTitle className="text-lg flex items-center gap-2">
+						<Users className="h-5 w-5 text-red-500" />
+						Channels in this group
+						<Badge variant="secondary" className="ml-2">
+							{group.channels?.length || 0}
+						</Badge>
+					</CardTitle>
+				</CardHeader>
+				<CardContent className="pt-0">
+					<ChannelsTable groupId={id} />
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
