@@ -2,7 +2,7 @@
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Users } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { ChannelsTable } from "@/components/channels-table";
 import { DashboardHeader } from "@/components/dashboard-header";
@@ -11,7 +11,7 @@ import { GroupVideosList } from "@/components/group-videos-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGroup } from "@/hooks/useQuery/useGroups";
+import { useGroup, useSyncGroupVideos } from "@/hooks/useQuery/useGroups";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 	component: GroupDetailPage,
@@ -20,6 +20,19 @@ export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 function GroupDetailPage() {
 	const { id } = Route.useParams();
 	const { data: group } = useGroup(id);
+	const syncVideos = useSyncGroupVideos();
+	const syncedIdRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (syncedIdRef.current !== id) {
+			syncedIdRef.current = id;
+			syncVideos.mutate(id, {
+				onError: () => {
+					toast.error("Failed to start video sync");
+				},
+			});
+		}
+	}, [id, syncVideos]);
 
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
