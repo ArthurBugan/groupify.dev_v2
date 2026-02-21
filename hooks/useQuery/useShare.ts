@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
-import type { Channel } from "./useChannels";
-import { toast } from "sonner";
 import { getRouter } from "@/router";
+import type { Channel } from "./useChannels";
 
 export interface ShareLink {
 	id: string;
@@ -25,6 +25,13 @@ export interface ConsumedShareLinkResponse {
 	channels: Channel[];
 }
 
+interface ShareLinkApiResponse {
+	success: boolean;
+	data: ConsumedShareLinkResponse;
+	message: string | null;
+	errors: string | null;
+}
+
 interface GenerateShareLinkVariables {
 	id: string;
 	linkType: string;
@@ -35,19 +42,11 @@ interface GenerateShareLinkResponseData {
 	shareLink: string;
 }
 
-interface ShareLinkResponse {
-	message: string;
-	data?: ConsumedShareLinkResponse;
-	errors?: ConsumedShareLinkResponse[];
-	success?: boolean;
-}
-
-// Query function to fetch a single share link with consumed details
-const getShareLink = async (id: string): Promise<ShareLinkResponse> => {
-	const response = await apiClient.get<ShareLinkResponse>(
+const getShareLink = async (id: string): Promise<ConsumedShareLinkResponse> => {
+	const response = await apiClient.get<ShareLinkApiResponse>(
 		`/api/v2/share-link/${id}`,
 	);
-	return response;
+	return response.data;
 };
 
 const generateShareLink = async (
@@ -66,25 +65,29 @@ const generateShareLink = async (
 export const useGenerateShareLink = () => {
 	const queryClient = useQueryClient();
 
-	return useMutation<ApiResponse<GenerateShareLinkResponseData>, Error, GenerateShareLinkVariables>({
+	return useMutation<
+		ApiResponse<GenerateShareLinkResponseData>,
+		Error,
+		GenerateShareLinkVariables
+	>({
 		mutationFn: generateShareLink,
 		onSuccess: (data) => {
-      console.log(data)
-      toast.success("Success", {
-        description: data.message,
-      });
+			console.log(data);
+			toast.success("Success", {
+				description: data.message,
+			});
 			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
 		},
 	});
 };
 
 export function useShareLink(id: string) {
-	return useQuery<ShareLinkResponse, Error>({
+	return useQuery<ConsumedShareLinkResponse, Error>({
 		queryKey: queryKeys.shareLink(id),
 		queryFn: () => getShareLink(id),
 		enabled: !!id,
-		staleTime: 5 * 60 * 1000, // 5 minutes
-		gcTime: 10 * 60 * 1000, // 10 minutes
+		staleTime: 5 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
 	});
 }
 
@@ -95,8 +98,8 @@ interface ConsumeShareLinkVariables {
 
 const consumeShareLink = async (
 	variables: ConsumeShareLinkVariables,
-): Promise<ShareLinkResponse> => {
-	const response = await apiClient.post<ApiResponse<ShareLinkResponse>>(
+): Promise<ConsumedShareLinkResponse> => {
+	const response = await apiClient.post<ShareLinkApiResponse>(
 		`/api/v2/share-link/${variables.linkType}/${variables.linkCode}`,
 	);
 	return response.data;
@@ -106,27 +109,27 @@ export const useConsumeShareLink = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation<
-		ShareLinkResponse,
+		ConsumedShareLinkResponse,
 		Error,
 		ConsumeShareLinkVariables
 	>({
 		mutationFn: consumeShareLink,
 		onSuccess: async (data, variables) => {
-      const router = getRouter();
+			const router = getRouter();
 			await toast.success("Success", {
-        description: `You successfully joined ${variables?.linkType === "copy" ? "group" : "collaboration"} as ${data?.data?.permission}`,
+				description: `You successfully joined ${variables?.linkType === "copy" ? "group" : "collaboration"} as ${data?.permission}`,
 			});
 			queryClient.invalidateQueries({
-        queryKey: queryKeys.shareLink(variables.linkCode),
+				queryKey: queryKeys.shareLink(variables.linkCode),
 			});
 			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
-      router.navigate({ to: `/dashboard/groups/${data?.data?.groupId}` });
+			router.navigate({ to: `/dashboard/groups/${data?.groupId}` });
 		},
-    onError: (error) => {
-      toast.error("Error", {
-        description: error.message,
-      });
-    },
+		onError: (error) => {
+			toast.error("Error", {
+				description: error.message,
+			});
+		},
 	});
 };
 
