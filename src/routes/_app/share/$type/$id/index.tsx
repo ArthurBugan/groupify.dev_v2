@@ -1,9 +1,8 @@
 "use client";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AlertTriangle, Clock, Copy, FolderKanban, Users } from "lucide-react";
-import { useId, useState } from "react";
-import { z } from "zod";
+import { AlertTriangle, Clock, Copy, Users } from "lucide-react";
+import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,6 @@ function ShareLinkPage() {
 	const { data: shareLink, isLoading, error } = useShareLink(id);
 	const { mutate: consumeShareLink, isPending: isConsuming } =
 		useConsumeShareLink();
-	const [newGroupName, setNewGroupName] = useState("");
 	const [isExpired, setIsExpired] = useState(false);
 
 	if (isLoading) {
@@ -46,27 +44,23 @@ function ShareLinkPage() {
 		);
 	}
 
-	if (error || shareLink?.message != null) {
-		const errorMessage = shareLink?.message || "Failed to load group data";
-		const isLinkExpired =
-			errorMessage.toLowerCase().includes("expired") || isExpired;
-
+	if (error) {
 		return (
 			<div className="flex min-h-screen items-center justify-center">
 				<Card className="w-full max-w-md">
 					<CardHeader>
 						<CardTitle className="text-center text-destructive flex items-center justify-center gap-2">
-							{isLinkExpired && <Clock className="h-5 w-5" />}
-							{isLinkExpired ? "Link Expired" : "Error"}
+							{isExpired && <Clock className="h-5 w-5" />}
+							{isExpired ? "Link Expired" : "Error"}
 						</CardTitle>
 						<CardDescription className="text-center">
-							{isLinkExpired
+							{isExpired
 								? "This share link has expired and is no longer valid."
-								: errorMessage}
+								: "Failed to load group data"}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						{isLinkExpired && (
+						{isExpired && (
 							<Alert>
 								<AlertTriangle className="h-4 w-4" />
 								<AlertDescription>
@@ -141,15 +135,12 @@ function ShareLinkPage() {
 
 						<div className="max-h-32 overflow-y-auto border rounded-md p-2">
 							<div className="space-y-1">
-								{shareLink?.channels?.map((channel: any) => (
+								{shareLink?.channels?.map((channel) => (
 									<div
 										key={channel.id}
 										className="flex justify-between text-sm"
 									>
 										<span>{channel.name}</span>
-										<span className="text-muted-foreground">
-											{channel.subscribers}
-										</span>
 									</div>
 								))}
 							</div>
