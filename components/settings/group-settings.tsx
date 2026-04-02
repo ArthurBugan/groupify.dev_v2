@@ -50,6 +50,7 @@ export function GroupSettings() {
 		if (savedSettings) {
 			try {
 				const settings = JSON.parse(savedSettings);
+				console.log(settings)
 				setMaxChannels(settings.maxChannels || "50");
 				setAllowDuplicates(settings.allowDuplicates || false);
 				setAutoSort(settings.autoSort || true);
@@ -70,6 +71,19 @@ export function GroupSettings() {
 		if (!categories.includes(newCategory)) {
 			setCategories([...categories, newCategory]);
 			setNewCategory("");
+
+			const savedSettings = localStorage.getItem("groupSettings");
+			if (savedSettings) {
+				try {
+					const settings = JSON.parse(savedSettings);
+					if (settings.categories && Array.isArray(settings.categories)) {
+						settings.categories.push(newCategory);
+						localStorage.setItem("groupSettings", JSON.stringify(settings));
+					}
+				} catch (error) {
+					console.error("Error parsing settings:", error);
+				}
+			}
 		}
 	};
 
