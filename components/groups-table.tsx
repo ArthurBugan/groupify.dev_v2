@@ -99,7 +99,6 @@ export function GroupsTable() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-	console.log(debouncedSearchTerm)
 	const { data: apiGroups, isLoading } = useGroups({
 		page: currentPage,
 		limit: itemsPerPage,
