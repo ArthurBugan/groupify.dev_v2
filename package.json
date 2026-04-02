@@ -7,7 +7,7 @@
 		"dev": "vite dev --port 3000",
 		"start": "bun run server.ts",
 		"sitemap": "node scripts/generate-sitemap.js",
-  		"build": "node scripts/generate-sitemap.js && vite build",
+		"build": "node scripts/generate-sitemap.js && vite build",
 		"preview": "vite preview"
 	},
 	"dependencies": {
@@ -64,6 +64,8 @@
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
 		"date-fns": "^4.1.0",
+		"dodopayments": "^2.25.1",
+		"dodopayments-checkout": "^1.8.0",
 		"embla-carousel-react": "^8.6.0",
 		"framer-motion": "^12.23.12",
 		"gray-matter": "^4.0.3",
