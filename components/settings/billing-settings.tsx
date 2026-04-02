@@ -1,8 +1,10 @@
 "use client";
-
+import { useEffect } from 'react';
 import { Check, CreditCard, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DodoPayments as DodoPaymentsCheckout } from "dodopayments-checkout";
+import { useCreateCheckoutSession } from "@/hooks/mutations/usePaymentMutations";
 import {
 	Card,
 	CardContent,
@@ -17,7 +19,22 @@ import { useDashboardTotal } from "@/hooks/useQuery/useDashboard";
 export function BillingSettings() {
 	const { data: user } = useUser();
 	const { data: dashboardTotal, isLoading } = useDashboardTotal();
-	
+	const createCheckoutSessionMutation = useCreateCheckoutSession();
+	useEffect(() => {
+		DodoPaymentsCheckout.Initialize({
+			mode: "test",
+			displayType: "overlay",
+			onEvent: (event) => {
+				switch (event.event_type) {
+					case "checkout.opened":
+						break;
+					case "checkout.error": ;
+						console.error("Checkout error:", event.data?.message);
+						break;
+				}
+			},
+		});
+	}, []);
 
 	const currentPlan = user?.planName || "Free";
 	const billingCycle = "monthly";
@@ -77,98 +94,98 @@ export function BillingSettings() {
 	];
 
 	if (isLoading) {
-			return (
-				<div className="space-y-6">
-					<Card>
-						<CardHeader>
-							<CardTitle>Current Plan</CardTitle>
-							<CardDescription>
-								<div className="h-4 w-48 rounded bg-muted animate-pulse" />
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="space-y-4">
-							<div className="flex items-center justify-between">
-								<div>
-									<div className="h-6 w-24 rounded bg-muted animate-pulse" />
-									<div className="h-4 w-64 rounded bg-muted animate-pulse mt-2" />
-								</div>
-								<div className="h-8 w-24 rounded bg-muted animate-pulse" />
-							</div>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader>
-							<CardTitle>Usage</CardTitle>
-							<CardDescription>
-								<div className="h-4 w-60 rounded bg-muted animate-pulse" />
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="space-y-6">
-							<div className="space-y-2">
-								<div className="flex justify-between text-sm">
-									<span>Groups</span>
-									<div className="h-4 w-20 rounded bg-muted animate-pulse" />
-								</div>
-								<div className="h-2 w-full rounded bg-muted animate-pulse" />
-							</div>
-							<div className="space-y-2">
-								<div className="flex justify-between text-sm">
-									<span>Channels</span>
-									<div className="h-4 w-24 rounded bg-muted animate-pulse" />
-								</div>
-								<div className="h-2 w-full rounded bg-muted animate-pulse" />
-							</div>
-						</CardContent>
-					</Card>
-
-					<div className="space-y-4">
-						<h3 className="text-lg font-semibold">Available Plans</h3>
-						<div className="grid gap-4 md:grid-cols-3">
-							{Array.from({ length: 3 }).map((_, i) => (
-								<Card key={i} className="h-full flex flex-col">
-									<CardHeader>
-										<div className="flex items-center justify-between">
-											<div className="h-6 w-24 rounded bg-muted animate-pulse" />
-											<div className="h-6 w-16 rounded bg-muted animate-pulse" />
-										</div>
-										<CardDescription>
-											<div className="h-6 w-20 rounded bg-muted animate-pulse" />
-										</CardDescription>
-									</CardHeader>
-									<CardContent className="flex-1 flex flex-col">
-										<ul className="space-y-2">
-											{Array.from({ length: 3 }).map((_, j) => (
-												<li key={j} className="flex items-center gap-2">
-													<div className="h-4 w-4 rounded bg-muted animate-pulse" />
-													<div className="h-4 w-40 rounded bg-muted animate-pulse" />
-												</li>
-											))}
-										</ul>
-										<div className="w-full h-10 rounded bg-muted animate-pulse mt-auto" />
-									</CardContent>
-								</Card>
-							))}
-						</div>
-					</div>
-
-					<Card>
-						<CardHeader>
-							<CardTitle>Billing History</CardTitle>
-							<CardDescription>
-								<div className="h-4 w-72 rounded bg-muted animate-pulse" />
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<div className="w-full h-10 rounded bg-muted animate-pulse" />
-						</CardContent>
-					</Card>
-				</div>
-			);
-		}
-
 		return (
 			<div className="space-y-6">
+				<Card>
+					<CardHeader>
+						<CardTitle>Current Plan</CardTitle>
+						<CardDescription>
+							<div className="h-4 w-48 rounded bg-muted animate-pulse" />
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-4">
+						<div className="flex items-center justify-between">
+							<div>
+								<div className="h-6 w-24 rounded bg-muted animate-pulse" />
+								<div className="h-4 w-64 rounded bg-muted animate-pulse mt-2" />
+							</div>
+							<div className="h-8 w-24 rounded bg-muted animate-pulse" />
+						</div>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>Usage</CardTitle>
+						<CardDescription>
+							<div className="h-4 w-60 rounded bg-muted animate-pulse" />
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-6">
+						<div className="space-y-2">
+							<div className="flex justify-between text-sm">
+								<span>Groups</span>
+								<div className="h-4 w-20 rounded bg-muted animate-pulse" />
+							</div>
+							<div className="h-2 w-full rounded bg-muted animate-pulse" />
+						</div>
+						<div className="space-y-2">
+							<div className="flex justify-between text-sm">
+								<span>Channels</span>
+								<div className="h-4 w-24 rounded bg-muted animate-pulse" />
+							</div>
+							<div className="h-2 w-full rounded bg-muted animate-pulse" />
+						</div>
+					</CardContent>
+				</Card>
+
+				<div className="space-y-4">
+					<h3 className="text-lg font-semibold">Available Plans</h3>
+					<div className="grid gap-4 md:grid-cols-3">
+						{Array.from({ length: 3 }).map((_, i) => (
+							<Card key={i} className="h-full flex flex-col">
+								<CardHeader>
+									<div className="flex items-center justify-between">
+										<div className="h-6 w-24 rounded bg-muted animate-pulse" />
+										<div className="h-6 w-16 rounded bg-muted animate-pulse" />
+									</div>
+									<CardDescription>
+										<div className="h-6 w-20 rounded bg-muted animate-pulse" />
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="flex-1 flex flex-col">
+									<ul className="space-y-2">
+										{Array.from({ length: 3 }).map((_, j) => (
+											<li key={j} className="flex items-center gap-2">
+												<div className="h-4 w-4 rounded bg-muted animate-pulse" />
+												<div className="h-4 w-40 rounded bg-muted animate-pulse" />
+											</li>
+										))}
+									</ul>
+									<div className="w-full h-10 rounded bg-muted animate-pulse mt-auto" />
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</div>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>Billing History</CardTitle>
+						<CardDescription>
+							<div className="h-4 w-72 rounded bg-muted animate-pulse" />
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<div className="w-full h-10 rounded bg-muted animate-pulse" />
+					</CardContent>
+				</Card>
+			</div>
+		);
+	}
+
+	return (
+		<div className="space-y-6">
 			<Card>
 				<CardHeader>
 					<CardTitle>Current Plan</CardTitle>
@@ -213,32 +230,32 @@ export function BillingSettings() {
 				</CardHeader>
 				<CardContent className="space-y-6">
 					<div className="space-y-2">
-							<div className="flex justify-between text-sm">
-								<span>Groups</span>
-								<span className="font-medium">
-									{isLoading ? <div className="h-4 w-20 rounded bg-muted animate-pulse" /> : `${usage.groups.used} / ${usage.groups.limit}`}
-								</span>
-							</div>
-							{isLoading ? (
-								<div className="h-2 w-full rounded bg-muted animate-pulse" />
-							) : (
-								<Progress value={usage.groups.limit === 0 ? 0 : (usage.groups.used / usage.groups.limit) * 100} />
-							)}
+						<div className="flex justify-between text-sm">
+							<span>Groups</span>
+							<span className="font-medium">
+								{isLoading ? <div className="h-4 w-20 rounded bg-muted animate-pulse" /> : `${usage.groups.used} / ${usage.groups.limit}`}
+							</span>
 						</div>
+						{isLoading ? (
+							<div className="h-2 w-full rounded bg-muted animate-pulse" />
+						) : (
+							<Progress value={usage.groups.limit === 0 ? 0 : (usage.groups.used / usage.groups.limit) * 100} />
+						)}
+					</div>
 
 					<div className="space-y-2">
-							<div className="flex justify-between text-sm">
-								<span>Channels</span>
-								<span className="font-medium">
-									{isLoading ? <div className="h-4 w-24 rounded bg-muted animate-pulse" /> : `${usage.channels.used} / ${usage.channels.limit}`}
-								</span>
-							</div>
-							{isLoading ? (
-								<div className="h-2 w-full rounded bg-muted animate-pulse" />
-							) : (
-								<Progress value={usage.channels.limit === 0 ? 0 : (usage.channels.used / usage.channels.limit) * 100} />
-							)}
+						<div className="flex justify-between text-sm">
+							<span>Channels</span>
+							<span className="font-medium">
+								{isLoading ? <div className="h-4 w-24 rounded bg-muted animate-pulse" /> : `${usage.channels.used} / ${usage.channels.limit}`}
+							</span>
 						</div>
+						{isLoading ? (
+							<div className="h-2 w-full rounded bg-muted animate-pulse" />
+						) : (
+							<Progress value={usage.channels.limit === 0 ? 0 : (usage.channels.used / usage.channels.limit) * 100} />
+						)}
+					</div>
 				</CardContent>
 			</Card>
 
@@ -270,13 +287,22 @@ export function BillingSettings() {
 									))}
 								</ul>
 								<Button
-									onClick={() => {
-										console.log(plan)
-										if (plan.name === "Basic") {
-											window.open(`https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=6aeab594898948c6a68ceeaeff0eb15f&user_id=${user?.id}`, "_blank");
-										} else if (plan.name === "Pro") {
-											window.open(`https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=fbd278241f0a4b6f9aeb2df594f7747a&user_id=${user?.id}`, "_blank");
-										}
+									onClick={async () => {
+										try {
+												// Use React Query mutation to create checkout session
+												const checkoutSession = await createCheckoutSessionMutation.mutateAsync({
+													plan_name: plan.name,
+													user_id: user?.id || '',
+												});
+												console.log(checkoutSession)
+												// Open Dodo checkout
+												await DodoPaymentsCheckout.Checkout.open({
+													checkoutUrl: checkoutSession.checkout_url,
+												});
+											} catch (error) {
+												// Error handling is already done in the mutation
+												console.error('Failed to create checkout session:', error);
+											}
 									}}
 									className="w-full mt-auto"
 									variant={plan.current ? "outline" : "secondary"}
