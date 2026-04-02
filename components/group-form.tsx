@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, FolderKanban, Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -79,6 +79,22 @@ export function GroupForm({
 	parentId,
 }: GroupFormProps) {
 	const navigate = useNavigate();
+	const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+
+	// Load categories from localStorage on component mount
+	useEffect(() => {
+		const savedSettings = localStorage.getItem("groupSettings");
+		if (savedSettings) {
+			try {
+				const settings = JSON.parse(savedSettings);
+				if (settings.categories && Array.isArray(settings.categories)) {
+					setAvailableCategories(settings.categories);
+				}
+			} catch (error) {
+				console.error("Error parsing settings:", error);
+			}
+		}
+	}, []);
 
 	const form = useForm<GroupFormData>({
 		resolver: zodResolver(groupFormSchema),
@@ -171,18 +187,11 @@ export function GroupForm({
 													</SelectTrigger>
 												</FormControl>
 												<SelectContent>
-													<SelectItem value="Gaming">Gaming</SelectItem>
-													<SelectItem value="Technology">Technology</SelectItem>
-													<SelectItem value="Food">Food</SelectItem>
-													<SelectItem value="Fitness">Fitness</SelectItem>
-													<SelectItem value="Travel">Travel</SelectItem>
-													<SelectItem value="DIY">DIY</SelectItem>
-													<SelectItem value="Music">Music</SelectItem>
-													<SelectItem value="Education">Education</SelectItem>
-													<SelectItem value="Entertainment">
-														Entertainment
-													</SelectItem>
-													<SelectItem value="Lifestyle">Lifestyle</SelectItem>
+													{availableCategories.map((category) => (
+														<SelectItem key={category} value={category}>
+															{category}
+														</SelectItem>
+													))}
 												</SelectContent>
 											</Select>
 											<FormMessage />
