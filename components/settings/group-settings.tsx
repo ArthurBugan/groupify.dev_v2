@@ -89,6 +89,18 @@ export function GroupSettings() {
 
 	const removeCategory = (category: string) => {
 		setCategories(categories.filter((c) => c !== category));
+		const savedSettings = localStorage.getItem("groupSettings");
+		if (savedSettings) {
+			try {
+				const settings = JSON.parse(savedSettings);
+				if (settings.categories && Array.isArray(settings.categories)) {
+					settings.categories = settings.categories.filter((c) => c !== category);
+					localStorage.setItem("groupSettings", JSON.stringify(settings));
+				}
+			} catch (error) {
+				console.error("Error parsing settings:", error);
+			}
+		}
 	};
 
 	const saveSettings = async () => {
