@@ -11,7 +11,7 @@ import {
 	TrendingUp,
 	Users,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { DashboardStats } from "@/components/dashboard-stats";
 import { GroupList } from "@/components/group-list";
@@ -28,6 +28,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UpgradePlanModal } from "@/components/upgrade-plan-modal";
 import { useUser } from "@/hooks/useQuery/useUser";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,15 @@ export const Route = createFileRoute("/_app/dashboard/")({
 	validateSearch: zodValidator(dashboardParams),
 });
 
-function WelcomeSection({ user }: { user: any }) {
+function WelcomeSection({
+	user,
+	onNewGroup,
+	onNewChannel,
+}: {
+	user: any;
+	onNewGroup: () => void;
+	onNewChannel: () => void;
+}) {
 	const navigate = useNavigate();
 	const currentHour = new Date().getHours();
 	const greeting =
@@ -81,12 +90,7 @@ function WelcomeSection({ user }: { user: any }) {
 							variant="secondary"
 							size="sm"
 							className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-							onClick={() =>
-								navigate({
-									to: "/dashboard/groups/new",
-									search: { parentId: undefined },
-								})
-							}
+							onClick={onNewGroup}
 						>
 							<Plus className="h-4 w-4 mr-1" />
 							New Group
@@ -188,6 +192,9 @@ function QuickActions() {
 function DashboardPage() {
 	const { origin } = Route.useSearch();
 	const { data: user } = useUser();
+	const [upgradeModalType, setUpgradeModalType] = useState<
+		"channel" | "group" | null
+	>(null);
 
 	useEffect(() => {
 		if (user) {
@@ -216,10 +223,35 @@ function DashboardPage() {
 		}
 	}, [origin]);
 
+	const handleNewGroupClick = () => {
+		if (user?.canAddGroup === false) {
+			setUpgradeModalType("group");
+		}
+	};
+
+	const handleNewChannelClick = () => {
+		if (user?.canAddChannel === false) {
+			setUpgradeModalType("channel");
+		}
+	};
+
 	return (
 		<div className="space-y-8">
+			{upgradeModalType && (
+				<UpgradePlanModal
+					open={true}
+					onOpenChange={(open) => !open && setUpgradeModalType(null)}
+					type={upgradeModalType}
+				/>
+			)}
 			{/* Welcome Section */}
-			{user && <WelcomeSection user={user} />}
+			{user && (
+				<WelcomeSection
+					user={user}
+					onNewGroup={handleNewGroupClick}
+					onNewChannel={handleNewChannelClick}
+				/>
+			)}
 
 			{/* Quick Actions */}
 			<section className="space-y-3">

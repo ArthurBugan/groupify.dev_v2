@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Plus } from "lucide-react";
+import { useState } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { GroupsTable } from "@/components/groups-table";
 import { Button } from "@/components/ui/button";
@@ -10,17 +11,30 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { UpgradePlanModal } from "@/components/upgrade-plan-modal";
 import { useGroups } from "@/hooks/useQuery/useGroups";
+import { useUser } from "@/hooks/useQuery/useUser";
 
 export const Route = createFileRoute("/_app/dashboard/groups/")({
 	component: GroupsPage,
 });
 
 function GroupsPage() {
+	const navigate = useNavigate();
 	const { isLoading, error } = useGroups({
 		page: 1,
 		limit: 25,
 	});
+	const { data: user } = useUser();
+	const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+
+	const handleNewGroup = () => {
+		if (user?.canAddGroup === false) {
+			setUpgradeModalOpen(true);
+		} else {
+			navigate({ to: "/dashboard/groups/new", search: { parentId: "" } });
+		}
+	};
 
 	if (isLoading) {
 		return (
@@ -30,11 +44,9 @@ function GroupsPage() {
 						title="Groups"
 						description="Manage your YouTube channel groups"
 					/>
-					<Button variant="outline" type="button" asChild>
-						<Link to="/dashboard/groups/new" search={{ parentId: "" }}>
-							<Plus className="mr-2 h-4 w-4" />
-							New Group
-						</Link>
+					<Button variant="outline" type="button" onClick={handleNewGroup}>
+						<Plus className="mr-2 h-4 w-4" />
+						New Group
 					</Button>
 				</div>
 				<Card>
@@ -59,11 +71,9 @@ function GroupsPage() {
 						title="Groups"
 						description="Manage your YouTube channel groups"
 					/>
-					<Button variant="outline" type="button" asChild>
-						<Link to="/dashboard/groups/new" search={{ parentId: "" }}>
-							<Plus className="mr-2 h-4 w-4" />
-							New Group
-						</Link>
+					<Button variant="outline" type="button" onClick={handleNewGroup}>
+						<Plus className="mr-2 h-4 w-4" />
+						New Group
 					</Button>
 				</div>
 				<Card>
@@ -85,21 +95,27 @@ function GroupsPage() {
 					title="Groups"
 					description="Manage your YouTube channel groups"
 				/>
-				<Button variant="outline" type="button" asChild>
-					<Link to="/dashboard/groups/new" search={{ parentId: "" }}>
-						<Plus className="mr-2 h-4 w-4" />
-						New Group
-					</Link>
+				<Button variant="outline" type="button" onClick={handleNewGroup}>
+					<Plus className="mr-2 h-4 w-4" />
+					New Group
 				</Button>
 			</div>
 			<div className="flex justify-center">
-				<ins className="adsbygoogle"
-					style={{ "display": "inline-block", "width": "728px", "height": "90px" }}
+				<ins
+					className="adsbygoogle"
+					style={{ display: "inline-block", width: "728px", height: "90px" }}
 					data-ad-client="ca-pub-4077364511521347"
-					data-ad-slot="5153442110">
-				</ins>
+					data-ad-slot="5153442110"
+				></ins>
 			</div>
 			<GroupsTable />
+			{user?.canAddGroup === false && (
+				<UpgradePlanModal
+					open={upgradeModalOpen}
+					onOpenChange={setUpgradeModalOpen}
+					type="group"
+				/>
+			)}
 		</div>
 	);
 }

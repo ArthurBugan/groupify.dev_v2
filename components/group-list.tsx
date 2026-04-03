@@ -1,10 +1,13 @@
 "use client";
 
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { FolderKanban, Loader2, Plus } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UpgradePlanModal } from "@/components/upgrade-plan-modal";
 import { useGroups } from "@/hooks/useQuery/useGroups";
+import { useUser } from "@/hooks/useQuery/useUser";
 import { cn } from "@/lib/utils";
 
 export function GroupList() {
@@ -12,8 +15,21 @@ export function GroupList() {
 	const { data: groupsData, isLoading } = useGroups({
 		limit: 5,
 	});
+	const { data: user } = useUser();
+	const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
 	const groups = groupsData?.data || [];
+
+	const handleCreateGroup = () => {
+		if (user?.canAddGroup === false) {
+			setUpgradeModalOpen(true);
+		} else {
+			navigate({
+				to: "/dashboard/groups/new",
+				search: { parentId: undefined },
+			});
+		}
+	};
 
 	if (isLoading) {
 		return (
@@ -33,12 +49,17 @@ export function GroupList() {
 						Start organizing your YouTube channels into groups
 					</p>
 				</div>
-				<Button asChild size="sm">
-					<Link to="/dashboard/groups/new" search={{ parentId: undefined }}>
-						<Plus className="h-4 w-4 mr-1" />
-						Create Your First Group
-					</Link>
+				<Button size="sm" onClick={handleCreateGroup}>
+					<Plus className="h-4 w-4 mr-1" />
+					Create Your First Group
 				</Button>
+				{user?.canAddGroup === false && (
+					<UpgradePlanModal
+						open={upgradeModalOpen}
+						onOpenChange={setUpgradeModalOpen}
+						type="group"
+					/>
+				)}
 			</div>
 		);
 	}

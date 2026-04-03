@@ -18,6 +18,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UpgradePlanModal } from "@/components/upgrade-plan-modal";
+import {
+	type Anime,
+	getAnimes,
+	useAllAnimes,
+	useInfiniteAnimes,
+} from "@/hooks/useQuery/useAnimes";
 import {
 	type Channel,
 	getChannels,
@@ -25,7 +32,7 @@ import {
 	useUpdateChannelsBatch,
 } from "@/hooks/useQuery/useChannels";
 import { useGroup } from "@/hooks/useQuery/useGroups";
-import { type Anime, useAllAnimes, useInfiniteAnimes, getAnimes } from "@/hooks/useQuery/useAnimes";
+import { useUser } from "@/hooks/useQuery/useUser";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/add-channel/")(
 	{
@@ -37,6 +44,8 @@ function AddChannelPage() {
 	const router = useNavigate();
 	const { id } = Route.useParams();
 	const { data: groupData } = useGroup(id);
+	const { data: user } = useUser();
+	const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 	const {
 		data: channelsData,
 		fetchNextPage,
@@ -75,9 +84,12 @@ function AddChannelPage() {
 	const [animeResults, setAnimeResults] = useState<any[]>([]);
 
 	const items = searchResults.length > 0 ? searchResults : channels;
-	const animeItems = animeResults.length > 0 ? animeResults : allAnimesData?.data || [];
+	const animeItems =
+		animeResults.length > 0 ? animeResults : allAnimesData?.data || [];
 
-	const [selectedChannels, setSelectedChannels] = useState<(Channel | Anime)[]>([]);
+	const [selectedChannels, setSelectedChannels] = useState<(Channel | Anime)[]>(
+		[],
+	);
 	const { mutateAsync: updateChannelsBatchMutation, isPending: isUpdating } =
 		useUpdateChannelsBatch();
 	const groupName = groupData?.name || "Channel Group";
@@ -131,8 +143,6 @@ function AddChannelPage() {
 				setIsSearching(false);
 			}
 		}
-
-
 	};
 
 	const handleAddChannel = (channel: Channel | Anime) => {
@@ -147,17 +157,17 @@ function AddChannelPage() {
 		if (selectedChannels.length === 0) return;
 
 		const channelsToUpdate = selectedChannels.map((channel) => {
-			let url = channel.url;
+			const url = channel.url;
 
 			return {
 				id: (url?.trim() || "").replace("@", "") || "",
 				name: channel.name,
 				thumbnail: channel.thumbnail,
 				groupId: id,
-				contentType: channel.contentType ?? 'youtube',
+				contentType: channel.contentType ?? "youtube",
 				url: url || "",
 				newContent: false,
-			}
+			};
 		});
 
 		await updateChannelsBatchMutation({ channels: channelsToUpdate });
@@ -419,7 +429,6 @@ function AddChannelPage() {
 															{channel.contentType === "anime"
 																? `https://crunchyroll.com/series/${channel.url}`
 																: `https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
-
 														</p>
 													</div>
 												</div>
@@ -442,7 +451,13 @@ function AddChannelPage() {
 										className="w-full"
 										variant="outline"
 										disabled={selectedChannels.length === 0 || isUpdating}
-										onClick={handleSaveChannels}
+										onClick={() => {
+											if (user?.canAddChannel === false) {
+												setUpgradeModalOpen(true);
+											} else {
+												handleSaveChannels();
+											}
+										}}
 									>
 										{isUpdating ? (
 											"Adding Channels..."
@@ -458,6 +473,14 @@ function AddChannelPage() {
 						</CardContent>
 					</Card>
 				</div>
+
+				{user?.canAddChannel === false && (
+					<UpgradePlanModal
+						open={upgradeModalOpen}
+						onOpenChange={setUpgradeModalOpen}
+						type="channel"
+					/>
+				)}
 			</div>
 		</div>
 	);

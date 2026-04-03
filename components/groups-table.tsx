@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
 	ArrowDown,
 	ArrowUp,
@@ -13,7 +13,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { IconViewer } from "@/components/icon-picker";
 import { Badge } from "@/components/ui/badge";
@@ -50,12 +50,14 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { UpgradePlanModal } from "@/components/upgrade-plan-modal";
 import {
 	type Group as ApiGroup,
 	useDeleteGroup,
 	useGroups,
 	useUpdateGroupDisplayOrder,
 } from "@/hooks/useQuery/useGroups";
+import { useUser } from "@/hooks/useQuery/useUser";
 import { cn } from "@/lib/utils";
 
 interface TableGroup {
@@ -71,13 +73,19 @@ interface TableGroup {
 	order: number;
 }
 
-
 const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
 	const adRef = useRef<any>(null);
 	useEffect(() => {
-		const w: any = typeof window !== 'undefined' ? (window as any) : null;
-		if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
-			try { w.adsbygoogle.push({}); } catch (_) {}
+		const w: any = typeof window !== "undefined" ? (window as any) : null;
+		if (
+			w &&
+			w.adsbygoogle &&
+			adRef.current &&
+			!adRef.current.getAttribute("data-adsbygoogle-status")
+		) {
+			try {
+				w.adsbygoogle.push({});
+			} catch (_) {}
 		}
 	}, []);
 	return (
@@ -85,7 +93,13 @@ const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
 			<TableCell colSpan={colSpan}>
 				<div className="flex justify-center">
 					<div>
-						<ins className="adsbygoogle" style={{ display: 'inline-block', width: 1200, height: 69 }} data-ad-client="ca-pub-4077364511521347" data-ad-slot="2439256813" ref={adRef}></ins>
+						<ins
+							className="adsbygoogle"
+							style={{ display: "inline-block", width: 1200, height: 69 }}
+							data-ad-client="ca-pub-4077364511521347"
+							data-ad-slot="2439256813"
+							ref={adRef}
+						></ins>
 					</div>
 				</div>
 			</TableCell>
@@ -94,10 +108,12 @@ const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
 };
 
 export function GroupsTable() {
+	const navigate = useNavigate();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+	const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
 	const { data: apiGroups, isLoading } = useGroups({
 		page: currentPage,
@@ -105,8 +121,18 @@ export function GroupsTable() {
 		search: debouncedSearchTerm || undefined,
 	});
 
+	const { data: user } = useUser();
+
 	const updateDisplayOrder = useUpdateGroupDisplayOrder();
 	const deleteGroup = useDeleteGroup();
+
+	const handleAddSubgroup = (parentId: string) => {
+		if (user?.canAddGroup === false) {
+			setUpgradeModalOpen(true);
+		} else {
+			navigate({ to: "/dashboard/groups/new", search: { parentId } });
+		}
+	};
 
 	// Transform API groups to table format
 	const transformApiGroups = (apiGroups?: ApiGroup[]): TableGroup[] => {
@@ -133,7 +159,7 @@ export function GroupsTable() {
 	const [dragOverGroup, setDragOverGroup] = useState<string | null>(null);
 	const [adIndices, setAdIndices] = useState<number[]>([]);
 	useEffect(() => {
-		console.log(searchTerm)
+		console.log(searchTerm);
 		const timer = setTimeout(() => {
 			setDebouncedSearchTerm(searchTerm);
 			setCurrentPage(1);
@@ -643,15 +669,10 @@ export function GroupsTable() {
 														variant="ghost"
 														size="icon"
 														className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-														asChild
+														onClick={() => handleAddSubgroup(group.id)}
 													>
-														<Link
-															to="/dashboard/groups/new"
-															search={{ parentId: group.id }}
-														>
-															<Plus className="h-3 w-3" />
-															<span className="sr-only">Add subgroup</span>
-														</Link>
+														<Plus className="h-3 w-3" />
+														<span className="sr-only">Add subgroup</span>
 													</Button>
 												</div>
 											</TableCell>
@@ -686,19 +707,18 @@ export function GroupsTable() {
 																Edit
 															</Link>
 														</DropdownMenuItem>
-														<DropdownMenuItem asChild>
-															<Link
-																to="/dashboard/groups/new"
-																search={{ parentId: group.id }}
-															>
-																<Plus className="mr-2 h-4 w-4" />
-																Add Subgroup
-															</Link>
+														<DropdownMenuItem
+															onClick={() => handleAddSubgroup(group.id)}
+														>
+															<Plus className="mr-2 h-4 w-4" />
+															Add Subgroup
 														</DropdownMenuItem>
 														<DropdownMenuSeparator />
 														<DropdownMenuItem
 															onClick={() => moveGroup(group, "up")}
-															disabled={!canMoveUp || debouncedSearchTerm !== ""}
+															disabled={
+																!canMoveUp || debouncedSearchTerm !== ""
+															}
 														>
 															<ArrowUp className="mr-2 h-4 w-4" />
 															Move Up
@@ -805,6 +825,13 @@ export function GroupsTable() {
 						</PaginationContent>
 					</Pagination>
 				</div>
+			)}
+			{user?.canAddGroup === false && (
+				<UpgradePlanModal
+					open={upgradeModalOpen}
+					onOpenChange={setUpgradeModalOpen}
+					type="group"
+				/>
 			)}
 		</div>
 	);
