@@ -6,50 +6,18 @@ import { ArrowLeft, FolderKanban, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-	IconPicker,
-	IconPickerContent,
-	IconPickerTrigger,
-	IconViewer,
-} from "@/components/icon-picker";
+import { IconPicker, IconPickerContent, IconPickerTrigger, IconViewer } from "@/components/icon-picker";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Group } from "@/hooks/useQuery/useGroups";
 
-// Zod schema for form validation
 export const groupFormSchema = z.object({
-	name: z
-		.string()
-		.min(1, "Group name is required")
-		.max(50, "Group name must be less than 50 characters")
-		.regex(
-			/^[a-zA-Z0-9\s\-_]+$/,
-			"Group name can only contain letters, numbers, spaces, hyphens, and underscores",
-		),
-	description: z
-		.string()
-		.max(200, "Description must be less than 200 characters")
-		.optional(),
-	category: z.string().min(1, "Please select a category"),
-	icon: z.string().min(1, "Please select an icon"),
+	name: z.string().min(1, "Required").max(50, "Max 50 chars").regex(/^[a-zA-Z0-9\s\-_]+$/, "Only letters, numbers, spaces, hyphens, underscores"),
+	description: z.string().max(200).optional(),
+	category: z.string().min(1, "Select a category"),
+	icon: z.string().min(1, "Select an icon"),
 	parentId: z.string().optional(),
 });
 
@@ -67,251 +35,109 @@ interface GroupFormProps {
 	parentId?: string;
 }
 
-export function GroupForm({
-	initialData,
-	groups = [],
-	isLoading = false,
-	onSubmit,
-	submitLabel = "Submit",
-	cancelPath = "/dashboard/groups",
-	title = "Group Form",
-	description = "Manage group settings",
-	parentId,
-}: GroupFormProps) {
+export function GroupForm({ initialData, groups = [], isLoading = false, onSubmit, submitLabel = "Submit", cancelPath = "/dashboard/groups", title = "Create Group", description = "", parentId }: GroupFormProps) {
 	const navigate = useNavigate();
-	const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+	const [categories, setCategories] = useState<string[]>([]);
 
-	// Load categories from localStorage on component mount
 	useEffect(() => {
-		const savedSettings = localStorage.getItem("groupSettings");
-		if (savedSettings) {
+		const settings = localStorage.getItem("groupSettings");
+		if (settings) {
 			try {
-				const settings = JSON.parse(savedSettings);
-				if (settings.categories && Array.isArray(settings.categories)) {
-					setAvailableCategories(settings.categories);
-				}
-			} catch (error) {
-				console.error("Error parsing settings:", error);
-			}
+				const parsed = JSON.parse(settings);
+				if (parsed.categories && Array.isArray(parsed.categories)) setCategories(parsed.categories);
+			} catch {}
 		}
 	}, []);
 
 	const form = useForm<GroupFormData>({
 		resolver: zodResolver(groupFormSchema),
-		defaultValues: {
-			name: initialData?.name || "",
-			description: initialData?.description || "",
-			category: initialData?.category || "",
-			icon: initialData?.icon || "twemoji:rocket",
-			parentId: initialData?.parentId || parentId || undefined,
-		},
+		defaultValues: { name: initialData?.name || "", description: initialData?.description || "", category: initialData?.category || "", icon: initialData?.icon || "twemoji:rocket", parentId: initialData?.parentId || parentId },
 	});
 
-	const { control, setValue, handleSubmit } = form;
-	// Set parent group from prop
-	useEffect(() => {
-		if (parentId) {
-			setValue("parentId", parentId);
-		}
-	}, [parentId, setValue]);
-
-	const handleFormSubmit = async (data: GroupFormData) => {
-		await onSubmit(data);
-	};
+	const { control, setValue } = form;
+	useEffect(() => { if (parentId) setValue("parentId", parentId); }, [parentId, setValue]);
 
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
 				<div>
-					<h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-					<p className="text-muted-foreground">{description}</p>
+					<h1 className="text-xl font-semibold">{title}</h1>
+					<p className="text-sm text-muted-foreground">{description}</p>
 				</div>
-				<Button variant="outline" size="sm" asChild>
-					<Link to={cancelPath}>
-						<ArrowLeft className="mr-2 h-4 w-4" />
-						Cancel
-					</Link>
-				</Button>
+				<Button variant="outline" size="sm" asChild><Link to={cancelPath}><ArrowLeft className="mr-2 h-3.5 w-3.5" /> Back</Link></Button>
 			</div>
 
-			<Card>
-				<CardContent className="pt-6">
-					<Form {...form}>
-						<form onSubmit={handleSubmit(handleFormSubmit)}>
-							<div className="grid gap-4">
-								<FormField
-									control={control}
-									name="name"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Group Name</FormLabel>
-											<FormControl>
-												<Input placeholder="Enter group name..." {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+			<div className="rounded-xl border bg-card/50 backdrop-blur-sm">
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="p-4 space-y-4">
+						<FormField control={control} name="name" render={({ field }) => (
+							<FormItem>
+								<FormLabel className="text-sm font-medium">Name</FormLabel>
+								<FormControl><Input placeholder="My Group" className="h-10" {...field} /></FormControl>
+								<FormMessage />
+							</FormItem>
+						)} />
 
-								<FormField
-									control={control}
-									name="description"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Description</FormLabel>
-											<FormControl>
-												<Textarea
-													placeholder="Describe what this group is about..."
-													rows={3}
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+						<FormField control={control} name="description" render={({ field }) => (
+							<FormItem>
+								<FormLabel className="text-sm font-medium">Description</FormLabel>
+								<FormControl><Input placeholder="What's this group about?" className="h-10" {...field} /></FormControl>
+								<FormMessage />
+							</FormItem>
+						)} />
 
-								<FormField
-									control={control}
-									name="category"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Category</FormLabel>
-											<Select
-												onValueChange={field.onChange}
-												defaultValue={field.value}
-											>
-												<FormControl>
-													<SelectTrigger>
-														<SelectValue placeholder="Select a category" />
-													</SelectTrigger>
-												</FormControl>
-												<SelectContent>
-													{availableCategories.map((category) => (
-														<SelectItem key={category} value={category}>
-															{category}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+						<div className="grid md:grid-cols-2 gap-4">
+							<FormField control={control} name="category" render={({ field }) => (
+								<FormItem>
+									<FormLabel className="text-sm font-medium">Category</FormLabel>
+									<Select onValueChange={field.onChange} defaultValue={field.value}>
+										<FormControl><SelectTrigger className="h-10"><SelectValue placeholder="Select category" /></SelectTrigger></FormControl>
+										<SelectContent>
+											{categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)} />
 
-								<div className="grid grid-cols-3 gap-4">
-									<FormField
-										control={control}
-										name="icon"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Icon</FormLabel>
-												<FormControl>
-													<IconPicker
-														value={field.value}
-														onChange={(value) => field.onChange(`${value}`)}
-													>
-														<IconPickerTrigger />
-														<IconPickerContent />
-													</IconPicker>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={control}
-										name="parentId"
-										render={({ field }) => (
-											<FormItem className="col-span-2">
-												<FormLabel>Parent Group (Optional)</FormLabel>
-												<Select
-													onValueChange={field.onChange}
-													defaultValue={field.value}
-												>
-													<FormControl>
-														<SelectTrigger>
-															<SelectValue
-																placeholder={
-																	isLoading
-																		? "Loading groups..."
-																		: "None (Top-level group)"
-																}
-															/>
-														</SelectTrigger>
-													</FormControl>
-													<SelectContent>
-														<SelectItem value="none">
-															None (Top-level group)
-														</SelectItem>
-														{isLoading ? (
-															<SelectItem value="loading" disabled>
-																<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-																Loading groups...
-															</SelectItem>
-														) : groups.length === 0 ? (
-															<SelectItem value="no-groups" disabled>
-																<span className="flex items-center gap-2">
-																	<FolderKanban className="h-4 w-4" />
-																	No parent groups available
-																</span>
-															</SelectItem>
-														) : (
-															groups.map((pg) => (
-																<SelectItem key={pg.id} value={pg.id}>
-																	<div className="flex items-center gap-2">
-																		<IconViewer
-																			icon={pg.icon || "FolderKanban"}
-																			size={32}
-																		/>
-																		{pg.name}
-																	</div>
-																</SelectItem>
-															))
-														)}
-													</SelectContent>
-												</Select>
-												<FormDescription>
-													Creating a subgroup allows you to organize channels
-													hierarchically.{" "}
-													{groups.length === 0 &&
-														!isLoading &&
-														"Create a main group first to use as a parent group."}
-												</FormDescription>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								</div>
-							</div>
+							<FormField control={control} name="icon" render={({ field }) => (
+								<FormItem>
+									<FormLabel className="text-sm font-medium">Icon</FormLabel>
+									<FormControl>
+										<IconPicker value={field.value} onChange={(v) => field.onChange(v)}>
+											<IconPickerTrigger />
+											<IconPickerContent />
+										</IconPicker>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)} />
 
-							<div className="flex justify-end gap-2 mt-4">
-								<Button
-									variant="destructive"
-									type="button"
-									onClick={() => navigate({ to: cancelPath })}
-								>
-									Cancel
-								</Button>
-								<Button
-									type="submit"
-									className="flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-									disabled={isLoading}
-								>
-									{isLoading ? (
-										<>
-											<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-											Processing...
-										</>
-									) : (
-										submitLabel
-									)}
-								</Button>
-							</div>
-						</form>
-					</Form>
-				</CardContent>
-			</Card>
+							<FormField control={control} name="parentId" render={({ field }) => (
+								<FormItem className="md:col-span-2">
+									<FormLabel className="text-sm font-medium">Parent Group (Optional)</FormLabel>
+									<Select onValueChange={field.onChange} defaultValue={field.value}>
+										<FormControl><SelectTrigger className="h-10"><SelectValue placeholder="None (top-level)" /></SelectTrigger></FormControl>
+										<SelectContent>
+											<SelectItem value="none">None (Top-level)</SelectItem>
+											{groups.map((g) => <SelectItem key={g.id} value={g.id}><div className="flex items-center gap-2"><IconViewer icon={g.icon || "FolderKanban"} size={16} /> {g.name}</div></SelectItem>)}
+										</SelectContent>
+									</Select>
+									<FormDescription className="text-xs mt-1">Create subgroups to organize hierarchically</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)} />
+						</div>
+
+						<div className="flex justify-end gap-2 pt-2">
+							<Button variant="ghost" size="sm" type="button" onClick={() => navigate({ to: cancelPath })}>Cancel</Button>
+							<Button size="sm" disabled={isLoading} className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600">
+								{isLoading ? <><Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> Creating...</> : submitLabel}
+							</Button>
+						</div>
+					</form>
+				</Form>
+			</div>
 		</div>
 	);
 }
