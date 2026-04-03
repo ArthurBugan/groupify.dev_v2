@@ -165,10 +165,40 @@ export function LandingPage() {
 							</Badge>
 							<h2 className="text-2xl lg:text-3xl font-bold tracking-tight">{t("landing.extension.title")}</h2>
 							<p className="text-muted-foreground leading-relaxed">{t("landing.extension.subtitle")}</p>
-							<div className="flex gap-2">
-								<Button variant="outline" size="icon" asChild><a href="https://chromewebstore.google.com/detail/groupify-youtube-organize/dmdgaegnpjnnkcbdngfgkhlehlccbija"><IconViewer icon="logos:chrome" className="h-4 w-4" /></a></Button>
-								<Button variant="outline" size="icon" asChild><a href="https://addons.mozilla.org/en-US/firefox/addon/groupify-yt-organize"><IconViewer icon="logos:firefox" className="h-4 w-4" /></a></Button>
-								<Button variant="outline" size="icon" asChild><a href="https://apps.apple.com/us/app/groupify-yt-subscriptions/id6714452813?l=pt-BR"><IconViewer icon="logos:safari" className="h-4 w-4" /></a></Button>
+							<div className="flex items-center gap-3">
+								<Button
+									variant="outline"
+									size="icon"
+									asChild
+									className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+									title="Available on Chrome Web Store"
+								>
+									<a href="https://chromewebstore.google.com/detail/groupify-youtube-organize/dmdgaegnpjnnkcbdngfgkhlehlccbija">
+										<IconViewer icon="logos:chrome" className="h-6 w-6" />
+									</a>
+								</Button>
+								<Button
+									variant="outline"
+									size="icon"
+									asChild
+									className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+									title="Available on Firefox Add-ons"
+								>
+									<a href="https://addons.mozilla.org/en-US/firefox/addon/groupify-yt-organize">
+										<IconViewer icon="logos:firefox" className="h-6 w-6" />
+									</a>
+								</Button>
+								<Button
+									variant="outline"
+									size="icon"
+									asChild
+									className="h-12 w-12 rounded-xl border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+									title="Available on Safari Extensions"
+								>
+									<a href="https://apps.apple.com/us/app/groupify-yt-subscriptions/id6714452813?l=pt-BR">
+										<IconViewer icon="logos:safari" className="h-6 w-6" />
+									</a>
+								</Button>
 							</div>
 						</div>
 						<CompactCard className="p-4">
