@@ -39,13 +39,18 @@ export function GroupForm({ initialData, groups = [], isLoading = false, onSubmi
 	const navigate = useNavigate();
 	const [categories, setCategories] = useState<string[]>([]);
 
+	// Load categories from localStorage on component mount
 	useEffect(() => {
-		const settings = localStorage.getItem("groupSettings");
-		if (settings) {
+		const savedSettings = localStorage.getItem("groupSettings");
+		if (savedSettings) {
 			try {
-				const parsed = JSON.parse(settings);
-				if (parsed.categories && Array.isArray(parsed.categories)) setCategories(parsed.categories);
-			} catch {}
+				const settings = JSON.parse(savedSettings);
+				if (settings.categories && Array.isArray(settings.categories)) {
+					setCategories(settings.categories);
+				}
+			} catch (error) {
+				console.error("Error parsing settings:", error);
+			}
 		}
 	}, []);
 
