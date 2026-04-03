@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Pencil, Share2 } from "lucide-react";
+import { Pencil, Plus, Share2 } from "lucide-react";
 import { IconViewer } from "@/components/icon-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,15 +36,6 @@ export function GroupDetails({ id }: GroupDetailsProps) {
 						</div>
 						<div>
 							<div className="flex items-center gap-2">
-								{group.parentId && (
-									<Link
-										to={`/dashboard/groups/$id`}
-										params={{ id: group.parentId ?? "" }}
-										className="text-sm text-muted-foreground hover:underline"
-									>
-										{group.parentId} /
-									</Link>
-								)}
 								<CardTitle>{group.name}</CardTitle>
 							</div>
 							<CardDescription>{group.description}</CardDescription>
@@ -67,6 +58,12 @@ export function GroupDetails({ id }: GroupDetailsProps) {
 								Share
 							</Link>
 						</Button>
+						<Button variant="outline" type="button" asChild>
+							<Link to={"/dashboard/groups/$id/add-channel"} params={{ id: group.id }}>
+								<Plus className="mr-2 h-4 w-4" />
+								Add Channel
+							</Link>
+						</Button>	
 					</div>
 				</div>
 			</CardHeader>
