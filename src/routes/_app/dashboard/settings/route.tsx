@@ -1,12 +1,5 @@
-import {
-	createFileRoute,
-	Outlet,
-	useLocation,
-	useNavigate,
-} from "@tanstack/react-router";
-
+import { createFileRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { DashboardHeader } from "@/components/dashboard-header";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_app/dashboard/settings")({
@@ -22,52 +15,18 @@ function SettingsPage() {
 		setActiveTab(location.pathname.split("/")[3]);
 	}, [location.pathname]);
 
-
 	return (
-		<div className="space-y-6">
-			<DashboardHeader
-				title="Settings"
-				description="Manage your account settings and preferences"
-			/>
+		<div className="space-y-4">
+			<h1 className="text-xl font-semibold">Settings</h1>
+			<p className="text-sm text-muted-foreground">Manage your preferences</p>
 
-			<Tabs
-				value={activeTab}
-				onValueChange={setActiveTab}
-				className="space-y-4"
-			>
-				<div className="overflow-x-auto">
-					<TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground min-w-full lg:grid lg:grid-cols-4">
-						<TabsTrigger
-							onClick={() => router({ to: "/dashboard/settings/account" })}
-							value="account"
-							className="whitespace-nowrap"
-						>
-							Account
-						</TabsTrigger>
-						<TabsTrigger
-							onClick={() => router({ to: "/dashboard/settings/appearance" })}
-							value="appearance"
-							className="whitespace-nowrap"
-						>
-							Appearance
-						</TabsTrigger>
-						<TabsTrigger
-							onClick={() => router({ to: "/dashboard/settings/groups" })}
-							value="groups"
-							className="whitespace-nowrap"
-						>
-							Groups
-						</TabsTrigger>
-						<TabsTrigger
-							onClick={() => router({ to: "/dashboard/settings/billing" })}
-							value="billing"
-							className="whitespace-nowrap"
-						>
-							Billing
-						</TabsTrigger>
-					</TabsList>
-				</div>
-
+			<Tabs value={activeTab} onValueChange={(v) => router({ to: `/dashboard/settings/${v}` })} className="space-y-4">
+				<TabsList className="grid grid-cols-4 w-full bg-muted/30">
+					<TabsTrigger value="account" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Account</TabsTrigger>
+					<TabsTrigger value="appearance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Appearance</TabsTrigger>
+					<TabsTrigger value="groups" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Groups</TabsTrigger>
+					<TabsTrigger value="billing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Billing</TabsTrigger>
+				</TabsList>
 				<Outlet />
 			</Tabs>
 		</div>

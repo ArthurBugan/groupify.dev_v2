@@ -3,24 +3,10 @@
 import { Plus, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
 export function GroupSettings() {
@@ -29,254 +15,103 @@ export function GroupSettings() {
 	const [autoSort, setAutoSort] = useState(true);
 	const [defaultView, setDefaultView] = useState("grid");
 	const [sortOrder, setSortOrder] = useState("subscribers-desc");
-	const [categories, setCategories] = useState([
-		"Gaming",
-		"Technology",
-		"Food",
-		"Fitness",
-		"Travel",
-		"DIY",
-		"Music",
-		"Education",
-		"Entertainment",
-		"Lifestyle",
-	]);
+	const [categories, setCategories] = useState(["Gaming", "Technology", "Food", "Music"]);
 	const [newCategory, setNewCategory] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
 
-	// Load settings from localStorage on component mount
 	useEffect(() => {
-		const savedSettings = localStorage.getItem("groupSettings");
-		if (savedSettings) {
+		const saved = localStorage.getItem("groupSettings");
+		if (saved) {
 			try {
-				const settings = JSON.parse(savedSettings);
-				console.log(settings)
-				setMaxChannels(settings.maxChannels || "50");
-				setAllowDuplicates(settings.allowDuplicates || false);
-				setAutoSort(settings.autoSort || true);
-				setDefaultView(settings.defaultView || "grid");
-				setSortOrder(settings.sortOrder || "subscribers-desc");
-				if (settings.categories && Array.isArray(settings.categories)) {
-					setCategories(settings.categories);
-				}
-			} catch (error) {
-				console.error("Error loading settings:", error);
-			}
+				const s = JSON.parse(saved);
+				setMaxChannels(s.maxChannels || "50");
+				setAllowDuplicates(s.allowDuplicates || false);
+				setAutoSort(s.autoSort || true);
+				setDefaultView(s.defaultView || "grid");
+				setSortOrder(s.sortOrder || "subscribers-desc");
+				if (s.categories) setCategories(s.categories);
+			} catch {}
 		}
 	}, []);
 
 	const addCategory = () => {
-		if (!newCategory.trim()) return;
-
-		if (!categories.includes(newCategory)) {
-			setCategories([...categories, newCategory]);
-			setNewCategory("");
-
-			const savedSettings = localStorage.getItem("groupSettings");
-			if (savedSettings) {
-				try {
-					const settings = JSON.parse(savedSettings);
-					if (settings.categories && Array.isArray(settings.categories)) {
-						settings.categories.push(newCategory);
-						localStorage.setItem("groupSettings", JSON.stringify(settings));
-					}
-				} catch (error) {
-					console.error("Error parsing settings:", error);
-				}
-			}
-		}
+		if (!newCategory.trim() || categories.includes(newCategory)) return;
+		setCategories([...categories, newCategory]);
+		setNewCategory("");
+		saveToStorage();
 	};
 
-	const removeCategory = (category: string) => {
-		setCategories(categories.filter((c) => c !== category));
-		const savedSettings = localStorage.getItem("groupSettings");
-		if (savedSettings) {
-			try {
-				const settings = JSON.parse(savedSettings);
-				if (settings.categories && Array.isArray(settings.categories)) {
-					settings.categories = settings.categories.filter((c) => c !== category);
-					localStorage.setItem("groupSettings", JSON.stringify(settings));
-				}
-			} catch (error) {
-				console.error("Error parsing settings:", error);
-			}
-		}
+	const removeCategory = (c: string) => {
+		setCategories(categories.filter((x) => x !== c));
+		saveToStorage();
 	};
 
 	const saveSettings = async () => {
 		setIsSaving(true);
-
-		// Save settings to localStorage
-		const settings = {
-			maxChannels,
-			allowDuplicates,
-			autoSort,
-			defaultView,
-			sortOrder,
-			categories,
-		};
-		localStorage.setItem("groupSettings", JSON.stringify(settings));
-
-		// Simulate API call
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
+		await new Promise(r => setTimeout(r, 500));
+		toast.success("Settings saved");
 		setIsSaving(false);
+	};
 
-		toast("Settings saved");
+	const saveToStorage = () => {
+		localStorage.setItem("groupSettings", JSON.stringify({ maxChannels, allowDuplicates, autoSort, defaultView, sortOrder, categories }));
 	};
 
 	return (
-		<div className="space-y-6">
-			<Card>
-				<CardHeader>
-					<CardTitle>Group Configuration</CardTitle>
-					<CardDescription>
-						Configure default settings for channel groups
-					</CardDescription>
-				</CardHeader>
-				<CardContent className="space-y-6">
-					<div className="flex items-center justify-between">
-						<div className="space-y-0.5">
-							<Label htmlFor="max-channels">Maximum Channels per Group</Label>
-							<p className="text-sm text-muted-foreground">
-								Limit the number of channels in a single group
-							</p>
-						</div>
-						<Input
-							id="max-channels"
-							type="number"
-							value={maxChannels}
-							onChange={(e) => setMaxChannels(e.target.value)}
-							className="w-24"
-						/>
-					</div>
+		<div className="space-y-4">
+			{/* Configuration */}
+			<div className="rounded-xl border bg-card/50 backdrop-blur-sm p-4 space-y-3">
+				<h2 className="font-semibold text-sm mb-1">Configuration</h2>
 
-					<div className="flex items-center justify-between">
-						<div className="space-y-0.5">
-							<Label htmlFor="allow-duplicates">Allow Duplicate Channels</Label>
-							<p className="text-sm text-muted-foreground">
-								Allow the same channel in multiple groups
-							</p>
-						</div>
-						<Switch
-							id="allow-duplicates"
-							checked={allowDuplicates}
-							onCheckedChange={setAllowDuplicates}
-						/>
-					</div>
+				<div className="flex items-center justify-between">
+					<Label htmlFor="max-channels" className="text-sm">Max Channels per Group</Label>
+					<Input id="max-channels" type="number" value={maxChannels} onChange={(e) => setMaxChannels(e.target.value)} className="w-20 h-9" />
+				</div>
 
-					<div className="flex items-center justify-between">
-						<div className="space-y-0.5">
-							<Label htmlFor="auto-sort">Auto-sort Channels</Label>
-							<p className="text-sm text-muted-foreground">
-								Automatically sort channels by subscriber count
-							</p>
-						</div>
-						<Switch
-							id="auto-sort"
-							checked={autoSort}
-							onCheckedChange={setAutoSort}
-						/>
-					</div>
-				</CardContent>
-			</Card>
+				<div className="flex items-center justify-between">
+					<Label htmlFor="duplicates" className="text-sm">Allow Duplicates</Label>
+					<Switch id="duplicates" checked={allowDuplicates} onCheckedChange={setAllowDuplicates} />
+				</div>
 
-			<Card>
-				<CardHeader>
-					<CardTitle>Group Categories</CardTitle>
-					<CardDescription>
-						Manage available categories for organizing groups
-					</CardDescription>
-				</CardHeader>
-				<CardContent className="space-y-4">
-					<div className="flex gap-2">
-						<Input
-							placeholder="Add new category"
-							value={newCategory}
-							onChange={(e) => setNewCategory(e.target.value)}
-							onKeyPress={(e) => e.key === "Enter" && addCategory()}
-						/>
-						<Button onClick={addCategory} size="icon">
-							<Plus className="h-4 w-4" />
-						</Button>
-					</div>
-
-					<div className="flex flex-wrap gap-2">
-						{categories.map((category) => (
-							<Badge key={category} variant="secondary" className="gap-1 pr-1">
-								{category}
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-4 w-4 p-0 hover:bg-transparent"
-									onClick={() => removeCategory(category)}
-								>
-									<X className="h-3 w-3" />
-								</Button>
-							</Badge>
-						))}
-					</div>
-				</CardContent>
-			</Card>
-
-			<Card>
-				<CardHeader>
-					<CardTitle>Default Group Settings</CardTitle>
-					<CardDescription>
-						Settings applied to newly created groups
-					</CardDescription>
-				</CardHeader>
-				<CardContent className="space-y-4">
-					<div className="grid gap-4">
-						<div className="grid gap-2">
-							<Label htmlFor="default-view">Default View</Label>
-							<Select value={defaultView} onValueChange={setDefaultView}>
-								<SelectTrigger id="default-view">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="grid">Grid View</SelectItem>
-									<SelectItem value="list">List View</SelectItem>
-									<SelectItem value="compact">Compact View</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-
-						<div className="grid gap-2">
-							<Label htmlFor="sort-order">Default Sort Order</Label>
-							<Select value={sortOrder} onValueChange={setSortOrder}>
-								<SelectTrigger id="sort-order">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="subscribers-desc">
-										Subscribers (High to Low)
-									</SelectItem>
-									<SelectItem value="subscribers-asc">
-										Subscribers (Low to High)
-									</SelectItem>
-									<SelectItem value="name-asc">Name (A to Z)</SelectItem>
-									<SelectItem value="name-desc">Name (Z to A)</SelectItem>
-									<SelectItem value="recent">Recently Added</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-
-			<div className="flex justify-end">
-				<Button onClick={saveSettings} disabled={isSaving}>
-					{isSaving ? (
-						"Saving..."
-					) : (
-						<>
-							<Save className="mr-2 h-4 w-4" />
-							Save Group Settings
-						</>
-					)}
-				</Button>
+				<div className="flex items-center justify-between">
+					<Label htmlFor="auto-sort" className="text-sm">Auto-Sort Channels</Label>
+					<Switch id="auto-sort" checked={autoSort} onCheckedChange={setAutoSort} />
+				</div>
 			</div>
+
+			{/* Categories */}
+			<div className="rounded-xl border bg-card/50 backdrop-blur-sm p-4 space-y-3">
+				<h2 className="font-semibold text-sm mb-1">Categories</h2>
+				<div className="flex gap-2">
+					<Input placeholder="Add category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} onKeyPress={(e) => e.key === "Enter" && addCategory()} className="h-9 flex-1" />
+					<Button size="icon" onClick={addCategory}><Plus className="h-4 w-4" /></Button>
+				</div>
+				<div className="flex flex-wrap gap-2">
+					{categories.map((c) => (
+						<span key={c} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted text-xs">{c}<button onClick={() => removeCategory(c)}><X className="h-3 w-3" /></button></span>
+					))}
+				</div>
+			</div>
+
+			{/* Defaults */}
+			<div className="rounded-xl border bg-card/50 backdrop-blur-sm p-4 space-y-3">
+				<h2 className="font-semibold text-sm mb-1">Default Settings</h2>
+				<div className="grid grid-cols-2 gap-3">
+					<Select value={defaultView} onValueChange={setDefaultView}>
+						<Label className="text-xs mb-1.5 block">Default View</Label>
+						<SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+						<SelectContent><SelectItem value="grid">Grid</SelectItem><SelectItem value="list">List</SelectItem><SelectItem value="compact">Compact</SelectItem></SelectContent>
+					</Select>
+
+					<Select value={sortOrder} onValueChange={setSortOrder}>
+						<Label className="text-xs mb-1.5 block">Sort Order</Label>
+						<SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+						<SelectContent><SelectItem value="subscribers-desc">Subscribers ↓</SelectItem><SelectItem value="name-asc">Name A-Z</SelectItem></SelectContent>
+					</Select>
+				</div>
+			</div>
+
+			<div className="flex justify-end"><Button size="sm" onClick={saveSettings} disabled={isSaving}>{isSaving ? "Saving..." : <><Save className="h-3.5 w-3.5 mr-1" /> Save Settings</>}</Button></div>
 		</div>
 	);
 }
