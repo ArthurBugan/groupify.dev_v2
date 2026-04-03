@@ -15,7 +15,7 @@ import {
 import { useId, useState } from "react";
 import { z } from "zod";
 import { useLanguage } from "@/components/language-provider";
-import { MainNavbar } from "@/components/main-navbar";
+import { CompactHeader } from "@/components/compact-header";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -129,7 +129,7 @@ function RegisterPage() {
 			<div className="absolute top-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
 			<div className="absolute bottom-0 left-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
 
-			<MainNavbar />
+			<CompactHeader />
 
 			<div className="flex-1 flex items-center justify-center px-4 py-12 relative">
 				<div className="w-full max-w-md space-y-6">

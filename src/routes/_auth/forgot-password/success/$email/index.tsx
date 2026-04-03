@@ -4,7 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle, Mail, RefreshCw } from "lucide-react";
 import { Suspense } from "react";
 import { useLanguage } from "@/components/language-provider";
-import { MainNavbar } from "@/components/main-navbar";
+import { CompactHeader } from "@/components/compact-header";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -25,7 +25,7 @@ function SuccessContent() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<MainNavbar />
+			<CompactHeader />
 
 			<div className="flex items-center justify-center bg-muted/50 p-4 min-h-[calc(100vh-4rem)]">
 				<div className="w-full max-w-md space-y-6">

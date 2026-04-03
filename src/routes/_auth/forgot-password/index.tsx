@@ -7,7 +7,7 @@ import type React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useLanguage } from "@/components/language-provider";
-import { MainNavbar } from "@/components/main-navbar";
+import { CompactHeader } from "@/components/compact-header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,7 +74,7 @@ function ForgotPasswordPage() {
 
 	return (
 		<div className="min-h-screen bg-background flex flex-col">
-			<MainNavbar />
+			<CompactHeader />
 			<div className="flex-1 flex items-center justify-center px-4 py-12">
 				<div className="w-full max-w-md space-y-8">
 					<Card>

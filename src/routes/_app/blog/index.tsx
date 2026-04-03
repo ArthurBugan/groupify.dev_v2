@@ -11,7 +11,7 @@ import {
 	X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { MainNavbar } from "@/components/main-navbar";
+import { CompactHeader } from "@/components/compact-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -109,7 +109,7 @@ function BlogIndex() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<MainNavbar />
+			<CompactHeader />
 
 			{/* Hero Section */}
 			<section className="relative overflow-hidden">

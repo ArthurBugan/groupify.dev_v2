@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MainNavbar } from "@/components/main-navbar";
+import { CompactHeader } from "@/components/compact-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,7 +46,7 @@ function SupportPage() {
 	return (
 		<div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
 			<TechBackground />
-			<MainNavbar />
+			<CompactHeader />
 			
 			<main className="flex-1 container mx-auto px-4 py-20 relative z-10">
 				<div className="max-w-4xl mx-auto space-y-16">

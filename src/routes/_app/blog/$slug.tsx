@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MainNavbar } from "@/components/main-navbar";
+import { CompactHeader } from "@/components/compact-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -53,7 +53,7 @@ function BlogPostComponent() {
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            <MainNavbar />
+            <CompactHeader />
             
             {/* Layout Switcher (Demo Only) */}
             <div className="container mx-auto px-4 pt-8 flex justify-end gap-2">
