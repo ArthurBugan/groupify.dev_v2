@@ -130,6 +130,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 						gtag('config', 'G-D7BS3V6VJF');
 					`}
 				</script>
+				<script defer src="https://umami.groupify.dev/script.js" data-website-id="12a8d73a-1f10-4dcd-ae0b-7e2b16de3338"></script>
 				<Scripts />
 			</body>
 		</html>
