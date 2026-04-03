@@ -131,6 +131,22 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 					`}
 				</script>
 				<script defer src="https://umami.groupify.dev/script.js" data-website-id="12a8d73a-1f10-4dcd-ae0b-7e2b16de3338"></script>
+				<script>
+					{`
+					window.op=window.op||function(){var n=[];return new Proxy(function(){arguments.length&&n.push([].slice.call(arguments))},{get:function(t,r){return"q"===r?n:function(){n.push([r].concat([].slice.call(arguments)))}} ,has:function(t,r){return"q"===r}}) }();
+					window.op('init', {
+						apiUrl: 'https://opapi.groupify.dev',
+						clientId: 'c203cf16-53ce-471a-94c6-d09b2f0e6bc9',
+						trackScreenViews: true,
+						trackOutgoingLinks: true,
+						trackAttributes: true,
+						sessionReplay: {
+						enabled: true,
+						}
+					});
+					`}
+				</script>
+				<script src="https://openpanel.dev/op1.js" defer async></script>
 				<Scripts />
 			</body>
 		</html>
