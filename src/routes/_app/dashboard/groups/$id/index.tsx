@@ -10,9 +10,13 @@ import { GroupVideosList } from "@/components/group-videos-list";
 import { IconViewer } from "@/components/icon-picker";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGroup, useGroups, useSyncGroupVideos } from "@/hooks/useQuery/useGroups";
+import {
+	useGroup,
+	useGroups,
+	useSyncGroupVideos,
+} from "@/hooks/useQuery/useGroups";
+import { useGroupVideos } from "@/hooks/useQuery/useGroupVideos";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 	component: GroupDetailPage,
@@ -22,12 +26,15 @@ function GroupDetailPage() {
 	const { id } = Route.useParams();
 	const { data: group } = useGroup(id);
 	const { data: groupsData } = useGroups({ limit: 100 });
+	const { data: videosData } = useGroupVideos(id, { limit: 1 });
 	const syncVideos = useSyncGroupVideos();
 	const syncedIdRef = useRef<string | null>(null);
 
+	const videoCount = videosData?.pagination?.total || 0;
+
 	const breadcrumbs = useMemo(() => {
 		if (!group || !groupsData?.data) return [];
-		const crumbs: typeof group[] = [];
+		const crumbs: (typeof group)[] = [];
 		let current: typeof group | undefined = group;
 		while (current) {
 			crumbs.unshift(current);
@@ -38,9 +45,11 @@ function GroupDetailPage() {
 
 	const childGroups = useMemo(() => {
 		if (!groupsData?.data || !group) return [];
-		const getAllDescendants = (parentId: string): typeof group[] => {
-			const directChildren = groupsData.data.filter((g) => g.parentId === parentId);
-			const descendants: typeof group[] = [];
+		const getAllDescendants = (parentId: string): (typeof group)[] => {
+			const directChildren = groupsData.data.filter(
+				(g) => g.parentId === parentId,
+			);
+			const descendants: (typeof group)[] = [];
 			for (const child of directChildren) {
 				if (child) {
 					descendants.push(child);
@@ -55,14 +64,18 @@ function GroupDetailPage() {
 	useEffect(() => {
 		if (syncedIdRef.current !== id) {
 			syncedIdRef.current = id;
-			syncVideos.mutate(id, { onError: () => toast.error("Failed to sync videos") });
+			syncVideos.mutate(id, {
+				onError: () => toast.error("Failed to sync videos"),
+			});
 		}
 	}, [id, syncVideos]);
 
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.get("settings-saved") === "true") {
-			toast.info("Settings Applied", { description: "Your group settings have been applied." });
+			toast.info("Settings Applied", {
+				description: "Your group settings have been applied.",
+			});
 			window.history.replaceState({}, document.title, window.location.pathname);
 		}
 	}, []);
@@ -74,7 +87,10 @@ function GroupDetailPage() {
 			{/* Breadcrumb */}
 			{breadcrumbs.length > 0 && (
 				<div className="flex items-center gap-1 text-sm">
-					<Link to="/dashboard/groups" className="hover:text-red-500 transition-colors">
+					<Link
+						to="/dashboard/groups"
+						className="hover:text-red-500 transition-colors"
+					>
 						Home
 					</Link>
 					{breadcrumbs.map((crumb, index) => (
@@ -83,7 +99,11 @@ function GroupDetailPage() {
 							{index === breadcrumbs.length - 1 ? (
 								<span className="font-medium">{crumb.name}</span>
 							) : (
-								<Link to="/dashboard/groups/$id" params={{ id: crumb.id }} className="hover:text-red-500 transition-colors">
+								<Link
+									to="/dashboard/groups/$id"
+									params={{ id: crumb.id }}
+									className="hover:text-red-500 transition-colors"
+								>
 									{crumb.name}
 								</Link>
 							)}
@@ -104,11 +124,15 @@ function GroupDetailPage() {
 						>
 							<Avatar className="h-6 w-6">
 								<IconViewer icon={child.icon || "folder"} />
-								<AvatarFallback><Users className="h-3 w-3 text-muted-foreground" /></AvatarFallback>
+								<AvatarFallback>
+									<Users className="h-3 w-3 text-muted-foreground" />
+								</AvatarFallback>
 							</Avatar>
 							<div className="flex-1 min-w-0">
 								<p className="font-medium text-sm truncate">{child.name}</p>
-								<p className="text-xs text-muted-foreground">{child.channelCount} channels</p>
+								<p className="text-xs text-muted-foreground">
+									{child.channelCount} channels
+								</p>
 							</div>
 						</Link>
 					))}
@@ -121,12 +145,23 @@ function GroupDetailPage() {
 			{/* Tabs */}
 			<Tabs defaultValue="channels" className="space-y-4">
 				<TabsList className="grid grid-cols-2 w-auto bg-muted/30">
-					<TabsTrigger value="channels" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 flex items-center gap-2">
+					<TabsTrigger
+						value="channels"
+						className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 flex items-center gap-2"
+					>
 						<Users className="h-3.5 w-3.5" /> Channels
-						<Badge variant="secondary" className="ml-1">{group.channels?.length || 0}</Badge>
+						<Badge variant="secondary" className="ml-1">
+							{group.channels?.length || 0}
+						</Badge>
 					</TabsTrigger>
-					<TabsTrigger value="videos" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 flex items-center gap-2">
+					<TabsTrigger
+						value="videos"
+						className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600 flex items-center gap-2"
+					>
 						<Play className="h-3.5 w-3.5" /> Videos
+						<Badge variant="secondary" className="ml-1">
+							{videoCount}
+						</Badge>
 					</TabsTrigger>
 				</TabsList>
 

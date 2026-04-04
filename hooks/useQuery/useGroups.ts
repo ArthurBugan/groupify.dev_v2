@@ -17,6 +17,7 @@ export interface Group {
 	parentId?: string | null;
 	createdAt: string;
 	channelCount: number;
+	videoCount?: number;
 	updatedAt: string;
 }
 
