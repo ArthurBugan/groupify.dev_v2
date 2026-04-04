@@ -45,7 +45,7 @@ export function DashboardSidebar() {
 		},
 		{
 			name: "Settings",
-			href: "/dashboard/settings/account",
+			href: "/dashboard/settings/billing",
 			icon: Settings,
 		},
 	];

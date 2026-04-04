@@ -84,7 +84,7 @@ const secondaryItems: NavItem[] = [
 	},
 	{
 		title: "Settings",
-		url: "/dashboard/settings/account",
+		url: "/dashboard/settings/billing",
 		icon: Settings,
 	},
 ];
