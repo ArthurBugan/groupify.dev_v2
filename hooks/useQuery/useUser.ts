@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
-import { umamiClient, op } from "@/routes/__root";
+import { op } from "@/routes/__root";
 
 // Types for the User
 export interface User {
@@ -37,7 +37,9 @@ const getUser = async (): Promise<User> => {
 		},
 	};
 	op.identify(identifyOptions);
-	umamiClient.identify(identifyOptions);
+	if ((window as any).umami) {
+	  	(window as any).umami.identify(identifyOptions);
+    }
 	return response.data;
 };
 

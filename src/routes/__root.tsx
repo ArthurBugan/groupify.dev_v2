@@ -19,14 +19,10 @@ import { Toaster } from "@/components/ui/sonner";
 import { queryClient } from "@/hooks/utils/queryClient";
 import appCss from "@/styles/app.css?url";
 import posthog from "posthog-js";
-import HyperDX from '@hyperdx/browser';
 import { AnalyticsListener } from "@/hooks/analytics-listener";
 import { OpenPanel } from '@openpanel/web';
-import {Umami} from '@umami/node';
 
 const PUBLIC_POST_HOG_ID = import.meta.env.VITE_POST_HOG_ID;
-const PUBLIC_HYPER_DX_ID = import.meta.env.VITE_HYPER_DX_ID;
-const PUBLIC_HYPER_DX_URL = import.meta.env.VITE_HYPER_DX_URL;
 const NODE_ENV = import.meta.env.MODE;
 
 if (
@@ -72,10 +68,6 @@ export const op = new OpenPanel({
 	apiUrl: 'https://opapi.groupify.dev',
 });
 
-export const umamiClient = new Umami({
-	websiteId: '12a8d73a-1f10-4dcd-ae0b-7e2b16de3338',
-	hostUrl: 'https://umami.groupify.dev/script.js'
-});
 
 function RootComponent() {
 	return (
@@ -134,6 +126,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 						gtag('config', 'G-D7BS3V6VJF');
 					`}
 				</script>
+				<script defer src="https://umami.groupify.dev/script.js" data-website-id="12a8d73a-1f10-4dcd-ae0b-7e2b16de3338"></script>
 				<Scripts />
 			</body>
 		</html>
