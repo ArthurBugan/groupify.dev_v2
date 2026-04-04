@@ -50,7 +50,7 @@ export function BillingSettings() {
 			{/* Usage */}
 			<div className="rounded-xl border bg-card/50 backdrop-blur-sm p-4 space-y-3">
 				<h2 className="font-semibold text-sm mb-1">Usage</h2>
-				
+
 				{isLoading ? (
 					<div className="space-y-2"><div className="h-4 w-full rounded bg-muted animate-pulse" /><div className="h-4 w-3/4 rounded bg-muted animate-pulse" /></div>
 				) : (
@@ -80,7 +80,29 @@ export function BillingSettings() {
 							</div>
 							<p className="text-lg font-bold mb-3">{plan.price}<span className="text-xs text-muted-foreground">/mo</span></p>
 							<ul className="space-y-1.5 mb-4"><li><Check className="h-3 w-3 mr-1 inline" /> Up to {plan.name === "Free" ? "3" : plan.name === "Basic" ? "10" : "Unlimited"} groups</li></ul>
-							<Button size="sm" variant={plan.current ? "outline" : "secondary"} disabled={plan.current} onClick={() => createCheckoutSessionMutation.mutateAsync({ plan_name: plan.name, user_id: user?.id || "" })}>{plan.current ? "Current Plan" : "Change Plan"}</Button>
+							<Button
+								size="sm"
+								variant={plan.current ? "outline" : "secondary"}
+								disabled={plan.current}
+								onClick={async () => {
+									try {
+										// Use React Query mutation to create checkout session
+										const checkoutSession = await createCheckoutSessionMutation.mutateAsync({
+											plan_name: plan.name,
+											user_id: user?.id || '',
+										});
+										// Open Dodo checkout
+										await DodoPaymentsCheckout.Checkout.open({
+											checkoutUrl: checkoutSession.checkout_url,
+										});
+									} catch (error) {
+										// Error handling is already done in the mutation
+										console.error('Failed to create checkout session:', error);
+									}
+								}}
+							>
+								{plan.current ? "Current Plan" : "Change Plan"}
+							</Button>
 						</div>
 					))}
 				</div>
