@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
+import { umamiClient, op } from "@/routes/__root";
 
 // Types for the User
 export interface User {
@@ -26,6 +27,18 @@ export interface User {
 // Query function to fetch the current user
 const getUser = async (): Promise<User> => {
 	const response = await apiClient.get<ApiResponse<User>>("api/v3/me");
+	console.log(response)
+	const identifyOptions = {
+		profileId: response.data.id, // Required
+		firstName: response.data.username,
+		lastName: response.data.username,
+		email: response.data.email,
+		properties: {
+			tier: response.data.planName,
+		},
+	};
+	op.identify(identifyOptions);
+	umamiClient.identify(identifyOptions);
 	return response.data;
 };
 
