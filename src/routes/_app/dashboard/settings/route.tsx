@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_app/dashboard/settings")({
 });
 
 function SettingsPage() {
-	const [activeTab, setActiveTab] = useState("account");
+	const [activeTab, setActiveTab] = useState("billing");
 	const router = useNavigate();
 	const location = useLocation();
 
@@ -22,10 +22,10 @@ function SettingsPage() {
 
 			<Tabs value={activeTab} onValueChange={(v) => router({ to: `/dashboard/settings/${v}` })} className="space-y-4">
 				<TabsList className="grid grid-cols-4 w-full bg-muted/30">
+					<TabsTrigger value="billing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Billing</TabsTrigger>
 					<TabsTrigger value="account" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Account</TabsTrigger>
 					<TabsTrigger value="appearance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Appearance</TabsTrigger>
 					<TabsTrigger value="groups" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Groups</TabsTrigger>
-					<TabsTrigger value="billing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">Billing</TabsTrigger>
 				</TabsList>
 				<Outlet />
 			</Tabs>
