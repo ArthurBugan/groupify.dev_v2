@@ -21,6 +21,8 @@ import appCss from "@/styles/app.css?url";
 import posthog from "posthog-js";
 import HyperDX from '@hyperdx/browser';
 import { AnalyticsListener } from "@/hooks/analytics-listener";
+import { OpenPanel } from '@openpanel/web';
+import {Umami} from '@umami/node';
 
 const PUBLIC_POST_HOG_ID = import.meta.env.VITE_POST_HOG_ID;
 const PUBLIC_HYPER_DX_ID = import.meta.env.VITE_HYPER_DX_ID;
@@ -35,20 +37,6 @@ if (
 		api_host: "https://app.posthog.com",
 	});
 }
-
-// if (
-// 	NODE_ENV === "production" &&
-// 	PUBLIC_HYPER_DX_ID
-// ) {
-// 	HyperDX.init({
-// 		url: PUBLIC_HYPER_DX_URL,
-// 		apiKey: PUBLIC_HYPER_DX_ID,
-// 		service: 'groupify-web',
-// 		tracePropagationTargets: [/coolify.groupify.dev/i], // Set to link traces from frontend to backend requests
-// 		consoleCapture: true, // Capture console logs (default false)
-// 		advancedNetworkCapture: true, // Capture full HTTP request/response headers and bodies (default false)
-// 	});
-// }
 
 export const Route = createRootRoute({
 	notFoundComponent: () => <NotFound />,
@@ -71,6 +59,22 @@ export const Route = createRootRoute({
 		middlewares: [retainSearchParams(["rootValue"])],
 	},
 	component: RootComponent,
+});
+
+export const op = new OpenPanel({
+	clientId: 'c203cf16-53ce-471a-94c6-d09b2f0e6bc9',
+	trackScreenViews: true,
+	trackOutgoingLinks: true,
+	trackAttributes: true,
+		sessionReplay: {
+		enabled: true,
+	},
+	apiUrl: 'https://opapi.groupify.dev',
+});
+
+export const umamiClient = new Umami({
+  websiteId: 'https://umami.groupify.dev/script.js', // Your website id
+  hostUrl: 'https://umami.mywebsite.com' // URL to your Umami instance
 });
 
 function RootComponent() {
@@ -130,23 +134,6 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 						gtag('config', 'G-D7BS3V6VJF');
 					`}
 				</script>
-				<script defer src="https://umami.groupify.dev/script.js" data-website-id="12a8d73a-1f10-4dcd-ae0b-7e2b16de3338"></script>
-				<script>
-					{`
-					window.op=window.op||function(){var n=[];return new Proxy(function(){arguments.length&&n.push([].slice.call(arguments))},{get:function(t,r){return"q"===r?n:function(){n.push([r].concat([].slice.call(arguments)))}} ,has:function(t,r){return"q"===r}}) }();
-					window.op('init', {
-						apiUrl: 'https://opapi.groupify.dev',
-						clientId: 'c203cf16-53ce-471a-94c6-d09b2f0e6bc9',
-						trackScreenViews: true,
-						trackOutgoingLinks: true,
-						trackAttributes: true,
-						sessionReplay: {
-						enabled: true,
-						}
-					});
-					`}
-				</script>
-				<script src="https://openpanel.dev/op1.js" defer async></script>
 				<Scripts />
 			</body>
 		</html>
