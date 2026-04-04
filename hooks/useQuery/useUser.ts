@@ -27,7 +27,6 @@ export interface User {
 // Query function to fetch the current user
 const getUser = async (): Promise<User> => {
 	const response = await apiClient.get<ApiResponse<User>>("api/v3/me");
-	console.log(response)
 	const identifyOptions = {
 		profileId: response.data.id, // Required
 		firstName: response.data.username,

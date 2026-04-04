@@ -73,8 +73,8 @@ export const op = new OpenPanel({
 });
 
 export const umamiClient = new Umami({
-  websiteId: 'https://umami.groupify.dev/script.js', // Your website id
-  hostUrl: 'https://umami.mywebsite.com' // URL to your Umami instance
+	websiteId: '12a8d73a-1f10-4dcd-ae0b-7e2b16de3338',
+	hostUrl: 'https://umami.groupify.dev/script.js'
 });
 
 function RootComponent() {

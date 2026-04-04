@@ -27,6 +27,7 @@ import { Route as AppDashboardChannelsIndexRouteImport } from './routes/_app/das
 import { Route as AppDashboardAnimesIndexRouteImport } from './routes/_app/dashboard/animes/index'
 import { Route as AuthSubscriptionsConfirmCodeRouteImport } from './routes/_auth/subscriptions/confirm.$code'
 import { Route as AuthForgotPasswordSuccessEmailIndexRouteImport } from './routes/_auth/forgot-password/success/$email/index'
+import { Route as AuthForgotPasswordConfirmIdIndexRouteImport } from './routes/_auth/forgot-password/confirm/$id/index'
 import { Route as AppShareTypeIdIndexRouteImport } from './routes/_app/share/$type/$id/index'
 import { Route as AppDashboardSettingsGroupsIndexRouteImport } from './routes/_app/dashboard/settings/groups/index'
 import { Route as AppDashboardSettingsBillingIndexRouteImport } from './routes/_app/dashboard/settings/billing/index'
@@ -135,6 +136,12 @@ const AuthForgotPasswordSuccessEmailIndexRoute =
   AuthForgotPasswordSuccessEmailIndexRouteImport.update({
     id: '/_auth/forgot-password/success/$email/',
     path: '/forgot-password/success/$email/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthForgotPasswordConfirmIdIndexRoute =
+  AuthForgotPasswordConfirmIdIndexRouteImport.update({
+    id: '/_auth/forgot-password/confirm/$id/',
+    path: '/forgot-password/confirm/$id/',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AppShareTypeIdIndexRoute = AppShareTypeIdIndexRouteImport.update({
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings/billing': typeof AppDashboardSettingsBillingIndexRoute
   '/dashboard/settings/groups': typeof AppDashboardSettingsGroupsIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
+  '/forgot-password/confirm/$id': typeof AuthForgotPasswordConfirmIdIndexRoute
   '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
   '/dashboard/animes/change-group/$id': typeof AppDashboardAnimesChangeGroupIdIndexRoute
   '/dashboard/animes/edit/$id': typeof AppDashboardAnimesEditIdIndexRoute
@@ -279,6 +287,7 @@ export interface FileRoutesByTo {
   '/dashboard/settings/billing': typeof AppDashboardSettingsBillingIndexRoute
   '/dashboard/settings/groups': typeof AppDashboardSettingsGroupsIndexRoute
   '/share/$type/$id': typeof AppShareTypeIdIndexRoute
+  '/forgot-password/confirm/$id': typeof AuthForgotPasswordConfirmIdIndexRoute
   '/forgot-password/success/$email': typeof AuthForgotPasswordSuccessEmailIndexRoute
   '/dashboard/animes/change-group/$id': typeof AppDashboardAnimesChangeGroupIdIndexRoute
   '/dashboard/animes/edit/$id': typeof AppDashboardAnimesEditIdIndexRoute
@@ -314,6 +323,7 @@ export interface FileRoutesById {
   '/_app/dashboard/settings/billing/': typeof AppDashboardSettingsBillingIndexRoute
   '/_app/dashboard/settings/groups/': typeof AppDashboardSettingsGroupsIndexRoute
   '/_app/share/$type/$id/': typeof AppShareTypeIdIndexRoute
+  '/_auth/forgot-password/confirm/$id/': typeof AuthForgotPasswordConfirmIdIndexRoute
   '/_auth/forgot-password/success/$email/': typeof AuthForgotPasswordSuccessEmailIndexRoute
   '/_app/dashboard/animes/change-group/$id/': typeof AppDashboardAnimesChangeGroupIdIndexRoute
   '/_app/dashboard/animes/edit/$id/': typeof AppDashboardAnimesEditIdIndexRoute
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings/billing'
     | '/dashboard/settings/groups'
     | '/share/$type/$id'
+    | '/forgot-password/confirm/$id'
     | '/forgot-password/success/$email'
     | '/dashboard/animes/change-group/$id'
     | '/dashboard/animes/edit/$id'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings/billing'
     | '/dashboard/settings/groups'
     | '/share/$type/$id'
+    | '/forgot-password/confirm/$id'
     | '/forgot-password/success/$email'
     | '/dashboard/animes/change-group/$id'
     | '/dashboard/animes/edit/$id'
@@ -417,6 +429,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard/settings/billing/'
     | '/_app/dashboard/settings/groups/'
     | '/_app/share/$type/$id/'
+    | '/_auth/forgot-password/confirm/$id/'
     | '/_auth/forgot-password/success/$email/'
     | '/_app/dashboard/animes/change-group/$id/'
     | '/_app/dashboard/animes/edit/$id/'
@@ -440,6 +453,7 @@ export interface RootRouteChildren {
   AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
   AuthSubscriptionsConfirmCodeRoute: typeof AuthSubscriptionsConfirmCodeRoute
   AppShareTypeIdIndexRoute: typeof AppShareTypeIdIndexRoute
+  AuthForgotPasswordConfirmIdIndexRoute: typeof AuthForgotPasswordConfirmIdIndexRoute
   AuthForgotPasswordSuccessEmailIndexRoute: typeof AuthForgotPasswordSuccessEmailIndexRoute
 }
 
@@ -569,6 +583,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password/success/$email'
       fullPath: '/forgot-password/success/$email'
       preLoaderRoute: typeof AuthForgotPasswordSuccessEmailIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/forgot-password/confirm/$id/': {
+      id: '/_auth/forgot-password/confirm/$id/'
+      path: '/forgot-password/confirm/$id'
+      fullPath: '/forgot-password/confirm/$id'
+      preLoaderRoute: typeof AuthForgotPasswordConfirmIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/share/$type/$id/': {
@@ -750,6 +771,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,
   AuthSubscriptionsConfirmCodeRoute: AuthSubscriptionsConfirmCodeRoute,
   AppShareTypeIdIndexRoute: AppShareTypeIdIndexRoute,
+  AuthForgotPasswordConfirmIdIndexRoute: AuthForgotPasswordConfirmIdIndexRoute,
   AuthForgotPasswordSuccessEmailIndexRoute:
     AuthForgotPasswordSuccessEmailIndexRoute,
 }
