@@ -98,8 +98,14 @@ class ApiClient {
 		const url = new URL(endpoint, this.baseURL);
 		if (params) {
 			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined) {
-					url.searchParams.append(key, value.toString());
+				if (value !== undefined && value !== null && value !== "") {
+					if (typeof value === "number") {
+						url.searchParams.set(key, String(value));
+					} else if (typeof value === "boolean") {
+						url.searchParams.set(key, String(value));
+					} else {
+						url.searchParams.set(key, value);
+					}
 				}
 			});
 		}

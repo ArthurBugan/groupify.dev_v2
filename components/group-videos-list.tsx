@@ -10,6 +10,7 @@ import {
 	List,
 	Play,
 	Search,
+	Trash2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useGroupVideos } from "@/hooks/useQuery/useGroupVideos";
+import { useGroup as useGroupDetail } from "@/hooks/useQuery/useGroups";
+import {
+	useDeleteAllGroupVideos,
+	useGroupVideos,
+} from "@/hooks/useQuery/useGroupVideos";
 import { cn } from "@/lib/utils";
 
 interface GroupVideosListProps {
@@ -77,6 +82,10 @@ export function GroupVideosList({ groupId }: GroupVideosListProps) {
 		"recent",
 	);
 	const [viewMode, setViewMode] = useState<"grid" | "list" | "compact">("grid");
+	const [selectedChannel, setSelectedChannel] = useState<string>("all");
+
+	const { data: groupData } = useGroupDetail(groupId);
+	const channels = groupData?.channels || [];
 
 	// Debounce search input
 	useEffect(() => {
@@ -96,12 +105,14 @@ export function GroupVideosList({ groupId }: GroupVideosListProps) {
 		page: currentPage,
 		limit: itemsPerPage,
 		search: debouncedSearch || undefined,
+		channelId: selectedChannel !== "all" ? selectedChannel : undefined,
 	});
+
+	const deleteAllVideos = useDeleteAllGroupVideos();
 
 	const allVideos = videosData?.data || [];
 	const pagination = videosData?.pagination;
 
-	// Client-side filtering (only if not using server-side search)
 	const filteredVideos = useMemo(() => {
 		if (!searchQuery.trim()) return allVideos;
 
@@ -135,12 +146,6 @@ export function GroupVideosList({ groupId }: GroupVideosListProps) {
 		}
 		return sorted;
 	}, [filteredVideos, sortOrder]);
-
-	// Reset to page 1 when items per page changes
-	useEffect(() => {
-		setCurrentPage(1);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [itemsPerPage]);
 
 	// Load settings from localStorage on component mount
 	useEffect(() => {
@@ -479,6 +484,29 @@ export function GroupVideosList({ groupId }: GroupVideosListProps) {
 					</CardTitle>
 
 					<div className="flex items-center gap-2">
+						{/* Channel Filter */}
+						{channels.length > 0 && (
+							<Select
+								value={selectedChannel}
+								onValueChange={(v) => {
+									setSelectedChannel(v);
+									setCurrentPage(1);
+								}}
+							>
+								<SelectTrigger className="h-8 w-32 text-xs">
+									<SelectValue placeholder="All channels" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">All channels</SelectItem>
+									{channels.map((channel) => (
+										<SelectItem key={channel.id} value={channel.id}>
+											{channel.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						)}
+
 						{/* Search */}
 						<div className="relative">
 							<Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -532,6 +560,28 @@ export function GroupVideosList({ groupId }: GroupVideosListProps) {
 								<AlignJustify className="h-3.5 w-3.5" />
 							</Button>
 						</div>
+
+						{/* Clear All Videos */}
+						{allVideos.length > 0 && (
+							<Button
+								variant="ghost"
+								size="sm"
+								className="h-8 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+								onClick={() => {
+									if (
+										confirm(
+											"Are you sure you want to clear all videos from this group? Its going to resync all videos from YouTube and force a new collection.",
+										)
+									) {
+										deleteAllVideos.mutate(groupId);
+									}
+								}}
+								disabled={deleteAllVideos.isPending}
+							>
+								<Trash2 className="h-3.5 w-3.5 mr-1" />
+								{deleteAllVideos.isPending ? "Clearing..." : "Clear All"}
+							</Button>
+						)}
 					</div>
 				</div>
 			</CardHeader>
