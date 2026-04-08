@@ -87,6 +87,18 @@ function ShareLinksPage() {
 			</div>
 
 			<div className="rounded-lg border bg-card p-6">
+				<div className="flex justify-center py-4">
+						<ins
+							className="adsbygoogle"
+							style={{
+								display: "inline-block",
+								width: "728px",
+								height: "90px",
+							}}
+							data-ad-client="ca-pub-4077364511521347"
+							data-ad-slot="5153442110"
+						></ins>
+					</div>
 				<div className="flex items-center gap-2 mb-4">
 					<Share2 className="h-5 w-5 text-muted-foreground" />
 					<h3 className="text-lg font-semibold">All Share Links</h3>
