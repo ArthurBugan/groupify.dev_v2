@@ -47,7 +47,7 @@ function WelcomeSection({ user, onNewGroup }: { user: any; onNewGroup: () => voi
 				</div>
 				<div className="flex gap-2">
 					<Button size="sm" variant="secondary" onClick={onNewGroup}><Plus className="h-3.5 w-3.5 mr-1.5" /> New Group</Button>
-					<Button size="sm" asChild><Link to="/dashboard/share-links"><Share2 className="h-3.5 w-3.5 mr-1.5" /> Share Links</Link></Button>
+					<Button size="sm" variant="secondary" asChild><Link to="/dashboard/share-links"><Share2 className="h-3.5 w-3.5 mr-1.5" /> Share Links</Link></Button>
 				</div>
 			</div>
 		</div>

@@ -3,7 +3,7 @@
 import { useTheme } from "@/components/theme-provider";
 import * as React from "react";
 
-type AccentColor = "blue" | "green" | "purple" | "red" | "orange";
+type AccentColor = "blue" | "green" | "purple" | "red" | "orange" | "black";
 type FontSize = "small" | "medium" | "large";
 
 interface AppearanceSettings {
@@ -65,13 +65,17 @@ const accentColors = {
 		light: "24.6 95% 53.1%",
 		dark: "20.5 90.2% 48.2%",
 	},
+	black: {
+		light: "0 0% 15%",
+		dark: "0 0% 75%",
+	},
 };
 
 export function AppearanceProvider({
 	children,
 	initialSettings,
 }: AppearanceProviderProps) {
-	const { resolvedTheme } = useTheme();
+	const { theme, resolvedTheme } = useTheme();
 	const [mounted, setMounted] = React.useState(false);
 	const [settings, setSettings] = React.useState<AppearanceSettings>(() => {
 		if (typeof window !== "undefined") {
@@ -108,17 +112,19 @@ export function AppearanceProvider({
 		const root = document.documentElement;
 
 		// Apply accent color based on resolved theme
-		const isDark = resolvedTheme === "dark";
-		const accentColorValue = isDark
-			? accentColors[settings.accentColor].dark
-			: accentColors[settings.accentColor].light;
+		// Skip accent color override for "groupify" theme to preserve its brand colors
+		const isDark = resolvedTheme !== "light";
+		if (theme !== "groupify") {
+			const accentColorValue = isDark
+				? accentColors[settings.accentColor].dark
+				: accentColors[settings.accentColor].light;
 
-		// Set both primary and primary-foreground for better compatibility
-		root.style.setProperty("--primary", `hsl(${accentColorValue})`);
-		root.style.setProperty(
-			"--primary-foreground",
-			isDark ? "hsl(210 40% 98%)" : "hsl(210 40% 2%)",
-		);
+			root.style.setProperty("--primary", `hsl(${accentColorValue})`);
+			root.style.setProperty(
+				"--primary-foreground",
+				isDark ? "hsl(210 40% 98%)" : "hsl(210 40% 2%)",
+			);
+		}
 
 		// Apply font size
 		const fontSizeMap = {
@@ -153,7 +159,7 @@ export function AppearanceProvider({
 			localStorage.setItem("appearance-settings", JSON.stringify(settings));
 		}
 		document.cookie = `appearance-settings=${JSON.stringify(settings)}; path=/; max-age=${60 * 60 * 24 * 365}`;
-	}, [settings, resolvedTheme, mounted]);
+	}, [settings, resolvedTheme, theme, mounted]);
 
 	const contextValue: AppearanceContextType = {
 		...settings,

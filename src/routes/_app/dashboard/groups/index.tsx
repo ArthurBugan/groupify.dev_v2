@@ -100,15 +100,23 @@ function GroupsPage() {
 					New Group
 				</Button>
 			</div>
-			<div className="flex justify-center">
-				<ins
-					className="adsbygoogle"
-					style={{ display: "inline-block", width: "728px", height: "90px" }}
-					data-ad-client="ca-pub-4077364511521347"
-					data-ad-slot="5153442110"
-				></ins>
-			</div>
-			<GroupsTable />
+			<Card>
+				<CardContent className="pt-6">
+					<div className="flex justify-center py-4">
+						<ins
+							className="adsbygoogle"
+							style={{
+								display: "inline-block",
+								width: "728px",
+								height: "90px",
+							}}
+							data-ad-client="ca-pub-4077364511521347"
+							data-ad-slot="5153442110"
+						></ins>
+					</div>
+					<GroupsTable />
+				</CardContent>
+			</Card>
 			{user?.canAddGroup === false && (
 				<UpgradePlanModal
 					open={upgradeModalOpen}
