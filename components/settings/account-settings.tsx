@@ -94,7 +94,7 @@ export function AccountSettings() {
 					
 					<Input type={showConfirmPassword ? "text" : "password"} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="pr-10 h-9" />
 					
-					<Button size="sm" disabled={!newPassword || newPassword !== confirmPassword || newPassword.length < 6 || passwordMutation} onClick={() => updatePasswordMutation({ password: newPassword, passwordConfirmation: confirmPassword })}>Update Password</Button>
+					<Button variant="secondary" size="sm" disabled={!newPassword || newPassword !== confirmPassword || newPassword.length < 6 || passwordMutation} onClick={() => updatePasswordMutation({ password: newPassword, passwordConfirmation: confirmPassword })}>Update Password</Button>
 				</div>
 			</div>
 

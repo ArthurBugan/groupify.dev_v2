@@ -60,7 +60,7 @@ const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
 		) {
 			try {
 				w.adsbygoogle.push({});
-			} catch (_) { }
+			} catch (_) {}
 		}
 	}, []);
 	return (
@@ -228,7 +228,7 @@ export function ShareLinksTable() {
 				</div>
 			)}
 
-			<div className="rounded-md border">
+			<div className="rounded-md border bg-card">
 				<Table>
 					<TableHeader>
 						<TableRow>

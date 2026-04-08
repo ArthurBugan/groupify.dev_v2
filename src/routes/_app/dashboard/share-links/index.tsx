@@ -41,7 +41,7 @@ function ShareLinksPage() {
 				/>
 				<Dialog open={open} onOpenChange={setOpen}>
 					<DialogTrigger asChild>
-						<Button>
+						<Button variant="secondary">
 							<Plus className="mr-2 h-4 w-4" />
 							Create New Link
 						</Button>

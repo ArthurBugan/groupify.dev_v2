@@ -53,7 +53,8 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 	const [viewMode, setViewMode] = useState("grid"); // grid, list, compact
 	const [sortOrder, setSortOrder] = useState("recent"); // Default sort by name ascending
 
-	const { mutate: deleteChannel, isPending: isDeletingChannel } = useDeleteChannelMutation();
+	const { mutate: deleteChannel, isPending: isDeletingChannel } =
+		useDeleteChannelMutation();
 
 	useEffect(() => {
 		if (groupData?.channels) {
@@ -74,7 +75,10 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 				filtered.sort((a, b) => b.name.localeCompare(a.name));
 				break;
 			case "recent":
-				filtered.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+				filtered.sort(
+					(a, b) =>
+						new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+				);
 				break;
 			default:
 				break;
@@ -101,7 +105,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 	};
 
 	const renderTableView = () => (
-		<div className="rounded-md border">
+		<div className="rounded-md border bg-card">
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -149,7 +153,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem asChild>
 												<a
-													href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/channel/'}${channel.url}`}
+													href={`${channel.contentType === "anime" ? "https://crunchyroll.com/series/" : "https://youtube.com/channel/"}${channel.url}`}
 													target="_blank"
 													rel="noopener noreferrer"
 												>
@@ -210,8 +214,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 										className="flex-1"
 									>
 										<a
-											href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/channel/'}${channel.url}`}
-
+											href={`${channel.contentType === "anime" ? "https://crunchyroll.com/series/" : "https://youtube.com/channel/"}${channel.url}`}
 											target="_blank"
 											rel="noopener noreferrer"
 										>
@@ -271,7 +274,7 @@ export function ChannelsTable({ groupId }: ChannelsTableProps) {
 						<div className="flex items-center gap-2">
 							<Button variant="ghost" size="icon" className="h-7 w-7" asChild>
 								<a
-									href={`${channel.contentType === 'anime' ? 'https://crunchyroll.com/series/' : 'https://youtube.com/channel/'}${channel.url}`}
+									href={`${channel.contentType === "anime" ? "https://crunchyroll.com/series/" : "https://youtube.com/channel/"}${channel.url}`}
 									target="_blank"
 									rel="noopener noreferrer"
 								>

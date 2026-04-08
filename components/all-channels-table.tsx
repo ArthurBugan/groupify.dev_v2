@@ -47,25 +47,38 @@ import { useGroups } from "@/hooks/useQuery/useGroups";
 import { IconViewer } from "./icon-picker";
 
 const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
-		const adRef = useRef<any>(null);
-		useEffect(() => {
-			const w: any = typeof window !== 'undefined' ? (window as any) : null;
-			if (w && w.adsbygoogle && adRef.current && !adRef.current.getAttribute('data-adsbygoogle-status')) {
-				try { w.adsbygoogle.push({}); } catch (_) {}
-			}
-		}, []);
-		return (
-			<TableRow>
-				<TableCell colSpan={colSpan}>
-					<div className="flex justify-center">
-						<div>
-							<ins className="adsbygoogle" style={{ display: 'inline-block', width: 1200, height: 69 }} data-ad-client="ca-pub-4077364511521347" data-ad-slot="2439256813" ref={adRef}></ins>
-						</div>
+	const adRef = useRef<any>(null);
+	useEffect(() => {
+		const w: any = typeof window !== "undefined" ? (window as any) : null;
+		if (
+			w &&
+			w.adsbygoogle &&
+			adRef.current &&
+			!adRef.current.getAttribute("data-adsbygoogle-status")
+		) {
+			try {
+				w.adsbygoogle.push({});
+			} catch (_) {}
+		}
+	}, []);
+	return (
+		<TableRow>
+			<TableCell colSpan={colSpan}>
+				<div className="flex justify-center">
+					<div>
+						<ins
+							className="adsbygoogle"
+							style={{ display: "inline-block", width: 1200, height: 69 }}
+							data-ad-client="ca-pub-4077364511521347"
+							data-ad-slot="2439256813"
+							ref={adRef}
+						></ins>
 					</div>
-				</TableCell>
-			</TableRow>
-		);
-	};
+				</div>
+			</TableCell>
+		</TableRow>
+	);
+};
 
 export function AllChannelsTable() {
 	const [currentPage, setCurrentPage] = useState(1);
@@ -74,7 +87,7 @@ export function AllChannelsTable() {
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 	const [adIndices, setAdIndices] = useState<number[]>([]);
 	// Fetch all groups
-	const { data: groupsData } = useGroups({limit: 100});
+	const { data: groupsData } = useGroups({ limit: 100 });
 	const { mutate: updateChannel } = useUpdateChannel();
 	const { mutate: deleteChannel, isPending: isDeletingChannel } =
 		useDeleteChannelMutation();
@@ -125,7 +138,14 @@ export function AllChannelsTable() {
 	) => {
 		updateChannel({
 			id: channelId,
-			data: { id: channelId, groupId, name, thumbnail, url, contentType: 'youtube' },
+			data: {
+				id: channelId,
+				groupId,
+				name,
+				thumbnail,
+				url,
+				contentType: "youtube",
+			},
 		});
 	};
 
@@ -185,7 +205,7 @@ export function AllChannelsTable() {
 				</div>
 			)}
 
-			<div className="rounded-md border">
+			<div className="rounded-md border bg-card">
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -214,98 +234,98 @@ export function AllChannelsTable() {
 										<AdRow colSpan={3} key={`ad-${channel.id}-${idx}`} />
 									)}
 									<TableRow key={channel.id}>
-									<TableCell>
-										<div className="flex items-center gap-3">
-											<Avatar className="h-4 w-4">
-												<AvatarImage
-													src={channel.thumbnail || "/placeholder.svg"}
-													alt={channel.name}
-												/>
-												<AvatarFallback>
-													<Youtube className="h-4 w-4" />
-												</AvatarFallback>
-											</Avatar>
-											<div>
-												<p className="font-medium">{channel.name}</p>
-												<p className="text-xs text-muted-foreground truncate max-w-[200px]">
-													{`https://youtube.com/channel/${channel.url}`}
-												</p>
-											</div>
-										</div>
-									</TableCell>
-									<TableCell>
-										{channel.groupId ? (
-											<div className="flex items-center gap-2">
-												<Avatar className="h-6 w-6">
-													<IconViewer
-														icon={channel.groupIcon || "/placeholder.svg"}
+										<TableCell>
+											<div className="flex items-center gap-3">
+												<Avatar className="h-4 w-4">
+													<AvatarImage
+														src={channel.thumbnail || "/placeholder.svg"}
+														alt={channel.name}
 													/>
 													<AvatarFallback>
-														<FolderKanban className="h-3 w-3" />
+														<Youtube className="h-4 w-4" />
 													</AvatarFallback>
 												</Avatar>
-												<Link
-													to={`/dashboard/groups/$id`}
-													params={{ id: channel.groupId }}
-													className="hover:underline"
-												>
-													{channel.groupName}
-												</Link>
+												<div>
+													<p className="font-medium">{channel.name}</p>
+													<p className="text-xs text-muted-foreground truncate max-w-[200px]">
+														{`https://youtube.com/channel/${channel.url}`}
+													</p>
+												</div>
 											</div>
-										) : (
-											<GenericCombobox
-												data={
-													groupsData?.data.map((group) => ({
-														value: group.id,
-														label: group.name,
-														icon: group.icon,
-													})) || []
-												}
-												value={channel.groupId || ""}
-												onValueChange={(value) =>
-													handleAssignGroup(
-														channel.id,
-														value,
-														channel.name,
-														channel.thumbnail,
-														channel.url,
-													)
-												}
-												placeholder="Assign Group"
-												renderItem={(item) => (
-													<div className="flex items-center gap-8">
-														{item.icon && (
-															<IconViewer
-																icon={item.icon}
-																className="h-6 w-6"
-															/>
-														)}
-														<span>{item.label}</span>
-													</div>
-												)}
-											/>
-										)}
-									</TableCell>
-									<TableCell className="text-right">
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button variant="ghost" size="icon">
-													<MoreHorizontal className="h-4 w-4" />
-													<span className="sr-only">Open menu</span>
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end">
-												<DropdownMenuItem asChild>
-													<a
-														href={`https://youtube.com/channel/${channel.url?.trim().replace("@", "")}`}
-														target="_blank"
-														rel="noopener noreferrer"
+										</TableCell>
+										<TableCell>
+											{channel.groupId ? (
+												<div className="flex items-center gap-2">
+													<Avatar className="h-6 w-6">
+														<IconViewer
+															icon={channel.groupIcon || "/placeholder.svg"}
+														/>
+														<AvatarFallback>
+															<FolderKanban className="h-3 w-3" />
+														</AvatarFallback>
+													</Avatar>
+													<Link
+														to={`/dashboard/groups/$id`}
+														params={{ id: channel.groupId }}
+														className="hover:underline"
 													>
-														<ExternalLink className="mr-2 h-4 w-4" />
-														Visit channel
-													</a>
-												</DropdownMenuItem>
-												{/* <DropdownMenuItem asChild>
+														{channel.groupName}
+													</Link>
+												</div>
+											) : (
+												<GenericCombobox
+													data={
+														groupsData?.data.map((group) => ({
+															value: group.id,
+															label: group.name,
+															icon: group.icon,
+														})) || []
+													}
+													value={channel.groupId || ""}
+													onValueChange={(value) =>
+														handleAssignGroup(
+															channel.id,
+															value,
+															channel.name,
+															channel.thumbnail,
+															channel.url,
+														)
+													}
+													placeholder="Assign Group"
+													renderItem={(item) => (
+														<div className="flex items-center gap-8">
+															{item.icon && (
+																<IconViewer
+																	icon={item.icon}
+																	className="h-6 w-6"
+																/>
+															)}
+															<span>{item.label}</span>
+														</div>
+													)}
+												/>
+											)}
+										</TableCell>
+										<TableCell className="text-right">
+											<DropdownMenu>
+												<DropdownMenuTrigger asChild>
+													<Button variant="ghost" size="icon">
+														<MoreHorizontal className="h-4 w-4" />
+														<span className="sr-only">Open menu</span>
+													</Button>
+												</DropdownMenuTrigger>
+												<DropdownMenuContent align="end">
+													<DropdownMenuItem asChild>
+														<a
+															href={`https://youtube.com/channel/${channel.url?.trim().replace("@", "")}`}
+															target="_blank"
+															rel="noopener noreferrer"
+														>
+															<ExternalLink className="mr-2 h-4 w-4" />
+															Visit channel
+														</a>
+													</DropdownMenuItem>
+													{/* <DropdownMenuItem asChild>
 													<Link
 														to={`/dashboard/channels/edit/$id`}
 														params={{ id: channel.id }}
@@ -314,32 +334,32 @@ export function AllChannelsTable() {
 														Edit details
 													</Link>
 												</DropdownMenuItem> */}
-												<DropdownMenuItem asChild>
-													<Link
-														to={`/dashboard/channels/change-group/$id`}
-														params={{ id: channel.id }}
+													<DropdownMenuItem asChild>
+														<Link
+															to={`/dashboard/channels/change-group/$id`}
+															params={{ id: channel.id }}
+														>
+															<FolderKanban className="mr-2 h-4 w-4" />
+															Change group
+														</Link>
+													</DropdownMenuItem>
+													<DropdownMenuItem
+														onClick={() => handleDeleteChannel(channel.id)}
+														className="text-destructive"
+														disabled={isDeletingChannel}
 													>
-														<FolderKanban className="mr-2 h-4 w-4" />
-														Change group
-													</Link>
-												</DropdownMenuItem>
-												<DropdownMenuItem
-													onClick={() => handleDeleteChannel(channel.id)}
-													className="text-destructive"
-													disabled={isDeletingChannel}
-												>
-													{isDeletingChannel ? (
-														<Loader2 className="animate-spin mr-2 h-4 w-4" />
-													) : (
-														<Trash2 className="mr-2 h-4 w-4" />
-													)}
-													Delete channel
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</TableCell>
-								</TableRow>
-							</>
+														{isDeletingChannel ? (
+															<Loader2 className="animate-spin mr-2 h-4 w-4" />
+														) : (
+															<Trash2 className="mr-2 h-4 w-4" />
+														)}
+														Delete channel
+													</DropdownMenuItem>
+												</DropdownMenuContent>
+											</DropdownMenu>
+										</TableCell>
+									</TableRow>
+								</>
 							))
 						)}
 					</TableBody>
