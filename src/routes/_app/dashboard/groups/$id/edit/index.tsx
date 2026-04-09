@@ -2,6 +2,7 @@
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { GroupForm, type GroupFormData } from "@/components/group-form";
 import {
 	useGroup,
@@ -31,14 +32,16 @@ function GroupEditPage() {
 					description: data.description,
 					category: data.category,
 					icon: data.icon,
-					parentId: data.parentId,
+					parentId: data.parentId === "none" ? undefined : data.parentId,
 				},
 			});
 
 			router({ to: "/dashboard/groups/$id", params: { id } });
-		} catch (error) {
-			console.error("Error updating group:", error);
-			// Error toast is already handled by the mutation
+		} catch (error: any) {
+			toast.error("Error", {
+				description:
+					error?.message || "Failed to update group. Please try again.",
+			});
 		}
 	};
 

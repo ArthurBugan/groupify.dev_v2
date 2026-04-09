@@ -18,19 +18,20 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { queryClient } from "@/hooks/utils/queryClient";
 import appCss from "@/styles/app.css?url";
-import posthog from "posthog-js";
 import { AnalyticsListener } from "@/hooks/analytics-listener";
-import { OpenPanel } from '@openpanel/web';
+import rybbit from "@rybbit/js";
 
-const PUBLIC_POST_HOG_ID = import.meta.env.VITE_POST_HOG_ID;
-const NODE_ENV = import.meta.env.MODE;
-
-if (
-	NODE_ENV === "production" &&
-	PUBLIC_POST_HOG_ID
-) {
-	posthog.init(PUBLIC_POST_HOG_ID, {
-		api_host: "https://app.posthog.com",
+if (typeof window !== "undefined") {
+	await rybbit.init({
+	  analyticsHost: "https://rybbit.groupify.dev/api",
+	  siteId: "5bd1e2c51d8f",
+	  replayPrivacyConfig: {
+		maskAllInputs: true, // Mask all input values (default: true)
+		maskTextSelectors: [
+		  ".sensitive-data",  // Mask text in elements with this class
+		  "#credit-card"      // Mask specific element IDs
+		]
+	  }
 	});
 }
 
@@ -56,18 +57,6 @@ export const Route = createRootRoute({
 	},
 	component: RootComponent,
 });
-
-export const op = new OpenPanel({
-	clientId: 'c203cf16-53ce-471a-94c6-d09b2f0e6bc9',
-	trackScreenViews: true,
-	trackOutgoingLinks: true,
-	trackAttributes: true,
-		sessionReplay: {
-		enabled: true,
-	},
-	apiUrl: 'https://opapi.groupify.dev',
-});
-
 
 function RootComponent() {
 	return (
@@ -126,7 +115,6 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 						gtag('config', 'G-D7BS3V6VJF');
 					`}
 				</script>
-				<script defer src="https://umami.groupify.dev/script.js" data-website-id="12a8d73a-1f10-4dcd-ae0b-7e2b16de3338"></script>
 				<Scripts />
 			</body>
 		</html>
