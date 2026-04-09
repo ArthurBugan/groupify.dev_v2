@@ -58,7 +58,7 @@ export interface BatchUpdateChannelRequest {
 }
 
 // Query function to fetch all channels with pagination
-const getChannels = async (params?: {
+export const getChannels = async (params?: {
 	page?: number;
 	limit?: number;
 	search?: string;
@@ -74,6 +74,15 @@ const getChannels = async (params?: {
 const getChannel = async (id: string): Promise<Channel> => {
 	const response = await apiClient.get<ApiResponse<Channel>>(
 		`/api/v2/channels/${id}`,
+	);
+	return response.data;
+};
+
+// Fetch channel info from external URL
+export const fetchChannelFromUrl = async (url: string): Promise<Channel> => {
+	const response = await apiClient.post<ApiResponse<Channel>>(
+		"/api/v3/proxy/fetch-url",
+		{ url },
 	);
 	return response.data;
 };
@@ -234,7 +243,8 @@ export function useUpdateChannel() {
 		},
 		onError: (error) => {
 			toast.error("Error", {
-				description: error.message || "Failed to update channel. Please try again.",
+				description:
+					error.message || "Failed to update channel. Please try again.",
 			});
 		},
 	});
@@ -268,18 +278,15 @@ export function useUpdateChannelsBatch() {
 		},
 		onError: (error) => {
 			toast.error("Error", {
-				description: error.message || "Failed to update channels. Please try again.",
+				description:
+					error.message || "Failed to update channels. Please try again.",
 			});
 		},
 	});
 }
 
-export {
-	getChannels,
-	getChannel,
-	getChannelsByGroup,
-	createChannel,
-	updateChannel,
-	deleteChannel,
-	updateChannelsBatch,
-};
+export function useFetchChannelFromUrl() {
+	return useMutation({
+		mutationFn: (url: string) => fetchChannelFromUrl(url),
+	});
+}

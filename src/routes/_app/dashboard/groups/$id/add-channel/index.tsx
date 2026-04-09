@@ -43,9 +43,13 @@ import {
 	getChannels,
 	useChannels,
 	useUpdateChannelsBatch,
+	useFetchChannelFromUrl,
 } from "@/hooks/useQuery/useChannels";
 import { useGroup } from "@/hooks/useQuery/useGroups";
 import { useUser } from "@/hooks/useQuery/useUser";
+import { getChannelUrl } from "@/lib/utils";
+
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/dashboard/groups/$id/add-channel/")(
 	{
@@ -93,6 +97,9 @@ function AddChannelPage() {
 
 	const [activeTab, setActiveTab] = useState("search");
 	const [searchQuery, setSearchQuery] = useState("");
+	const [urlInput, setUrlInput] = useState("");
+	const [isFetchingUrl, setIsFetchingUrl] = useState(false);
+	const [fetchError, setFetchError] = useState("");
 	const [isSearching, setIsSearching] = useState(false);
 	const [searchResults, setSearchResults] = useState<any[]>([]);
 	const [animeResults, setAnimeResults] = useState<any[]>([]);
@@ -108,6 +115,7 @@ function AddChannelPage() {
 	const [showDiscardDialog, setShowDiscardDialog] = useState(false);
 	const { mutateAsync: updateChannelsBatchMutation, isPending: isUpdating } =
 		useUpdateChannelsBatch();
+	const { mutateAsync: fetchChannelFromUrl } = useFetchChannelFromUrl();
 	const groupName = groupData?.name || "Channel Group";
 	useEffect(() => {
 		if (!isLoading && groupData?.channels) {
@@ -167,6 +175,37 @@ function AddChannelPage() {
 
 	const handleRemoveChannel = (channelId: string) => {
 		setSelectedChannels((prev) => prev.filter((c) => c.id !== channelId));
+	};
+
+	const handleFetchUrl = async (e?: React.FormEvent) => {
+		e?.preventDefault();
+		if (!urlInput.trim()) return;
+
+		setIsFetchingUrl(true);
+		setFetchError("");
+
+		try {
+			const response = await fetchChannelFromUrl(urlInput.trim());
+
+			const channelData = {
+				id: response.id,
+				name: response.name,
+				thumbnail: response.thumbnail,
+				channelId: response.id,
+				url: urlInput.trim(),
+				groupId: id,
+				contentType: response.contentType ?? ("youtube" as const),
+				newContent: false,
+			};
+
+			setSelectedChannels((prev) => [...prev, channelData]);
+			setUrlInput("");
+			toast.success("Channel added successfully");
+		} catch (error) {
+			setFetchError("Failed to fetch channel. Please check the URL.");
+		} finally {
+			setIsFetchingUrl(false);
+		}
 	};
 
 	const handleSaveChannels = async () => {
@@ -259,9 +298,10 @@ function AddChannelPage() {
 								onValueChange={setActiveTab}
 								className="space-y-4"
 							>
-								<TabsList className="grid w-full grid-cols-2">
+								<TabsList className="grid w-full grid-cols-3">
 									<TabsTrigger value="search">Search YouTube</TabsTrigger>
 									<TabsTrigger value="anime">Search Anime</TabsTrigger>
+									<TabsTrigger value="url">Add URL</TabsTrigger>
 								</TabsList>
 
 								<TabsContent value="search" className="space-y-4">
@@ -329,90 +369,120 @@ function AddChannelPage() {
 										</Button>
 									</form>
 								</TabsContent>
+
+								<TabsContent value="url" className="space-y-4">
+									<form onSubmit={handleFetchUrl} className="flex gap-2 mb-4">
+										<Input
+											placeholder="Paste YouTube channel URL..."
+											value={urlInput}
+											onChange={(e) => setUrlInput(e.target.value)}
+											className="flex-1"
+										/>
+										<Button
+											type="submit"
+											variant="secondary"
+											disabled={isFetchingUrl || !urlInput.trim()}
+										>
+											{isFetchingUrl ? "Fetching..." : "Fetch"}
+										</Button>
+									</form>
+									{fetchError && (
+										<p className="text-sm text-red-500">{fetchError}</p>
+									)}
+									<p className="text-sm text-muted-foreground">
+										Paste a YouTube channel URL to fetch and add it directly.
+									</p>
+								</TabsContent>
 							</Tabs>
 						</CardContent>
 					</Card>
 
 					<div className="space-y-2">
-						{activeTab === "search"
-							? items?.map((channel) => (
-									<div
-										key={channel.name + channel.id}
-										className="flex items-center justify-between p-3 rounded-lg border bg-card"
-									>
-										<div className="flex items-center gap-3">
-											<Avatar className="h-10 w-10">
-												<AvatarImage
-													src={channel.thumbnail || "/placeholder.svg"}
-													alt={channel.name}
-												/>
-												<AvatarFallback>
-													<Youtube className="h-5 w-5" />
-												</AvatarFallback>
-											</Avatar>
-											<div>
-												<div className="flex items-center gap-2">
-													<h3 className="font-medium">{channel.name}</h3>
-												</div>
-												<p className="text-xs text-muted-foreground">
-													{`https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
-												</p>
-											</div>
-										</div>
-										<Button
-											size="sm"
-											variant={isSelected(channel.id) ? "secondary" : "outline"}
-											onClick={() => handleAddChannel(channel)}
-											disabled={isSelected(channel.id)}
+						{activeTab === "url"
+							? null
+							: activeTab === "search"
+								? items?.map((channel) => (
+										<div
+											key={channel.name + channel.id}
+											className="flex items-center justify-between p-3 rounded-lg border bg-card"
 										>
-											{isSelected(channel.id) ? (
-												<Check className="mr-1 h-4 w-4" />
-											) : (
-												<Plus className="mr-1 h-4 w-4" />
-											)}
-											{isSelected(channel.id) ? "Added" : "Add"}
-										</Button>
-									</div>
-								))
-							: animeItems?.map((channel) => (
-									<div
-										key={channel.name + channel.id}
-										className="flex items-center justify-between p-3 rounded-lg border bg-card"
-									>
-										<div className="flex items-center gap-3">
-											<Avatar className="h-10 w-10">
-												<AvatarImage
-													src={channel.thumbnail || "/placeholder.svg"}
-													alt={channel.name}
-												/>
-												<AvatarFallback>
-													<Youtube className="h-5 w-5" />
-												</AvatarFallback>
-											</Avatar>
-											<div>
-												<div className="flex items-center gap-2">
-													<h3 className="font-medium">{channel.name}</h3>
+											<div className="flex items-center gap-3">
+												<Avatar className="h-10 w-10">
+													<AvatarImage
+														src={channel.thumbnail || "/placeholder.svg"}
+														alt={channel.name}
+													/>
+													<AvatarFallback>
+														<Youtube className="h-5 w-5" />
+													</AvatarFallback>
+												</Avatar>
+												<div>
+													<div className="flex items-center gap-2">
+														<h3 className="font-medium">{channel.name}</h3>
+													</div>
+													<p className="text-xs text-muted-foreground">
+														{getChannelUrl(channel.contentType, channel.url)}
+													</p>
 												</div>
-												<p className="text-xs text-muted-foreground">
-													{`https://crunchyroll.com/series/${channel.url}`}
-												</p>
 											</div>
+											<Button
+												size="sm"
+												variant={
+													isSelected(channel.id) ? "secondary" : "outline"
+												}
+												onClick={() => handleAddChannel(channel)}
+												disabled={isSelected(channel.id)}
+											>
+												{isSelected(channel.id) ? (
+													<Check className="mr-1 h-4 w-4" />
+												) : (
+													<Plus className="mr-1 h-4 w-4" />
+												)}
+												{isSelected(channel.id) ? "Added" : "Add"}
+											</Button>
 										</div>
-										<Button
-											size="sm"
-											variant={isSelected(channel.id) ? "secondary" : "outline"}
-											onClick={() => handleAddChannel(channel)}
-											disabled={isSelected(channel.id)}
+									))
+								: animeItems?.map((channel) => (
+										<div
+											key={channel.name + channel.id}
+											className="flex items-center justify-between p-3 rounded-lg border bg-card"
 										>
-											{isSelected(channel.id) ? (
-												<Check className="mr-1 h-4 w-4" />
-											) : (
-												<Plus className="mr-1 h-4 w-4" />
-											)}
-											{isSelected(channel.id) ? "Added" : "Add"}
-										</Button>
-									</div>
-								))}
+											<div className="flex items-center gap-3">
+												<Avatar className="h-10 w-10">
+													<AvatarImage
+														src={channel.thumbnail || "/placeholder.svg"}
+														alt={channel.name}
+													/>
+													<AvatarFallback>
+														<Youtube className="h-5 w-5" />
+													</AvatarFallback>
+												</Avatar>
+												<div>
+													<div className="flex items-center gap-2">
+														<h3 className="font-medium">{channel.name}</h3>
+													</div>
+													<p className="text-xs text-muted-foreground">
+														{getChannelUrl(channel.contentType, channel.url)}
+													</p>
+												</div>
+											</div>
+											<Button
+												size="sm"
+												variant={
+													isSelected(channel.id) ? "secondary" : "outline"
+												}
+												onClick={() => handleAddChannel(channel)}
+												disabled={isSelected(channel.id)}
+											>
+												{isSelected(channel.id) ? (
+													<Check className="mr-1 h-4 w-4" />
+												) : (
+													<Plus className="mr-1 h-4 w-4" />
+												)}
+												{isSelected(channel.id) ? "Added" : "Add"}
+											</Button>
+										</div>
+									))}
 
 						{activeTab === "search" && hasNextPage && (
 							<Button
@@ -520,9 +590,7 @@ function AddChannelPage() {
 													<div>
 														<p className="font-medium">{channel.name}</p>
 														<p className="text-xs text-muted-foreground">
-															{channel.contentType === "anime"
-																? `https://crunchyroll.com/series/${channel.url}`
-																: `https://youtube.com/channel/${channel.channelId?.split("/")[1]}`}
+															{getChannelUrl(channel.contentType, channel.url)}
 														</p>
 													</div>
 												</div>
