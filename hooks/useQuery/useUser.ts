@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
-import { op } from "@/routes/__root";
+import rybbit from "@rybbit/js";
 
 // Types for the User
 export interface User {
@@ -28,18 +28,13 @@ export interface User {
 const getUser = async (): Promise<User> => {
 	const response = await apiClient.get<ApiResponse<User>>("api/v3/me");
 	const identifyOptions = {
-		profileId: response.data.id, // Required
-		firstName: response.data.username,
-		lastName: response.data.username,
+		profileId: response.data.id,
 		email: response.data.email,
 		properties: {
 			tier: response.data.planName,
 		},
 	};
-	op.identify(identifyOptions);
-	if ((window as any).umami) {
-	  	(window as any).umami.identify(identifyOptions);
-    }
+	await rybbit.identify(response.data.id, identifyOptions);
 	return response.data;
 };
 

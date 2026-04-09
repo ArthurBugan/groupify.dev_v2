@@ -1,12 +1,19 @@
 "use client";
 
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	useNavigate,
+	useSearch,
+} from "@tanstack/react-router";
+import { toast } from "sonner";
 import { GroupForm, type GroupFormData } from "@/components/group-form";
 import { useCreateGroup, useGroups } from "@/hooks/useQuery/useGroups";
 
 export const Route = createFileRoute("/_app/dashboard/groups/new/")({
 	component: NewGroupPage,
-	validateSearch: (search) => ({ parentId: (search.parentId as string) || undefined }),
+	validateSearch: (search) => ({
+		parentId: (search.parentId as string) || undefined,
+	}),
 });
 
 function NewGroupPage() {
@@ -25,8 +32,11 @@ function NewGroupPage() {
 				parentId: data.parentId || undefined,
 			});
 			navigate({ to: "/dashboard/groups" });
-		} catch (error) {
-			console.error("Error:", error);
+		} catch (error: any) {
+			toast.error("Error", {
+				description:
+					error?.message || "Failed to create group. Please try again.",
+			});
 		}
 	};
 

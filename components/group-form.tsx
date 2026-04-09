@@ -125,24 +125,27 @@ export function GroupForm({
 		if (parentId) setValue("parentId", parentId);
 	}, [parentId, setValue]);
 
+	const handleSubmitWithTransform = async (data: GroupFormData) => {
+		const transformedData = {
+			...data,
+			parentId: data.parentId === "none" ? undefined : data.parentId,
+		};
+		await onSubmit(transformedData);
+	};
+
 	return (
-		<div className="space-y-6">
-			<div className="flex items-center justify-between">
-				<div>
-					<h1 className="text-xl font-semibold">{title}</h1>
-					<p className="text-sm text-muted-foreground">{description}</p>
-				</div>
-				<Button variant="outline" size="sm" asChild>
-					<Link to={cancelPath}>
-						<ArrowLeft className="mr-2 h-3.5 w-3.5" /> Back
-					</Link>
-				</Button>
+		<div className="container relative mx-auto py-10">
+			<div className="mb-8">
+				<h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+				{description && (
+					<p className="text-muted-foreground mt-2">{description}</p>
+				)}
 			</div>
 
 			<div className="rounded-xl border bg-card/50 backdrop-blur-sm">
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit(onSubmit)}
+						onSubmit={form.handleSubmit(handleSubmitWithTransform)}
 						className="p-4 space-y-4"
 					>
 						<FormField

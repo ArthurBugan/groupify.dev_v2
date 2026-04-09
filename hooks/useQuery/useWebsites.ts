@@ -76,11 +76,13 @@ export function useDeleteWebsiteMutation() {
 		mutationFn: ({ websiteId }) => deleteWebsite({ websiteId }),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.websites() });
+			queryClient.invalidateQueries({ queryKey: ["websites"] });
+			queryClient.invalidateQueries({ queryKey: ["infiniteWebsites"] });
 		},
-		onError: (error) => {
+		onError: (error: any) => {
 			toast.error("Error", {
 				description:
-					error.message || "Failed to delete website. Please try again.",
+					error?.message || "Failed to delete website. Please try again.",
 			});
 		},
 	});
