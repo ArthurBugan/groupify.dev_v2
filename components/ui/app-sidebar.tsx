@@ -2,6 +2,7 @@
 import {
 	ChevronUp,
 	FolderKanban,
+	Globe,
 	LayoutDashboard,
 	Settings,
 	Share2,
@@ -83,6 +84,11 @@ const secondaryItems: NavItem[] = [
 		icon: Video,
 	},
 	{
+		title: "Websites",
+		url: "/dashboard/websites",
+		icon: Globe,
+	},
+	{
 		title: "Settings",
 		url: "/dashboard/settings/billing",
 		icon: Settings,
@@ -121,7 +127,6 @@ export function AppSidebar() {
 							to="/"
 							className="flex items-center gap-3 group transition-all duration-300 hover:scale-[1.02]"
 						>
-
 							<div className="relative">
 								<div className="absolute inset-0 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity" />
 								<div className="relative bg-gradient-to-br from-red-500 to-pink-500 rounded-lg p-2 shadow-lg">
@@ -137,7 +142,6 @@ export function AppSidebar() {
 								<span className="text-lg font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent whitespace-nowrap">
 									Groupify
 								</span>
-
 							</div>
 						</Link>
 					)}
@@ -156,10 +160,9 @@ export function AppSidebar() {
 					)}
 				</SidebarHeader>
 
-				<SidebarContent className={cn(
-					"px-2 py-4 gap-6",
-					isCollapsed && "px-0",
-				)}>
+				<SidebarContent
+					className={cn("px-2 py-4 gap-6", isCollapsed && "px-0")}
+				>
 					{/* Main Navigation */}
 					<SidebarGroup>
 						<SidebarGroupLabel className="text-xs font-semibold text-muted-foreground/70 px-2 mb-1">
@@ -252,10 +255,16 @@ export function AppSidebar() {
 					{/* Ad Section */}
 					<div className="mt-auto pt-4">
 						<div className="rounded-lg overflow-hidden bg-muted/30 border border-sidebar-border/30">
-							<ins className="adsbygoogle"
-								style={{ display: "inline-block", width: "255px", height: "300px" }}
+							<ins
+								className="adsbygoogle"
+								style={{
+									display: "inline-block",
+									width: "255px",
+									height: "300px",
+								}}
 								data-ad-client="ca-pub-4077364511521347"
-								data-ad-slot="9387808543"></ins>
+								data-ad-slot="9387808543"
+							></ins>
 						</div>
 					</div>
 				</SidebarContent>
