@@ -20,6 +20,9 @@ import { queryClient } from "@/hooks/utils/queryClient";
 import appCss from "@/styles/app.css?url";
 import { AnalyticsListener } from "@/hooks/analytics-listener";
 import rybbit from "@rybbit/js";
+import Clarity from '@microsoft/clarity';
+
+const VITE_CLARITY_PROJECT_ID = import.meta.env.VITE_CLARITY_PROJECT_ID;
 
 if (typeof window !== "undefined") {
 	await rybbit.init({
@@ -33,6 +36,8 @@ if (typeof window !== "undefined") {
 		]
 	  }
 	});
+
+	Clarity.init(VITE_CLARITY_PROJECT_ID);
 }
 
 export const Route = createRootRoute({
