@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { type ApiResponse, apiClient } from "@/hooks/api/api-client";
 import { queryKeys } from "@/hooks/utils/queryKeys";
 import rybbit from "@rybbit/js";
+import Clarity from "@microsoft/clarity";
 
 // Types for the User
 export interface User {
@@ -35,6 +36,7 @@ const getUser = async (): Promise<User> => {
 		},
 	};
 	await rybbit.identify(response.data.id, identifyOptions);
+	await Clarity.identify(response.data.id, "", "", response.data.username);
 	return response.data;
 };
 
