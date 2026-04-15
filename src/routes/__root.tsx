@@ -29,11 +29,7 @@ if (typeof window !== "undefined") {
 	  analyticsHost: "https://rybbit.groupify.dev/api",
 	  siteId: "5bd1e2c51d8f",
 	  replayPrivacyConfig: {
-		maskAllInputs: true, // Mask all input values (default: true)
-		maskTextSelectors: [
-		  ".sensitive-data",  // Mask text in elements with this class
-		  "#credit-card"      // Mask specific element IDs
-		]
+		slimDOMOptions: true
 	  }
 	});
 

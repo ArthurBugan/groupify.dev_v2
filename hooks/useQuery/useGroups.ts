@@ -109,6 +109,15 @@ const updateGroupDisplayOrder = async (
 	});
 };
 
+// Bulk update display order for multiple groups
+const updateGroupsDisplayOrder = async (
+	orders: { groupId: string; displayOrder: number }[],
+): Promise<void> => {
+	await apiClient.put(`/api/v2/groups/display-order/bulk`, {
+		orders,
+	});
+};
+
 // Create a new group
 const createGroup = async (data: CreateGroupRequest): Promise<Group> => {
 	const response = await apiClient.post<ApiResponse<Group>>(
@@ -153,6 +162,19 @@ export function useUpdateGroupDisplayOrder() {
 		}) => updateGroupDisplayOrder(groupId, displayOrder),
 		onSuccess: () => {
 			// Invalidate and refetch the groups query to update the UI
+			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
+		},
+	});
+}
+
+// Bulk update display order for multiple groups
+export function useUpdateGroupsDisplayOrder() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (orders: { groupId: string; displayOrder: number }[]) =>
+			updateGroupsDisplayOrder(orders),
+		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
 		},
 	});

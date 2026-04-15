@@ -15,6 +15,23 @@ import {
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import {
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+	DragEndEvent,
+} from "@dnd-kit/core";
+import {
+	SortableContext,
+	arrayMove,
+	sortableKeyboardCoordinates,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { IconViewer } from "@/components/icon-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,7 +72,7 @@ import {
 	type Group as ApiGroup,
 	useDeleteGroup,
 	useGroups,
-	useUpdateGroupDisplayOrder,
+	useUpdateGroupsDisplayOrder,
 } from "@/hooks/useQuery/useGroups";
 import { useUser } from "@/hooks/useQuery/useUser";
 import { cn } from "@/lib/utils";
@@ -71,6 +88,54 @@ interface TableGroup {
 	expanded: boolean;
 	level: number;
 	order: number;
+}
+
+interface SortableRowProps {
+	group: TableGroup;
+	children: React.ReactNode;
+	canMoveUp: boolean;
+	canMoveDown: boolean;
+	moveGroup: (group: TableGroup, direction: "up" | "down") => void;
+}
+
+function SortableRow({
+	group,
+	children,
+	canMoveUp,
+	canMoveDown,
+	moveGroup,
+}: SortableRowProps) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: group.id });
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	};
+
+	return (
+		<TableRow ref={setNodeRef} style={style} className="group">
+			<TableCell>
+				{!group.parentId && (
+					<div
+						{...attributes}
+						{...listeners}
+						className="flex items-center gap-1 cursor-grab"
+					>
+						<GripVertical className="h-4 w-4 text-muted-foreground" />
+					</div>
+				)}
+			</TableCell>
+			{children}
+		</TableRow>
+	);
 }
 
 const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
@@ -123,8 +188,21 @@ export function GroupsTable() {
 
 	const { data: user } = useUser();
 
-	const updateDisplayOrder = useUpdateGroupDisplayOrder();
+	const updateGroupsDisplayOrder = useUpdateGroupsDisplayOrder();
 	const deleteGroup = useDeleteGroup();
+
+	const [sortOrder, setSortOrder] = useState<"default" | "manual">("default");
+
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 8,
+			},
+		}),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	);
 
 	const handleAddSubgroup = (parentId: string) => {
 		if (user?.canAddGroup === false) {
@@ -155,8 +233,6 @@ export function GroupsTable() {
 	const initialGroups: TableGroup[] = transformApiGroups(apiGroups?.data);
 
 	const [groups, setGroups] = useState(initialGroups);
-	const [draggedGroup, setDraggedGroup] = useState<TableGroup | null>(null);
-	const [dragOverGroup, setDragOverGroup] = useState<string | null>(null);
 	const [adIndices, setAdIndices] = useState<number[]>([]);
 	useEffect(() => {
 		console.log(searchTerm);
@@ -277,127 +353,62 @@ export function GroupsTable() {
 		return result;
 	};
 
-	// Drag and drop handlers
-	const handleDragStart = (e: React.DragEvent, group: TableGroup) => {
-		setDraggedGroup(group);
-		e.dataTransfer.effectAllowed = "move";
-	};
+	// dnd-kit drag end handler for manual sorting
+	const handleDndDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event;
 
-	const handleDragOver = (e: React.DragEvent, group: TableGroup) => {
-		e.preventDefault();
-		if (
-			draggedGroup &&
-			draggedGroup.id !== group.id &&
-			draggedGroup.parentId === group.parentId
-		) {
-			setDragOverGroup(group.id);
-			e.dataTransfer.dropEffect = "move";
-		}
-	};
+		if (over && active.id !== over.id) {
+			const activeId = active.id as string;
+			const overId = over.id as string;
 
-	const handleDragLeave = () => {
-		setDragOverGroup(null);
-	};
+			// Use sorted groups for finding indices
+			const sortedGroups = getSortedGroups();
+			const oldIndex = sortedGroups.findIndex((i) => i.id === activeId);
+			const newIndex = sortedGroups.findIndex((i) => i.id === overId);
 
-	const handleDrop = (e: React.DragEvent, targetGroup: TableGroup) => {
-		e.preventDefault();
-		setDragOverGroup(null);
+			if (oldIndex === -1 || newIndex === -1) return;
 
-		if (!draggedGroup || draggedGroup.id === targetGroup.id) return;
+			// Create a new array with the moved item
+			const newItems = [...sortedGroups];
+			const [movedItem] = newItems.splice(oldIndex, 1);
+			newItems.splice(newIndex, 0, movedItem);
 
-		// Only allow reordering within the same parent level
-		if (draggedGroup.parentId !== targetGroup.parentId) {
-			toast.error("Cannot move group", {
-				description: "Groups can only be reordered within the same level.",
+			// Update order values based on sorted positions
+			const orderData: Record<string, number> = {};
+			const orders: { groupId: string; displayOrder: number }[] = [];
+
+			newItems.forEach((group, index) => {
+				const originalGroup = groups.find((g) => g.id === group.id);
+				if (originalGroup) {
+					originalGroup.order = index;
+				}
+				orderData[group.id] = index;
+				orders.push({ groupId: group.id, displayOrder: index });
 			});
-			return;
-		}
 
-		// Additional safety check: ensure both groups have valid parent relationships in current dataset
-		if (
-			draggedGroup.parentId &&
-			!groups.some((g) => g.id === draggedGroup.parentId)
-		) {
-			toast.error("Cannot move group", {
-				description: "Parent group not available in current view.",
-			});
-			return;
-		}
-		if (
-			targetGroup.parentId &&
-			!groups.some((g) => g.id === targetGroup.parentId)
-		) {
-			toast.error("Cannot move group", {
-				description: "Target parent group not available in current view.",
-			});
-			return;
-		}
+			// Sort orders by current order value (smallest to biggest)
+			const sortedOrders = [...orders].sort(
+				(a, b) => a.displayOrder - b.displayOrder,
+			);
 
-		const newGroups = [...groups];
-		const draggedIndex = newGroups.findIndex((g) => g.id === draggedGroup.id);
+			setGroups([...groups]);
+			localStorage.setItem("groupsOrder", JSON.stringify(orderData));
 
-		// Update order values
-		const siblingGroups = newGroups.filter(
-			(g) => g.parentId === draggedGroup.parentId,
-		);
-		const sortedSiblings = siblingGroups.sort((a, b) => a.order - b.order);
-
-		const draggedSiblingIndex = sortedSiblings.findIndex(
-			(g) => g.id === draggedGroup.id,
-		);
-		const targetSiblingIndex = sortedSiblings.findIndex(
-			(g) => g.id === targetGroup.id,
-		);
-
-		if (draggedSiblingIndex < targetSiblingIndex) {
-			// Moving down
-			for (let i = draggedSiblingIndex + 1; i <= targetSiblingIndex; i++) {
-				const group = sortedSiblings[i];
-				const groupIndex = newGroups.findIndex((g) => g.id === group.id);
-				newGroups[groupIndex].order = i - 1;
-			}
-			newGroups[draggedIndex].order = targetSiblingIndex;
-		} else {
-			// Moving up
-			for (let i = targetSiblingIndex; i < draggedSiblingIndex; i++) {
-				const group = sortedSiblings[i];
-				const groupIndex = newGroups.findIndex((g) => g.id === group.id);
-				newGroups[groupIndex].order = i + 1;
-			}
-			newGroups[draggedIndex].order = targetSiblingIndex;
-		}
-
-		setGroups(newGroups);
-
-		// Save order to localStorage
-		const orderData: Record<string, number> = {};
-		newGroups.forEach((group) => {
-			orderData[group.id] = group.order;
-		});
-		localStorage.setItem("groupsOrder", JSON.stringify(orderData));
-
-		// Update display order via API
-		updateDisplayOrder.mutate(
-			{ groupId: draggedGroup.id, displayOrder: targetSiblingIndex },
-			{
+			// Bulk update all groups' display order via API
+			updateGroupsDisplayOrder.mutate(sortedOrders, {
 				onSuccess: () => {
-					toast.success("Groups reordered", {
-						description: "The group order has been updated",
+					toast.success("Group order updated", {
+						description: "The group order has been saved",
 					});
 				},
 				onError: (error) => {
-					toast.error("Failed to reorder groups", {
+					toast.error("Failed to update group order", {
 						description: "Please try again later",
 					});
 					console.error("Error updating group display order:", error);
 				},
-			},
-		);
-	};
-
-	const handleDragEnd = () => {
-		setDraggedGroup(null);
-		setDragOverGroup(null);
+			});
+		}
 	};
 
 	const handleDeleteGroup = (groupId: string, groupName: string) => {
@@ -454,28 +465,27 @@ export function GroupsTable() {
 
 		// Save order to localStorage
 		const orderData: Record<string, number> = {};
+		const orders: { groupId: string; displayOrder: number }[] = [];
 		newGroups.forEach((g) => {
 			orderData[g.id] = g.order;
+			orders.push({ groupId: g.id, displayOrder: g.order });
 		});
 		localStorage.setItem("groupsOrder", JSON.stringify(orderData));
 
-		// Update display order via API
-		updateDisplayOrder.mutate(
-			{ groupId: group.id, displayOrder: newGroups[groupIndex].order },
-			{
-				onSuccess: () => {
-					toast.success("Group moved", {
-						description: `${group.name} moved ${direction}`,
-					});
-				},
-				onError: (error) => {
-					toast.error("Failed to move group", {
-						description: "Please try again later",
-					});
-					console.error("Error updating group display order:", error);
-				},
+		// Bulk update all groups' display order via API
+		updateGroupsDisplayOrder.mutate(orders, {
+			onSuccess: () => {
+				toast.success("Group moved", {
+					description: `${group.name} moved ${direction}`,
+				});
 			},
-		);
+			onError: (error) => {
+				toast.error("Failed to move group", {
+					description: "Please try again later",
+				});
+				console.error("Error updating group display order:", error);
+			},
+		});
 	};
 
 	const getPaginationPages = (): (number | string)[] => {
@@ -542,217 +552,215 @@ export function GroupsTable() {
 				/>
 			</div>
 			<div className="rounded-md border bg-card">
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead className="w-[50px]"></TableHead>
-							<TableHead>Name</TableHead>
-							<TableHead>Category</TableHead>
-							<TableHead>Channels</TableHead>
-							<TableHead>Created</TableHead>
-							<TableHead className="text-right">Actions</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{isLoading ? (
+				<DndContext
+					sensors={sensors}
+					collisionDetection={closestCenter}
+					onDragEnd={handleDndDragEnd}
+				>
+					<Table>
+						<TableHeader>
 							<TableRow>
-								<TableCell colSpan={6} className="h-24 text-center">
-									<div className="flex flex-col items-center justify-center space-y-2">
-										<p className="text-sm text-muted-foreground">
-											Loading groups...
-										</p>
-									</div>
-								</TableCell>
+								<TableHead className="w-[50px]"></TableHead>
+								<TableHead>Name</TableHead>
+								<TableHead>Category</TableHead>
+								<TableHead>Channels</TableHead>
+								<TableHead>Created</TableHead>
+								<TableHead className="text-right">Actions</TableHead>
 							</TableRow>
-						) : sortedGroups.length === 0 ? (
-							<TableRow>
-								<TableCell colSpan={6} className="h-24 text-center">
-									<div className="flex flex-col items-center justify-center space-y-2">
-										{debouncedSearchTerm ? (
-											<>
-												<p className="text-sm text-muted-foreground">
-													No groups match "{debouncedSearchTerm}"
-												</p>
-												<p className="text-xs text-muted-foreground">
-													Try adjusting your search terms
-												</p>
-											</>
-										) : (
+						</TableHeader>
+						<TableBody>
+							{isLoading ? (
+								<TableRow>
+									<TableCell colSpan={6} className="h-24 text-center">
+										<div className="flex flex-col items-center justify-center space-y-2">
 											<p className="text-sm text-muted-foreground">
-												No groups found
+												Loading groups...
 											</p>
-										)}
-									</div>
-								</TableCell>
-							</TableRow>
-						) : (
-							sortedGroups.filter(isVisible).map((group, idx) => {
-								const siblingGroups = groups
-									.filter((g) => g.parentId === group.parentId)
-									.sort((a, b) => a.order - b.order);
-								const currentIndex = siblingGroups.findIndex(
-									(g) => g.id === group.id,
-								);
-								const canMoveUp = currentIndex > 0;
-								const canMoveDown = currentIndex < siblingGroups.length - 1;
-
-								return (
-									<>
-										{adIndices.includes(idx) && (
-											<AdRow colSpan={5} key={`ad-${group.id}-${idx}`} />
-										)}
-										<TableRow
-											key={group.id}
-											className={cn(
-												"group",
-												dragOverGroup === group.id && "bg-accent/50",
-												draggedGroup?.id === group.id && "opacity-50",
+										</div>
+									</TableCell>
+								</TableRow>
+							) : sortedGroups.length === 0 ? (
+								<TableRow>
+									<TableCell colSpan={6} className="h-24 text-center">
+										<div className="flex flex-col items-center justify-center space-y-2">
+											{debouncedSearchTerm ? (
+												<>
+													<p className="text-sm text-muted-foreground">
+														No groups match "{debouncedSearchTerm}"
+													</p>
+													<p className="text-xs text-muted-foreground">
+														Try adjusting your search terms
+													</p>
+												</>
+											) : (
+												<p className="text-sm text-muted-foreground">
+													No groups found
+												</p>
 											)}
-											draggable={!debouncedSearchTerm}
-											onDragStart={(e) => handleDragStart(e, group)}
-											onDragOver={(e) => handleDragOver(e, group)}
-											onDragLeave={handleDragLeave}
-											onDrop={(e) => handleDrop(e, group)}
-											onDragEnd={handleDragEnd}
-										>
-											<TableCell>
-												{!debouncedSearchTerm && (
-													<div className="flex items-center gap-1">
-														<GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-													</div>
+										</div>
+									</TableCell>
+								</TableRow>
+							) : (
+								<SortableContext
+									items={sortedGroups.map((g) => g.id)}
+									strategy={verticalListSortingStrategy}
+								>
+									{sortedGroups.filter(isVisible).map((group, idx) => {
+										const siblingGroups = groups
+											.filter((g) => g.parentId === group.parentId)
+											.sort((a, b) => a.order - b.order);
+										const currentIndex = siblingGroups.findIndex(
+											(g) => g.id === group.id,
+										);
+										const canMoveUp = currentIndex > 0;
+										const canMoveDown = currentIndex < siblingGroups.length - 1;
+
+										return (
+											<>
+												{adIndices.includes(idx) && (
+													<AdRow colSpan={5} key={`ad-${group.id}-${idx}`} />
 												)}
-											</TableCell>
-											<TableCell>
-												<div
-													className="flex items-center gap-2"
-													style={{
-														paddingLeft: `${group.parentId && !groups.some((g) => g.id === group.parentId) ? 0 : group.level * 1.5}rem`,
-													}}
+												<SortableRow
+													key={group.id}
+													group={group}
+													canMoveUp={canMoveUp}
+													canMoveDown={canMoveDown}
+													moveGroup={moveGroup}
 												>
-													{groups.some((g) => g.parentId === group.id) ? (
-														<Button
-															variant="ghost"
-															size="icon"
-															className="h-6 w-6 p-0"
-															onClick={() => toggleExpand(group.id)}
+													<TableCell>
+														<div
+															className="flex items-center gap-2"
+															style={{
+																paddingLeft: `${group.parentId && !groups.some((g) => g.id === group.parentId) ? 0 : group.level * 1.5}rem`,
+															}}
 														>
-															{group.expanded ? (
-																<ChevronDown className="h-4 w-4" />
+															{groups.some((g) => g.parentId === group.id) ? (
+																<Button
+																	variant="ghost"
+																	size="icon"
+																	className="h-6 w-6 p-0"
+																	onClick={() => toggleExpand(group.id)}
+																>
+																	{group.expanded ? (
+																		<ChevronDown className="h-4 w-4" />
+																	) : (
+																		<ChevronRight className="h-4 w-4" />
+																	)}
+																</Button>
 															) : (
-																<ChevronRight className="h-4 w-4" />
+																<div className="w-6"></div>
 															)}
-														</Button>
-													) : (
-														<div className="w-6"></div> // Spacer for alignment
-													)}
 
-													<IconViewer
-														icon={group.icon}
-														className="h-4 w-4 mr-4 text-muted-foreground"
-													/>
-													<Link
-														to={`/dashboard/groups/$id`}
-														params={{ id: group.id }}
-														className="font-medium hover:underline"
-													>
-														{group.name}
-														{group.parentId &&
-															!groups.some((g) => g.id === group.parentId) && (
-																<span className="ml-2 text-xs text-muted-foreground">
-																	(subgroup)
-																</span>
-															)}
-													</Link>
-
-													{/* Add subgroup button */}
-													<Button
-														variant="ghost"
-														size="icon"
-														className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-														onClick={() => handleAddSubgroup(group.id)}
-													>
-														<Plus className="h-3 w-3" />
-														<span className="sr-only">Add subgroup</span>
-													</Button>
-												</div>
-											</TableCell>
-											<TableCell>
-												<Badge variant="outline">{group.category}</Badge>
-											</TableCell>
-											<TableCell>{group.channelCount}</TableCell>
-											<TableCell>{group.createdAt}</TableCell>
-											<TableCell className="text-right">
-												<DropdownMenu>
-													<DropdownMenuTrigger asChild>
-														<Button variant="ghost" size="icon">
-															<MoreHorizontal className="h-4 w-4" />
-															<span className="sr-only">Open menu</span>
-														</Button>
-													</DropdownMenuTrigger>
-													<DropdownMenuContent align="end">
-														<DropdownMenuItem asChild>
+															<IconViewer
+																icon={group.icon}
+																className="h-4 w-4 mr-4 text-muted-foreground"
+															/>
 															<Link
 																to={`/dashboard/groups/$id`}
 																params={{ id: group.id }}
+																className="font-medium hover:underline"
 															>
-																View details
+																{group.name}
+																{group.parentId &&
+																	!groups.some(
+																		(g) => g.id === group.parentId,
+																	) && (
+																		<span className="ml-2 text-xs text-muted-foreground">
+																			(subgroup)
+																		</span>
+																	)}
 															</Link>
-														</DropdownMenuItem>
-														<DropdownMenuItem asChild>
-															<Link
-																to={`/dashboard/groups/$id/edit`}
-																params={{ id: group.id }}
+
+															<Button
+																variant="ghost"
+																size="icon"
+																className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+																onClick={() => handleAddSubgroup(group.id)}
 															>
-																<Pencil className="mr-2 h-4 w-4" />
-																Edit
-															</Link>
-														</DropdownMenuItem>
-														<DropdownMenuItem
-															onClick={() => handleAddSubgroup(group.id)}
-														>
-															<Plus className="mr-2 h-4 w-4" />
-															Add Subgroup
-														</DropdownMenuItem>
-														<DropdownMenuSeparator />
-														<DropdownMenuItem
-															onClick={() => moveGroup(group, "up")}
-															disabled={
-																!canMoveUp || debouncedSearchTerm !== ""
-															}
-														>
-															<ArrowUp className="mr-2 h-4 w-4" />
-															Move Up
-														</DropdownMenuItem>
-														<DropdownMenuItem
-															onClick={() => moveGroup(group, "down")}
-															disabled={
-																!canMoveDown || debouncedSearchTerm !== ""
-															}
-														>
-															<ArrowDown className="mr-2 h-4 w-4" />
-															Move Down
-														</DropdownMenuItem>
-														<DropdownMenuSeparator />
-														<DropdownMenuItem
-															className="text-destructive"
-															onClick={() =>
-																handleDeleteGroup(group.id, group.name)
-															}
-															disabled={deleteGroup.isPending}
-														>
-															<Trash2 className="mr-2 h-4 w-4" />
-															Delete
-														</DropdownMenuItem>
-													</DropdownMenuContent>
-												</DropdownMenu>
-											</TableCell>
-										</TableRow>
-									</>
-								);
-							})
-						)}
-					</TableBody>
-				</Table>
+																<Plus className="h-3 w-3" />
+																<span className="sr-only">Add subgroup</span>
+															</Button>
+														</div>
+													</TableCell>
+													<TableCell>
+														<Badge variant="outline">{group.category}</Badge>
+													</TableCell>
+													<TableCell>{group.channelCount}</TableCell>
+													<TableCell>{group.createdAt}</TableCell>
+													<TableCell className="text-right">
+														<DropdownMenu>
+															<DropdownMenuTrigger asChild>
+																<Button variant="ghost" size="icon">
+																	<MoreHorizontal className="h-4 w-4" />
+																	<span className="sr-only">Open menu</span>
+																</Button>
+															</DropdownMenuTrigger>
+															<DropdownMenuContent align="end">
+																<DropdownMenuItem asChild>
+																	<Link
+																		to={`/dashboard/groups/$id`}
+																		params={{ id: group.id }}
+																	>
+																		View details
+																	</Link>
+																</DropdownMenuItem>
+																<DropdownMenuItem asChild>
+																	<Link
+																		to={`/dashboard/groups/$id/edit`}
+																		params={{ id: group.id }}
+																	>
+																		<Pencil className="mr-2 h-4 w-4" />
+																		Edit
+																	</Link>
+																</DropdownMenuItem>
+																<DropdownMenuItem
+																	onClick={() => handleAddSubgroup(group.id)}
+																>
+																	<Plus className="mr-2 h-4 w-4" />
+																	Add Subgroup
+																</DropdownMenuItem>
+																<DropdownMenuSeparator />
+																<DropdownMenuItem
+																	onClick={() => moveGroup(group, "up")}
+																	disabled={
+																		!canMoveUp || debouncedSearchTerm !== ""
+																	}
+																>
+																	<ArrowUp className="mr-2 h-4 w-4" />
+																	Move Up
+																</DropdownMenuItem>
+																<DropdownMenuItem
+																	onClick={() => moveGroup(group, "down")}
+																	disabled={
+																		!canMoveDown || debouncedSearchTerm !== ""
+																	}
+																>
+																	<ArrowDown className="mr-2 h-4 w-4" />
+																	Move Down
+																</DropdownMenuItem>
+																<DropdownMenuSeparator />
+																<DropdownMenuItem
+																	className="text-destructive"
+																	onClick={() =>
+																		handleDeleteGroup(group.id, group.name)
+																	}
+																	disabled={deleteGroup.isPending}
+																>
+																	<Trash2 className="mr-2 h-4 w-4" />
+																	Delete
+																</DropdownMenuItem>
+															</DropdownMenuContent>
+														</DropdownMenu>
+													</TableCell>
+												</SortableRow>
+											</>
+										);
+									})}
+								</SortableContext>
+							)}
+						</TableBody>
+					</Table>
+				</DndContext>
 			</div>
 
 			{apiGroups?.data && apiGroups.pagination.total > 0 && (
