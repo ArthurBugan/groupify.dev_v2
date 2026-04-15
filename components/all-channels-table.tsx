@@ -11,6 +11,7 @@ import {
 	Youtube,
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { GenericCombobox } from "@/components/ui/combobox";
@@ -44,6 +45,7 @@ import {
 	useUpdateChannel,
 } from "@/hooks/useQuery/useChannels";
 import { useGroups } from "@/hooks/useQuery/useGroups";
+import { useCheckGoogleSession } from "@/hooks/useQuery/useSocialLogin";
 import { IconViewer } from "./icon-picker";
 
 const AdRow: React.FC<{ colSpan: number }> = ({ colSpan }) => {
@@ -97,6 +99,35 @@ export function AllChannelsTable() {
 		limit: itemsPerPage,
 		search: debouncedSearchTerm || undefined,
 	});
+
+	// Check Google session status
+	const { data: googleSession } = useCheckGoogleSession();
+
+	// Show toast if no channels and Google not connected
+	useEffect(() => {
+		if (
+			!isLoading &&
+			(!data?.data || data.data.length === 0) &&
+			googleSession &&
+			!googleSession.connected
+		) {
+			toast.info("No channels found", {
+				description: (
+					<span>
+						Sync your Google account to import your YouTube channels.{" "}
+						<Link
+							to="/dashboard/settings/account"
+							className="underline font-medium"
+							onClick={(e) => e.stopPropagation()}
+						>
+							Go to settings
+						</Link>
+					</span>
+				),
+				duration: 10000,
+			});
+		}
+	}, [data, isLoading, googleSession]);
 
 	// Handle delete channel
 	const handleDeleteChannel = (channelId: string) => {
