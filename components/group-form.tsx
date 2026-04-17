@@ -152,6 +152,30 @@ export function GroupForm({
 					>
 						<FormField
 							control={control}
+							name="enableGroupshelf"
+							render={({ field }) => (
+								<div className="rounded-xl border bg-gradient-to-r from-red-500/5 to-pink-500/5 p-4 md:p-6">
+									<div className="flex flex-row items-center justify-between gap-4">
+										<div className="space-y-1">
+											<FormLabel className="text-base font-semibold">
+												Enable Group Shelf
+											</FormLabel>
+											<FormDescription>
+												Allow this group to be added to groupshelf, so other
+												users can copy it if they find it useful
+											</FormDescription>
+										</div>
+										<Switch
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</div>
+								</div>
+							)}
+						/>
+
+						<FormField
+							control={control}
 							name="name"
 							render={({ field }) => (
 								<FormItem>
@@ -271,29 +295,6 @@ export function GroupForm({
 											Create subgroups to organize hierarchically
 										</FormDescription>
 										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={control}
-								name="enableGroupshelf"
-								render={({ field }) => (
-									<FormItem className="md:col-span-2 flex flex-row items-center justify-between rounded-lg border p-4">
-										<div className="space-y-0.5">
-											<FormLabel className="text-base">
-												Enable Group Shelf
-											</FormLabel>
-											<FormDescription>
-												Allow this group to be added to groupshelf, so other users can copy it if they find it useful
-											</FormDescription>
-										</div>
-										<FormControl>
-											<Switch
-												checked={field.value}
-												onCheckedChange={field.onChange}
-											/>
-										</FormControl>
 									</FormItem>
 								)}
 							/>
