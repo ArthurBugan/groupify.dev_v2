@@ -10,6 +10,7 @@ import { GroupVideosList } from "@/components/group-videos-list";
 import { IconViewer } from "@/components/icon-picker";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
 	useGroup,
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/_app/dashboard/groups/$id/")({
 
 function GroupDetailPage() {
 	const { id } = Route.useParams();
-	const { data: group } = useGroup(id);
+	const { data: group, isLoading } = useGroup(id);
 	const { data: groupsData } = useGroups({ limit: 100 });
 	const { data: videosData } = useGroupVideos(id, { limit: 1 });
 	const syncVideos = useSyncGroupVideos();
@@ -79,6 +80,24 @@ function GroupDetailPage() {
 			window.history.replaceState({}, document.title, window.location.pathname);
 		}
 	}, []);
+
+	if (!group && !isLoading) return null;
+
+	if (isLoading) {
+		return (
+			<div className="space-y-4">
+				<Skeleton className="h-6 w-48" />
+				<Skeleton className="h-48 w-full" />
+				<Skeleton className="h-12 w-full" />
+				<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+					<Skeleton className="h-16 w-full" />
+					<Skeleton className="h-16 w-full" />
+					<Skeleton className="h-16 w-full" />
+					<Skeleton className="h-16 w-full" />
+				</div>
+			</div>
+		);
+	}
 
 	if (!group) return null;
 
