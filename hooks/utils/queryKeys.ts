@@ -23,6 +23,11 @@ export const queryKeys = {
 	anime: (id) => ["anime", id],
 	groupVideos: (groupId: string, params?: { page?: number; limit?: number }) =>
 		params ? ["groupVideos", groupId, params] : ["groupVideos", groupId],
+	groupShelves: (params?: {
+		page?: number;
+		limit?: number;
+		search?: string;
+	}) => (params ? ["groupShelves", params] : ["groupShelves"]),
 	websites: (params?: { page?: number; limit?: number; search?: string }) =>
 		params ? ["websites", params] : ["websites"],
 	infiniteWebsites: (params?: { limit?: number; search?: string }) => [

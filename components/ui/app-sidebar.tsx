@@ -13,6 +13,7 @@ import {
 	CreditCard,
 	UserCircle,
 	PanelLeft,
+	Library,
 } from "lucide-react";
 import {
 	DropdownMenu,
@@ -79,6 +80,11 @@ const mainItems: NavItem[] = [
 
 const secondaryItems: NavItem[] = [
 	{
+		title: "Group Shelf",
+		url: "/dashboard/groupshelf",
+		icon: Library,
+	},
+	{
 		title: "Animes",
 		url: "/dashboard/animes",
 		icon: Video,
@@ -114,6 +120,18 @@ export function AppSidebar() {
 		}
 		if (url.startsWith("/dashboard/settings")) {
 			return currentPath.startsWith("/dashboard/settings");
+		}
+		if (url === "/dashboard/groups") {
+			return (
+				currentPath === "/dashboard/groups" ||
+				currentPath === "/dashboard/groups/"
+			);
+		}
+		if (url === "/dashboard/groupshelf") {
+			return (
+				currentPath === "/dashboard/groupshelf" ||
+				currentPath === "/dashboard/groupshelf/"
+			);
 		}
 		return currentPath.startsWith(url);
 	};

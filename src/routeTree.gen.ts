@@ -23,6 +23,7 @@ import { Route as AppBlogSlugRouteImport } from './routes/_app/blog/$slug'
 import { Route as AppDashboardSettingsRouteRouteImport } from './routes/_app/dashboard/settings/route'
 import { Route as AppDashboardWebsitesIndexRouteImport } from './routes/_app/dashboard/websites/index'
 import { Route as AppDashboardShareLinksIndexRouteImport } from './routes/_app/dashboard/share-links/index'
+import { Route as AppDashboardGroupshelfIndexRouteImport } from './routes/_app/dashboard/groupshelf/index'
 import { Route as AppDashboardGroupsIndexRouteImport } from './routes/_app/dashboard/groups/index'
 import { Route as AppDashboardChannelsIndexRouteImport } from './routes/_app/dashboard/channels/index'
 import { Route as AppDashboardAnimesIndexRouteImport } from './routes/_app/dashboard/animes/index'
@@ -115,6 +116,12 @@ const AppDashboardShareLinksIndexRoute =
   AppDashboardShareLinksIndexRouteImport.update({
     id: '/share-links/',
     path: '/share-links/',
+    getParentRoute: () => AppDashboardRouteRoute,
+  } as any)
+const AppDashboardGroupshelfIndexRoute =
+  AppDashboardGroupshelfIndexRouteImport.update({
+    id: '/groupshelf/',
+    path: '/groupshelf/',
     getParentRoute: () => AppDashboardRouteRoute,
   } as any)
 const AppDashboardGroupsIndexRoute = AppDashboardGroupsIndexRouteImport.update({
@@ -252,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/animes': typeof AppDashboardAnimesIndexRoute
   '/dashboard/channels': typeof AppDashboardChannelsIndexRoute
   '/dashboard/groups': typeof AppDashboardGroupsIndexRoute
+  '/dashboard/groupshelf': typeof AppDashboardGroupshelfIndexRoute
   '/dashboard/share-links': typeof AppDashboardShareLinksIndexRoute
   '/dashboard/websites': typeof AppDashboardWebsitesIndexRoute
   '/dashboard/groups/$id': typeof AppDashboardGroupsIdIndexRoute
@@ -287,6 +295,7 @@ export interface FileRoutesByTo {
   '/dashboard/animes': typeof AppDashboardAnimesIndexRoute
   '/dashboard/channels': typeof AppDashboardChannelsIndexRoute
   '/dashboard/groups': typeof AppDashboardGroupsIndexRoute
+  '/dashboard/groupshelf': typeof AppDashboardGroupshelfIndexRoute
   '/dashboard/share-links': typeof AppDashboardShareLinksIndexRoute
   '/dashboard/websites': typeof AppDashboardWebsitesIndexRoute
   '/dashboard/groups/$id': typeof AppDashboardGroupsIdIndexRoute
@@ -324,6 +333,7 @@ export interface FileRoutesById {
   '/_app/dashboard/animes/': typeof AppDashboardAnimesIndexRoute
   '/_app/dashboard/channels/': typeof AppDashboardChannelsIndexRoute
   '/_app/dashboard/groups/': typeof AppDashboardGroupsIndexRoute
+  '/_app/dashboard/groupshelf/': typeof AppDashboardGroupshelfIndexRoute
   '/_app/dashboard/share-links/': typeof AppDashboardShareLinksIndexRoute
   '/_app/dashboard/websites/': typeof AppDashboardWebsitesIndexRoute
   '/_app/dashboard/groups/$id/': typeof AppDashboardGroupsIdIndexRoute
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/dashboard/animes'
     | '/dashboard/channels'
     | '/dashboard/groups'
+    | '/dashboard/groupshelf'
     | '/dashboard/share-links'
     | '/dashboard/websites'
     | '/dashboard/groups/$id'
@@ -397,6 +408,7 @@ export interface FileRouteTypes {
     | '/dashboard/animes'
     | '/dashboard/channels'
     | '/dashboard/groups'
+    | '/dashboard/groupshelf'
     | '/dashboard/share-links'
     | '/dashboard/websites'
     | '/dashboard/groups/$id'
@@ -433,6 +445,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard/animes/'
     | '/_app/dashboard/channels/'
     | '/_app/dashboard/groups/'
+    | '/_app/dashboard/groupshelf/'
     | '/_app/dashboard/share-links/'
     | '/_app/dashboard/websites/'
     | '/_app/dashboard/groups/$id/'
@@ -568,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/share-links'
       fullPath: '/dashboard/share-links'
       preLoaderRoute: typeof AppDashboardShareLinksIndexRouteImport
+      parentRoute: typeof AppDashboardRouteRoute
+    }
+    '/_app/dashboard/groupshelf/': {
+      id: '/_app/dashboard/groupshelf/'
+      path: '/groupshelf'
+      fullPath: '/dashboard/groupshelf'
+      preLoaderRoute: typeof AppDashboardGroupshelfIndexRouteImport
       parentRoute: typeof AppDashboardRouteRoute
     }
     '/_app/dashboard/groups/': {
@@ -742,6 +762,7 @@ interface AppDashboardRouteRouteChildren {
   AppDashboardAnimesIndexRoute: typeof AppDashboardAnimesIndexRoute
   AppDashboardChannelsIndexRoute: typeof AppDashboardChannelsIndexRoute
   AppDashboardGroupsIndexRoute: typeof AppDashboardGroupsIndexRoute
+  AppDashboardGroupshelfIndexRoute: typeof AppDashboardGroupshelfIndexRoute
   AppDashboardShareLinksIndexRoute: typeof AppDashboardShareLinksIndexRoute
   AppDashboardWebsitesIndexRoute: typeof AppDashboardWebsitesIndexRoute
   AppDashboardGroupsIdIndexRoute: typeof AppDashboardGroupsIdIndexRoute
@@ -761,6 +782,7 @@ const AppDashboardRouteRouteChildren: AppDashboardRouteRouteChildren = {
   AppDashboardAnimesIndexRoute: AppDashboardAnimesIndexRoute,
   AppDashboardChannelsIndexRoute: AppDashboardChannelsIndexRoute,
   AppDashboardGroupsIndexRoute: AppDashboardGroupsIndexRoute,
+  AppDashboardGroupshelfIndexRoute: AppDashboardGroupshelfIndexRoute,
   AppDashboardShareLinksIndexRoute: AppDashboardShareLinksIndexRoute,
   AppDashboardWebsitesIndexRoute: AppDashboardWebsitesIndexRoute,
   AppDashboardGroupsIdIndexRoute: AppDashboardGroupsIdIndexRoute,

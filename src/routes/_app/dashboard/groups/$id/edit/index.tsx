@@ -33,6 +33,7 @@ function GroupEditPage() {
 					category: data.category,
 					icon: data.icon,
 					parentId: data.parentId === "none" ? undefined : data.parentId,
+					enableGroupshelf: data.enableGroupshelf,
 				},
 			});
 
@@ -53,6 +54,7 @@ function GroupEditPage() {
 				category: groupData.category,
 				icon: groupData.icon,
 				parentId: groupData.parentId || undefined,
+				enableGroupshelf: groupData.enableGroupshelf || false,
 			}}
 			groups={availableParentGroups}
 			isLoading={isUpdating}

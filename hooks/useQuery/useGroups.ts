@@ -15,6 +15,7 @@ export interface Group {
 	nestingLevel?: number;
 	displayOrder?: number;
 	parentId?: string | null;
+	enableGroupshelf?: boolean;
 	createdAt: string;
 	channelCount: number;
 	videoCount?: number;
@@ -47,6 +48,7 @@ export interface CreateGroupRequest {
 	icon?: string;
 	category?: string;
 	parentId?: string | null;
+	enableGroupshelf?: boolean;
 }
 
 export interface UpdateGroupRequest {
@@ -55,6 +57,7 @@ export interface UpdateGroupRequest {
 	icon?: string;
 	category?: string;
 	parentId?: string | null;
+	enableGroupshelf?: boolean;
 }
 
 // Query function to fetch all groups

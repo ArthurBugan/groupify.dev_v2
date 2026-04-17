@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Pencil, Plus, Share2 } from "lucide-react";
+import { Library, Pencil, Plus, Share2 } from "lucide-react";
 import { IconViewer } from "@/components/icon-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,12 @@ export function GroupDetails({ id }: GroupDetailsProps) {
 					</div>
 					<div className="flex items-center gap-2">
 						<Badge variant="secondary">{group.category}</Badge>
+						{group.enableGroupshelf && (
+							<Badge variant="outline" className="gap-1">
+								<Library className="h-3 w-3" />
+								Group Shelf
+							</Badge>
+						)}
 						<Button variant="outline" size="sm" asChild>
 							<Link to={"/dashboard/groups/$id/edit"} params={{ id: group.id }}>
 								<Pencil className="mr-2 h-4 w-4" />
@@ -59,11 +65,14 @@ export function GroupDetails({ id }: GroupDetailsProps) {
 							</Link>
 						</Button>
 						<Button variant="outline" type="button" asChild>
-							<Link to={"/dashboard/groups/$id/add-channel"} params={{ id: group.id }}>
+							<Link
+								to={"/dashboard/groups/$id/add-channel"}
+								params={{ id: group.id }}
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Channel
 							</Link>
-						</Button>	
+						</Button>
 					</div>
 				</div>
 			</CardHeader>
