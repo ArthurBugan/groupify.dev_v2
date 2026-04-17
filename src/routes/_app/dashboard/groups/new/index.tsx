@@ -30,6 +30,7 @@ function NewGroupPage() {
 				category: data.category,
 				icon: data.icon,
 				parentId: data.parentId || undefined,
+				enableGroupshelf: data.enableGroupshelf,
 			});
 			navigate({ to: "/dashboard/groups" });
 		} catch (error: any) {

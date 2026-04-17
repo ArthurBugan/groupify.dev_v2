@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, FolderKanban, Loader2 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,6 +30,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import type { Group } from "@/hooks/useQuery/useGroups";
 
 export const groupFormSchema = z.object({
@@ -45,6 +46,7 @@ export const groupFormSchema = z.object({
 	category: z.string().min(1, "Select a category"),
 	icon: z.string().min(1, "Select an icon"),
 	parentId: z.string().optional(),
+	enableGroupshelf: z.boolean().optional(),
 });
 
 export type GroupFormData = z.infer<typeof groupFormSchema>;
@@ -90,7 +92,6 @@ export function GroupForm({
 	const navigate = useNavigate();
 	const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
 
-	// Load categories from localStorage on component mount
 	useEffect(() => {
 		const savedSettings = localStorage.getItem("groupSettings");
 		if (savedSettings) {
@@ -117,6 +118,7 @@ export function GroupForm({
 			category: initialData?.category || "",
 			icon: initialData?.icon || "twemoji:rocket",
 			parentId: initialData?.parentId || parentId,
+			enableGroupshelf: initialData?.enableGroupshelf || false,
 		},
 	});
 
@@ -148,6 +150,30 @@ export function GroupForm({
 						onSubmit={form.handleSubmit(handleSubmitWithTransform)}
 						className="p-4 space-y-4"
 					>
+						<FormField
+							control={control}
+							name="enableGroupshelf"
+							render={({ field }) => (
+								<div className="rounded-xl border bg-gradient-to-r from-red-500/5 to-pink-500/5 p-4 md:p-6">
+									<div className="flex flex-row items-center justify-between gap-4">
+										<div className="space-y-1">
+											<FormLabel className="text-base font-semibold">
+												Enable Group Shelf
+											</FormLabel>
+											<FormDescription>
+												Allow this group to be added to groupshelf, so other
+												users can copy it if they find it useful
+											</FormDescription>
+										</div>
+										<Switch
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</div>
+								</div>
+							)}
+						/>
+
 						<FormField
 							control={control}
 							name="name"

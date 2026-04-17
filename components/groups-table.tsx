@@ -85,6 +85,7 @@ interface TableGroup {
 	createdAt: string;
 	icon: string;
 	parentId: string | null;
+	enableGroupshelf: boolean;
 	expanded: boolean;
 	level: number;
 	order: number;
@@ -220,10 +221,11 @@ export function GroupsTable() {
 			id: group.id,
 			name: group.name,
 			channelCount: group.channelCount || 0,
-			category: group.category || "General", // Default category, can be enhanced later
+			category: group.category || "General",
 			createdAt: new Date(group.createdAt).toLocaleDateString(),
 			icon: group.icon || "FolderKanban",
-			parentId: group.parentId || null, // Flat structure for now, can add hierarchical support later
+			parentId: group.parentId || null,
+			enableGroupshelf: group.enableGroupshelf || false,
 			expanded: false,
 			level: group.nestingLevel || 0,
 			order: group.displayOrder || index,
