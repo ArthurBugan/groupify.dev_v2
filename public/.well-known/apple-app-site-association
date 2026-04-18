@@ -1,10 +1,17 @@
 {
   "applinks": {
+    "apps": [],
     "details": [
       {
-        "appIDs": ["UM6SZWPURL.com.groupifyapp"],
-        "components": [{ "/": "/*" }]
+        "appID": "UM6SZWPURL.com.groupifyapp",
+        "paths": ["/oauth/*"]
       }
     ]
+  },
+  "activitycontinuation": {
+    "apps": ["UM6SZWPURL.com.groupifyapp"]
+  },
+  "webcredentials": {
+    "apps": ["UM6SZWPURL.com.groupifyapp"]
   }
 }
