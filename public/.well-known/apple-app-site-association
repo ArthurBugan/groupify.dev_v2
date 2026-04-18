@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["TEAMUM6SZWPURLID.groupify"],
+        "appIDs": ["UM6SZWPURL.com.groupifyapp"],
         "components": [{ "/": "/*" }]
       }
     ]
