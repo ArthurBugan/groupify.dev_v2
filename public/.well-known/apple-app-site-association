@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMUM6SZWPURLID.groupify"],
+        "components": [{ "/": "/*" }]
+      }
+    ]
+  }
+}
