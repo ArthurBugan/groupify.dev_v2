@@ -232,7 +232,7 @@ function AddChannelPage() {
 		selectedChannels.some((c) => c.id === channelId);
 
 	return (
-		<div className="space-y-6 flex flex-col h-full">
+		<div className="space-y-6 flex flex-col min-h-[calc(100vh-128px)]">
 			<div className="flex items-center justify-between">
 				<DashboardHeader
 					title={`Add Channels to ${groupName}`}
