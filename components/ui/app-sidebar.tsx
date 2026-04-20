@@ -261,6 +261,9 @@ export function AppSidebar() {
 														)}
 													/>
 													<span>{item.title}</span>
+													{active && (
+														<div className="absolute left-0 w-1 h-6 bg-gradient-to-b from-red-500 to-pink-500 rounded-r-full" />
+													)}
 												</Link>
 											</SidebarMenuButton>
 										</SidebarMenuItem>
