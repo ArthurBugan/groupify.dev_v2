@@ -64,7 +64,11 @@ export function GroupDetails({ id }: GroupDetailsProps) {
 								Share
 							</Link>
 						</Button>
-						<Button variant="outline" type="button" asChild>
+						<Button
+							className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white"
+							type="button"
+							asChild
+						>
 							<Link
 								to={"/dashboard/groups/$id/add-channel"}
 								params={{ id: group.id }}

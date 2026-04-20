@@ -44,7 +44,11 @@ function GroupsPage() {
 						title="Groups"
 						description="Manage your YouTube channel groups"
 					/>
-					<Button variant="outline" type="button" onClick={handleNewGroup}>
+					<Button
+						className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white"
+						type="button"
+						onClick={handleNewGroup}
+					>
 						<Plus className="mr-2 h-4 w-4" />
 						New Group
 					</Button>
@@ -71,7 +75,11 @@ function GroupsPage() {
 						title="Groups"
 						description="Manage your YouTube channel groups"
 					/>
-					<Button variant="outline" type="button" onClick={handleNewGroup}>
+					<Button
+						className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white"
+						type="button"
+						onClick={handleNewGroup}
+					>
 						<Plus className="mr-2 h-4 w-4" />
 						New Group
 					</Button>
@@ -95,7 +103,11 @@ function GroupsPage() {
 					title="Groups"
 					description="Manage your YouTube channel groups"
 				/>
-				<Button variant="outline" type="button" onClick={handleNewGroup}>
+				<Button
+					className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white"
+					type="button"
+					onClick={handleNewGroup}
+				>
 					<Plus className="mr-2 h-4 w-4" />
 					New Group
 				</Button>
