@@ -51,7 +51,7 @@ function WelcomeSection({
 				: "Good evening";
 
 	return (
-		<div className="rounded-xl border bg-gradient-to-r from-red-500/5 to-pink-500/5 p-4 md:p-6">
+		<div className="rounded-xl border bg-gradient-to-r from-red-500/5 to-pink-500/5 p-4 md:p-6" data-tour="welcome-section">
 			<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
 				<div className="flex items-center gap-3">
 					<Avatar className="h-10 w-10 border">
@@ -73,7 +73,7 @@ function WelcomeSection({
 					</div>
 				</div>
 				<div className="flex gap-2">
-					<Button size="sm" variant="secondary" onClick={onNewGroup}>
+					<Button size="sm" variant="secondary" onClick={onNewGroup} data-tour="new-group-btn">
 						<Plus className="h-3.5 w-3.5 mr-1.5" /> New Group
 					</Button>
 					<Button size="sm" variant="secondary" asChild>

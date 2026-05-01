@@ -659,6 +659,7 @@ export function GroupsTable() {
 															/>
 															<Link
 																to={`/dashboard/groups/$id`}
+																		data-tour={idx === 0 ? "first-group-link" : undefined}
 																params={{ id: group.id }}
 																className="font-medium hover:underline"
 															>
@@ -701,6 +702,7 @@ export function GroupsTable() {
 																<DropdownMenuItem asChild>
 																	<Link
 																		to={`/dashboard/groups/$id`}
+																		data-tour={idx === 0 ? "first-group-link" : undefined}
 																		params={{ id: group.id }}
 																	>
 																		View details

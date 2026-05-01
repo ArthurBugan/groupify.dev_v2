@@ -307,7 +307,7 @@ function AddChannelPage() {
 								<TabsContent value="search" className="space-y-4">
 									<form onSubmit={handleSearch} className="flex gap-2 mb-4">
 										<Input
-											placeholder="Search for YouTube channels..."
+											placeholder="Search for YouTube channels..." data-tour="channel-search-input"
 											value={searchQuery}
 											onChange={(e) => setSearchQuery(e.target.value)}
 											className="flex-1"
@@ -432,6 +432,7 @@ function AddChannelPage() {
 												}
 												onClick={() => handleAddChannel(channel)}
 												disabled={isSelected(channel.id)}
+																data-tour="channel-add-btn"
 											>
 												{isSelected(channel.id) ? (
 													<Check className="mr-1 h-4 w-4" />
@@ -473,6 +474,7 @@ function AddChannelPage() {
 												}
 												onClick={() => handleAddChannel(channel)}
 												disabled={isSelected(channel.id)}
+																data-tour="channel-add-btn"
 											>
 												{isSelected(channel.id) ? (
 													<Check className="mr-1 h-4 w-4" />
