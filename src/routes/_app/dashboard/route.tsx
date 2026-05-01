@@ -20,6 +20,8 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { OnboardingTour } from "@/components/onboarding-tour";
+import { TourProvider } from "@/hooks/useOnboardingTour";
 
 export const Route = createFileRoute("/_app/dashboard")({
 	component: DashboardLayout,
@@ -80,19 +82,22 @@ function DashboardBreadcrumb() {
 
 function DashboardLayout() {
 	return (
-		<SidebarProvider defaultOpen={true}>
-			<div className="flex min-h-screen w-full">
-				<AppSidebar />
-				<SidebarInset className="flex-1 overflow-hidden">
-					<header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-						<SidebarTrigger className="-ml-1" />
-						<Separator orientation="vertical" className="mr-2 h-4" />
-					</header>
-					<main className="flex-1 overflow-auto p-6">
-						<Outlet />
-					</main>
-				</SidebarInset>
-			</div>
-		</SidebarProvider>
+		<TourProvider>
+			<SidebarProvider defaultOpen={true}>
+				<div className="flex min-h-screen w-full">
+					<AppSidebar />
+					<SidebarInset className="flex-1 overflow-hidden">
+						<header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+							<SidebarTrigger className="-ml-1" />
+							<Separator orientation="vertical" className="mr-2 h-4" />
+						</header>
+						<main className="flex-1 overflow-auto p-6">
+							<Outlet />
+						</main>
+					</SidebarInset>
+				</div>
+				<OnboardingTour />
+			</SidebarProvider>
+		</TourProvider>
 	);
 }

@@ -49,7 +49,7 @@ export function GroupList() {
 						Start organizing your YouTube channels into groups
 					</p>
 				</div>
-				<Button size="sm" onClick={handleCreateGroup}>
+				<Button size="sm" variant="outline" onClick={handleCreateGroup}>
 					<Plus className="h-4 w-4 mr-1" />
 					Create Your First Group
 				</Button>

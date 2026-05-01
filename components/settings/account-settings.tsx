@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Eye, EyeOff, Link, Shield, Trash2, Unlink } from "lucide-react";
+import { AlertTriangle, Eye, EyeOff, Link, RefreshCw, Shield, Trash2, Unlink } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useCheckDiscordSession, useCheckGoogleSession, useDisconnectDiscordSession, useDisconnectGoogleSession } from "@/hooks/useQuery/useSocialLogin";
 import { Icons } from "@/components/ui/icons";
 import { useDeleteAccountMutation, useUpdatePasswordMutation } from "@/hooks/mutations/useAuthMutations";
+import { useTourController } from "@/components/onboarding-tour";
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -35,6 +36,12 @@ export function AccountSettings() {
 		discord: { connected: false, expired: false },
 		google: { connected: false, expired: false },
 	});
+
+	const { resetTour } = useTourController();
+
+	const handleRedoTour = () => {
+		resetTour();
+	};
 
 	useEffect(() => { if (discordSession) setSocialConnections((p) => ({ ...p, discord: { connected: discordSession.connected, expired: discordSession.expired } })); }, [discordSession]);
 	useEffect(() => { if (googleSession) setSocialConnections((p) => ({ ...p, google: { connected: googleSession.connected, expired: googleSession.expired } })); }, [googleSession]);
@@ -65,7 +72,7 @@ export function AccountSettings() {
 							{socialConnections.google.connected ? <Badge variant="secondary" className="mt-1 gap-1 h-auto py-0.5 px-2"><Shield className="h-3 w-3" /> Connected</Badge> : <span className="text-xs text-muted-foreground">Not connected</span>}
 						</div>
 					</div>
-					<Button size="sm" variant={socialConnections.google.connected ? "outline" : "ghost"} onClick={() => socialConnections.google.connected ? handleDisconnect("google") : handleConnect("google")}>
+					<Button size="sm" variant={socialConnections.google.connected ? "outline" : "ghost"} data-tour="google-connect-btn" onClick={() => socialConnections.google.connected ? handleDisconnect("google") : handleConnect("google")}>
 						{socialConnections.google.connected ? <><Unlink className="h-3.5 w-3.5 mr-1" /> Disconnect</> : <><Link className="h-3.5 w-3.5 mr-1" /> Connect</>}
 					</Button>
 				</div>
@@ -100,7 +107,22 @@ export function AccountSettings() {
 
 			{/* Delete Account */}
 			<div className="rounded-xl border bg-card/50 backdrop-blur-sm p-4">
-				<h2 className="font-semibold text-sm mb-3">Danger Zone</h2>
+				<h2 className="font-semibold text-sm mb-3">Tour</h2>
+				<div className="flex items-center justify-between p-3 rounded-lg border">
+					<div className="flex items-center gap-3">
+						<div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+							<RefreshCw className="h-4 w-4 text-red-600" />
+						</div>
+						<div className="flex flex-col">
+							<p className="font-medium text-sm">Redo Onboarding Tour</p>
+							<span className="text-xs text-muted-foreground">Start the guided tour again</span>
+						</div>
+					</div>
+					<Button size="sm" variant="outline" onClick={handleRedoTour}>
+						<RefreshCw className="h-3.5 w-3.5 mr-1" /> Redo Tour
+					</Button>
+				</div>
+				<h2 className="font-semibold text-sm mb-3 mt-6">Danger Zone</h2>
 				<Dialog open={deleteDialogOpen} onOpenChange={(o) => { setDeleteDialogOpen(o); if (!o) { setDeleteConfirmation(""); setAcknowledgeDataLoss(false); setAcknowledgeNoRecovery(false); } }}>
 					<DialogTrigger asChild><Button variant="destructive" size="sm"><Trash2 className="h-3.5 w-3.5 mr-1" /> Delete Account</Button></DialogTrigger>
 					<DialogContent>

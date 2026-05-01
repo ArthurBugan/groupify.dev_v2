@@ -181,7 +181,7 @@ export function GroupForm({
 								<FormItem>
 									<FormLabel className="text-sm font-medium">Name</FormLabel>
 									<FormControl>
-										<Input placeholder="My Group" className="h-10" {...field} />
+										<Input placeholder="My Group" className="h-10" data-tour="group-name-input" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -312,6 +312,7 @@ export function GroupForm({
 							<Button
 								size="sm"
 								disabled={isLoading}
+								data-tour="group-create-btn"
 								className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600"
 							>
 								{isLoading ? (

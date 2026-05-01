@@ -53,6 +53,7 @@ interface NavItem {
 	title: string;
 	url: string;
 	icon: React.ElementType;
+	dataTour?: string;
 }
 
 const mainItems: NavItem[] = [
@@ -65,6 +66,7 @@ const mainItems: NavItem[] = [
 		title: "Groups",
 		url: "/dashboard/groups",
 		icon: FolderKanban,
+		dataTour: "groups-nav-link",
 	},
 	{
 		title: "Channels",
@@ -98,6 +100,7 @@ const secondaryItems: NavItem[] = [
 		title: "Settings",
 		url: "/dashboard/settings/billing",
 		icon: Settings,
+		dataTour: "settings-nav-link",
 	},
 ];
 
@@ -199,6 +202,7 @@ export function AppSidebar() {
 											>
 												<Link
 													to={item.url}
+																dataTour={item.dataTour}
 													className={cn(
 														"group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
 														active
@@ -245,6 +249,7 @@ export function AppSidebar() {
 											>
 												<Link
 													to={item.url}
+																dataTour={item.dataTour}
 													className={cn(
 														"group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
 														active

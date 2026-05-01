@@ -48,6 +48,7 @@ function GroupsPage() {
 						className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white"
 						type="button"
 						onClick={handleNewGroup}
+						data-tour="new-group-btn"
 					>
 						<Plus className="mr-2 h-4 w-4" />
 						New Group
@@ -79,6 +80,7 @@ function GroupsPage() {
 						className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white"
 						type="button"
 						onClick={handleNewGroup}
+						data-tour="new-group-btn"
 					>
 						<Plus className="mr-2 h-4 w-4" />
 						New Group
@@ -107,6 +109,7 @@ function GroupsPage() {
 					className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white"
 					type="button"
 					onClick={handleNewGroup}
+				data-tour="new-group-btn"
 				>
 					<Plus className="mr-2 h-4 w-4" />
 					New Group
