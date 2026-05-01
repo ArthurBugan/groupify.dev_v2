@@ -222,7 +222,7 @@ export function GroupForm({
 											defaultValue={field.value}
 										>
 											<FormControl>
-												<SelectTrigger className="h-10">
+												<SelectTrigger className="h-10" data-tour="group-category">
 													<SelectValue placeholder="Select category" />
 												</SelectTrigger>
 											</FormControl>

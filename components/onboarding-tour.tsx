@@ -39,6 +39,7 @@ export function OnboardingTour() {
     onPrevious,
     onSkip,
     startTour,
+    completeTour,
   } = useOnboardingTour();
 
   const location = useLocation();
@@ -98,8 +99,11 @@ export function OnboardingTour() {
     if (currentStep?.action?.onClick) {
       currentStep.action.onClick();
     }
+    if (currentStep?.id === "done") {
+      completeTour();
+    }
     onNext();
-  }, [currentStep, onNext]);
+  }, [currentStep, onNext, completeTour]);
 
   if (!showModal || !currentStep) return null;
 
@@ -157,9 +161,6 @@ export function OnboardingTour() {
           className="pointer-events-auto w-full max-w-lg mt-8"
         >
           <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl shadow-black/20">
-            {/* Gradient accent bar */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-pink-500" />
-
             {/* Progress bar */}
             <div className="px-6 pt-3">
               <div className="h-1 w-full overflow-hidden rounded bg-muted/30">
