@@ -894,8 +894,19 @@ export function LandingPage() {
 									className="h-12"
 								/>
 							</a>
-							<a href="https://www.foundrlist.com/product/groupify-2?utm_source=badge&amp;utm_medium=embed" target="_blank" rel="noopener">
-								<img src="https://www.foundrlist.com/api/badge/groupify-2" alt="Featured on FoundrList" width="150" height="48" />
+							<a href="https://www.foundrlist.com/product/groupify-2?utm_source=badge&amp;utm_medium=embed" target="_blank" className="h-12" rel="noopener">
+								<img src="https://www.foundrlist.com/api/badge/groupify-2" alt="Featured on FoundrList" width="150" className="h-12" height="48" />
+							</a>
+							<a href="https://peerpush.net/p/groupify"
+								target="_blank"
+								rel="noopener"
+								className="h-12"
+							>
+								<img
+									src="https://peerpush.net/p/groupify/badge.png"
+									alt="Groupify badge"
+									className="h-12"
+								/>
 							</a>
 						</div>
 					</div>
