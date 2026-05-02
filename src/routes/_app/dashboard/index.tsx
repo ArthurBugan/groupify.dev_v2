@@ -22,7 +22,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UpgradePlanModal } from "@/components/upgrade-plan-modal";
-import { YouTubeConnectModal } from "@/components/youtube-connect-modal";
 import { useUser } from "@/hooks/useQuery/useUser";
 import { useDashboardTotal } from "@/hooks/useQuery/useDashboard";
 
@@ -185,10 +184,6 @@ function DashboardPage() {
 					type={upgradeModalType}
 				/>
 			)}
-			<YouTubeConnectModal
-				open={showYouTubeModal}
-				onOpenChange={setShowYouTubeModal}
-			/>
 
 			{user && (
 				<WelcomeSection
