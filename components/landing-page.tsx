@@ -891,8 +891,11 @@ export function LandingPage() {
 								<img
 									src="https://acidtools.com/assets/images/badge-dark.png"
 									alt="Acid Tools"
-									className="h-8"
+									className="h-12"
 								/>
+							</a>
+							<a href="https://www.foundrlist.com/product/groupify-2?utm_source=badge&amp;utm_medium=embed" target="_blank" rel="noopener">
+								<img src="https://www.foundrlist.com/api/badge/groupify-2" alt="Featured on FoundrList" width="150" height="48" />
 							</a>
 						</div>
 					</div>
